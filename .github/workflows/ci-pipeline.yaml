@@ -1,0 +1,42 @@
+name: Run Tests and Checks
+
+on:
+  push:
+  pull_request:
+    branches:
+      - main
+    types: [opened, reopened]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+          cache: yarn
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Test and coverage
+        run: yarn jest --coverage
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+      - name: Send notification to MS Teams channel
+        if: ${{ github.event.action == 'opened' }}
+        uses: nhs-england-tools/notify-msteams-action@v0.0.4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          teams-webhook-url: ${{ secrets.TEAMS_WEBHOOK_URL_DEVOPS_CHANNEL }}
+          message-title: "${{ github.event.pull_request.title }}"
+          message-text: "Pull request **[${{ github.event.pull_request.title }}](${{ github.event.pull_request.html_url }})** opened by ***${{ github.event.pull_request.user.login }}***"
