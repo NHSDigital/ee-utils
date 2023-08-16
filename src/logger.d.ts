@@ -2,7 +2,7 @@ import { Logger, transports } from "winston";
 
 export declare type LogReferences<T> = Record<T, string>;
 
-declare class LambdaLogger<T> {
+export declare class LambdaLogger<T> {
   constructor(moduleName: string, logReferences: LogReferences<T>);
 
   info: (
