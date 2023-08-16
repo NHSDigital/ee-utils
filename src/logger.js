@@ -18,7 +18,7 @@ const splunkFormat = combine(
   format.json()
 );
 
-class LambdaLogger {
+export class LambdaLogger {
   constructor(moduleName, logReferences) {
     this._logger = this._createWinstonLogger(moduleName);
     this._logReferences = logReferences;
