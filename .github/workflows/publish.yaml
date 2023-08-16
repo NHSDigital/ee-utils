@@ -28,6 +28,9 @@ jobs:
       - name: Install Dependencies
         run: yarn install --immutable
 
+      - name: Build
+        run: yarn build
+
       - name: Publish to GitHub packages
         run: yarn publish
         env:
