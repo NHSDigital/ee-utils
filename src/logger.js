@@ -101,5 +101,3 @@ export class LambdaLogger {
     };
   }
 }
-
-export default LambdaLogger;

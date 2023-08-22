@@ -1,10 +1,10 @@
-import LambdaLogger from "./logger.js";
+import { LambdaLogger } from "./logger.js";
 
 const logReferences = {
   ENGEXPUTILS001: "Sonarcloud Group Created",
   ENGEXPUTILS002: "Sonarcloud Group Would Be Created",
 };
-const logger = new LambdaLogger("nhse-ee-gh-utils/sonarcloud", logReferences);
+const logger = new LambdaLogger("ee-utils/sonarcloud", logReferences);
 
 export const SONARCLOUD_BASE_URL = "https://sonarcloud.io/api";
 

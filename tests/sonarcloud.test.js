@@ -1,5 +1,5 @@
 import { createGroup, getSonarcloudProjects } from "../src/sonarcloud";
-import LambdaLogger from "../src/logger";
+import { LambdaLogger } from "../src/logger";
 
 global.fetch = jest.fn();
 jest.mock("../src/sonarcloud", () => ({
