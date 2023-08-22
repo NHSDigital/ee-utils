@@ -1,6 +1,6 @@
 {
   "name": "@NHSDigital/ee-utils",
-  "version": "0.0.4-experimental",
+  "version": "0.0.5",
   "license": "MIT",
   "type": "module",
   "author": "jacobgill1 <jacob.gill1@nhs.net>",
@@ -11,8 +11,10 @@
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
   },
+  "types": "./lib/cjs/index.d.ts",
   "exports": {
     ".": {
+      "types": "./lib/cjs/index.d.ts",
       "import": "./lib/esm/index.js",
       "require": "./lib/cjs/index.js"
     }
