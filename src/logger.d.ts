@@ -33,5 +33,3 @@ export declare class LambdaLogger<T> {
     logArgs: Record<string, any>
   ) => Record<string, any>;
 }
-
-export default LambdaLogger;
