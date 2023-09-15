@@ -6,15 +6,6 @@ export declare const getOctokit = async (
   installationId: string
 ): Promise<Octokit> => {};
 
-export declare const getNormalPrivilegeOctokit =
-  async (): Promise<Octokit> => {};
-
-export declare const getElevatedPrivilegeOctokit =
-  async (): Promise<Octokit> => {};
-
-export declare const getRepoMetaDataBotOctokit =
-  async (): Promise<Octokit> => {};
-
 export declare const getAllRepositoriesInOrganisation = async (
   octokit: Octokit,
   organisationName: string
