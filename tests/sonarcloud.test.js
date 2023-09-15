@@ -43,6 +43,14 @@ describe("handleErrors", () => {
     ];
     expect(() => handleErrors(mockErrors)).toThrow("No organization for key");
   });
+  it("should throw errors", () => {
+    const mockErrors = [
+      {
+        msg: "some error message",
+      },
+    ];
+    expect(() => handleErrors(mockErrors)).toThrow(Error(mockErrors));
+  });
 });
 
 describe("getSonarcloudProjects", () => {
