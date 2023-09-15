@@ -12,45 +12,59 @@ export const makeSonarcloudAPICall = async (
   urlToCall,
   searchParams,
   sonarcloudApiToken,
+  itemKey,
   method = "get"
 ) => {
   const url = new URL(`${SONARCLOUD_BASE_URL}${urlToCall}`);
   url.search = new URLSearchParams(searchParams);
-
-  return await fetch(url, {
+  const requestInit = {
     method,
     headers: {
       Authorization: `basic ${Buffer.from(sonarcloudApiToken, "utf8").toString(
         "base64"
       )}`,
     },
-  });
+  };
+
+  if (method === "post") {
+    const response = await fetch(url, requestInit);
+    return await response.json();
+  }
+
+  const allItems = [];
+  const firstResponse = await fetch(url, requestInit);
+
+  const firstResponseParsed = await firstResponse.json();
+  const totalItems = firstResponseParsed.paging.total;
+  allItems.push(...firstResponseParsed[itemKey]);
+  let pageCounter = 2;
+
+  while (allItems.length < totalItems) {
+    searchParams.p = pageCounter;
+    url.search = new URLSearchParams(searchParams);
+
+    const response = await fetch(url, requestInit);
+
+    const responseParsed = await response.json();
+    allItems.push(...responseParsed[itemKey]);
+    pageCounter++;
+  }
+  return allItems;
 };
 
 export const getSonarcloudProjects = async (
   sonarcloudApiToken,
   sonarcloudOrganisationName
 ) => {
-  const allProjects = [];
-  let allPagesExplored = false;
-  let pageCounter = 1;
-  while (!allPagesExplored) {
-    const sonarCloudProjects = await makeSonarcloudAPICall(
-      "/components/search_projects",
-      {
-        p: pageCounter,
-        organization: sonarcloudOrganisationName,
-      },
-      sonarcloudApiToken
-    );
-    const sonarCloudProjectsParsed = await sonarCloudProjects.json();
-    const paging = sonarCloudProjectsParsed.paging;
-    allPagesExplored =
-      paging.pageIndex == paging.total || paging.pageSize > paging.total;
-    pageCounter += 1;
-    allProjects.push(...sonarCloudProjectsParsed.components);
-  }
-  return allProjects.map((project) => project.name);
+  const sonarCloudProjects = await makeSonarcloudAPICall(
+    "/components/search_projects",
+    {
+      organization: sonarcloudOrganisationName,
+    },
+    sonarcloudApiToken,
+    "components"
+  );
+  return sonarCloudProjects.map((project) => project.name);
 };
 
 export const createGroup = async (
@@ -63,16 +77,16 @@ export const createGroup = async (
     logger.info("ENGEXPUTILS002", { group: groupName });
     return groupName;
   }
-  const response = await makeSonarcloudAPICall(
+  const parsedResponse = await makeSonarcloudAPICall(
     "/user_groups/create",
     {
       organization: organisation,
       name: groupName,
     },
     sonarcloudApiToken,
+    "group",
     "post"
   );
-  const parsedResponse = await response.json();
   logger.info("ENGEXPUTILS001", parsedResponse);
   return parsedResponse.group.name;
 };
