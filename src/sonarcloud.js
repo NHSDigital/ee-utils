@@ -24,7 +24,6 @@ export const makeSonarcloudAPICall = async (
       )}`,
     },
   });
-  console.log(response);
   return response;
 };
 
@@ -45,6 +44,7 @@ export const getSonarcloudProjects = async (
       sonarcloudApiToken
     );
     const sonarCloudProjectsParsed = await sonarCloudProjects.json();
+    console.log(sonarCloudProjectsParsed);
     const paging = sonarCloudProjectsParsed.paging;
     allPagesExplored =
       paging.pageIndex == paging.total || paging.pageSize > paging.total;
