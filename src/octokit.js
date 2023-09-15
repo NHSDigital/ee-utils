@@ -9,30 +9,6 @@ export const getOctokit = async (privateKey, appId, installationId) => {
   return app.getInstallationOctokit(GITHUB_INSTALLATION_ID);
 };
 
-export const getNormalPrivilegeOctokit = async () => {
-  return getOctokit(
-    "github-scanning-utils-github-app-private-key",
-    "github-scanning-utils-github-app-id",
-    "github-scanning-utils-github-installation-id"
-  );
-};
-
-export const getElevatedPrivilegeOctokit = async () => {
-  return getOctokit(
-    "github-scanning-utils-elevated-privileges-github-app-private-key",
-    "github-scanning-utils-elevated-privileges-github-app-id",
-    "github-scanning-utils-elevated-privileges-github-installation-id"
-  );
-};
-
-export const getRepoMetaDataBotOctokit = async () => {
-  return getOctokit(
-    "github-scanning-utils-repo-meta-data-bot-private-key",
-    "github-scanning-utils-repo-meta-data-bot-app-id",
-    "github-scanning-utils-repo-meta-data-bot-installation-id"
-  );
-};
-
 export const getAllRepositoriesInOrganisation = async (
   octokit,
   organisationName

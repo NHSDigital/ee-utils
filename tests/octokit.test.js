@@ -1,14 +1,11 @@
+import { App } from "octokit";
 import {
   getAllRepositoriesInOrganisation,
-  getTeamsForRepo,
-  getOctokit,
-  getNormalPrivilegeOctokit,
-  getElevatedPrivilegeOctokit,
-  getRepoMetaDataBotOctokit,
-  getTeamsForRepositoriesInOrganisation,
   getContributorsForRepo,
+  getOctokit,
+  getTeamsForRepo,
+  getTeamsForRepositoriesInOrganisation,
 } from "../src/octokit";
-import { App } from "octokit";
 
 jest.mock("../src/parameters", () => ({
   ...jest.requireActual("../src/parameters"),
@@ -41,61 +38,6 @@ describe("getOctokit", () => {
       privateKey: inputPrivateKey,
     });
     expect(getInstallationOctokitMock).toBeCalledWith(inputInstallationId);
-  });
-});
-
-describe("getNormalPrivilegeOctokit", () => {
-  it("returns the octokit using the correct parameters", async () => {
-    const getInstallationOctokitMock = jest.fn();
-    App.mockImplementation(() => ({
-      getInstallationOctokit: getInstallationOctokitMock,
-    }));
-    await getNormalPrivilegeOctokit();
-
-    expect(App).toBeCalledWith({
-      appId: "github-scanning-utils-github-app-id",
-      privateKey: "github-scanning-utils-github-app-private-key",
-    });
-    expect(getInstallationOctokitMock).toBeCalledWith(
-      "github-scanning-utils-github-installation-id"
-    );
-  });
-});
-
-describe("getElevatedPrivilegeOctokit", () => {
-  it("returns the octokit using the correct parameters", async () => {
-    const getInstallationOctokitMock = jest.fn();
-    App.mockImplementation(() => ({
-      getInstallationOctokit: getInstallationOctokitMock,
-    }));
-    await getElevatedPrivilegeOctokit();
-
-    expect(App).toBeCalledWith({
-      appId: "github-scanning-utils-elevated-privileges-github-app-id",
-      privateKey:
-        "github-scanning-utils-elevated-privileges-github-app-private-key",
-    });
-    expect(getInstallationOctokitMock).toBeCalledWith(
-      "github-scanning-utils-elevated-privileges-github-installation-id"
-    );
-  });
-});
-
-describe("getRepoMetaDataBotOctokit", () => {
-  it("returns the octokit using the correct parameters", async () => {
-    const getInstallationOctokitMock = jest.fn();
-    App.mockImplementation(() => ({
-      getInstallationOctokit: getInstallationOctokitMock,
-    }));
-    await getRepoMetaDataBotOctokit();
-
-    expect(App).toBeCalledWith({
-      appId: "github-scanning-utils-repo-meta-data-bot-app-id",
-      privateKey: "github-scanning-utils-repo-meta-data-bot-private-key",
-    });
-    expect(getInstallationOctokitMock).toBeCalledWith(
-      "github-scanning-utils-repo-meta-data-bot-installation-id"
-    );
   });
 });
 
