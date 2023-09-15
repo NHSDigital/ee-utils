@@ -16,8 +16,7 @@ export const makeSonarcloudAPICall = async (
 ) => {
   const url = new URL(`${SONARCLOUD_BASE_URL}${urlToCall}`);
   url.search = new URLSearchParams(searchParams);
-
-  return await fetch(url, {
+  const response = await fetch(url, {
     method,
     headers: {
       Authorization: `basic ${Buffer.from(sonarcloudApiToken, "utf8").toString(
@@ -25,6 +24,8 @@ export const makeSonarcloudAPICall = async (
       )}`,
     },
   });
+  console.log(response);
+  return response;
 };
 
 export const getSonarcloudProjects = async (
