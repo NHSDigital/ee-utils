@@ -15,13 +15,13 @@ class NoOrganisationError extends Error {
   }
 }
 
-const checkForErrors = (response) => {
+export const checkForErrors = (response) => {
   if (response.errors) {
     throw response.errors;
   }
 };
 
-const handleErrors = (errors) => {
+export const handleErrors = (errors) => {
   for (const error of errors) {
     if (error.msg.includes("No organization for key")) {
       logger.warn("ENGEXPUTILS003", { error });
