@@ -10,14 +10,14 @@ const logReferences = {
 const logger = new LambdaLogger("ee-utils/sonarcloud", logReferences);
 
 export const SONARCLOUD_BASE_URL = "https://sonarcloud.io/api";
-class NoOrganisationError extends Error {
+export class NoOrganisationError extends Error {
   constructor(message) {
     super(message);
     this.name = "NoOrganisationError";
   }
 }
 
-class ProjectNotFoundError extends Error {
+export class ProjectNotFoundError extends Error {
   constructor(message) {
     super(message);
     this.name = "ProjectNotFoundError";
