@@ -21,3 +21,10 @@ export declare const createGroup = async (
   sonarcloudApiToken: string,
   dryRunMode: boolean = false
 ): Promise<string> => {};
+
+export declare class NoOrganisationError extends Error {
+  constructor(message: string);
+}
+export declare class ProjectNotFoundError extends Error {
+  constructor(message: string);
+}

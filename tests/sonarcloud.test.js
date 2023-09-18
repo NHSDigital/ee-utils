@@ -43,6 +43,16 @@ describe("handleErrors", () => {
     ];
     expect(() => handleErrors(mockErrors)).toThrow("No organization for key");
   });
+  it("should handle errors and throw project not found error", () => {
+    const mockErrors = [
+      {
+        msg: "Component key 'someProject' not found",
+      },
+    ];
+    expect(() => handleErrors(mockErrors)).toThrow(
+      "Component key 'someProject' not found"
+    );
+  });
   it("should throw errors", () => {
     const mockErrors = [
       {

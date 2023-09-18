@@ -5,14 +5,22 @@ const logReferences = {
   ENGEXPUTILS002: "Sonarcloud Group Would Be Created",
   ENGEXPUTILS003: "Organisation doesn't exist in Sonarcloud",
   ENGEXPUTILS004: "Sonarcloud API Call Errored",
+  ENGEXPUTILS005: "Project could not be found",
 };
 const logger = new LambdaLogger("ee-utils/sonarcloud", logReferences);
 
 export const SONARCLOUD_BASE_URL = "https://sonarcloud.io/api";
-class NoOrganisationError extends Error {
+export class NoOrganisationError extends Error {
   constructor(message) {
     super(message);
     this.name = "NoOrganisationError";
+  }
+}
+
+export class ProjectNotFoundError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "ProjectNotFoundError";
   }
 }
 
@@ -28,6 +36,13 @@ export const handleErrors = (errors) => {
     if (error.msg.includes("No organization for key")) {
       logger.warn("ENGEXPUTILS003", { error });
       throw new NoOrganisationError(error.msg);
+    }
+    if (
+      error.msg.includes("Component key") &&
+      error.msg.includes("not found")
+    ) {
+      logger.warn("ENGEXPUTILS005", { error });
+      throw new ProjectNotFoundError(error.msg);
     }
   }
   throw errors;
