@@ -1,6 +1,6 @@
+import { v4 as uuidv4 } from "uuid";
 import { createLogger, format, transports } from "winston";
 const { combine, timestamp } = format;
-import { v4 as uuidv4 } from "uuid";
 
 const transformLogInfo = (info) => {
   info.level = info.level.toUpperCase();
@@ -42,6 +42,9 @@ export class LambdaLogger {
 
   error(logReference, logArgs = {}) {
     this._logger.error(this._buildLog(logReference, logArgs));
+  }
+  debug(logReference, logArgs = {}) {
+    this._logger.debug(this._buildLog(logReference, logArgs));
   }
 
   _getLogTransports() {
