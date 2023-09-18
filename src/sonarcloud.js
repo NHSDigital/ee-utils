@@ -4,6 +4,7 @@ const logReferences = {
   ENGEXPUTILS001: "Sonarcloud Group Created",
   ENGEXPUTILS002: "Sonarcloud Group Would Be Created",
   ENGEXPUTILS003: "Organisation doesn't exist in Sonarcloud",
+  ENGEXPUTILS004: "Sonarcloud API Call Errored",
 };
 const logger = new LambdaLogger("ee-utils/sonarcloud", logReferences);
 
@@ -17,6 +18,7 @@ class NoOrganisationError extends Error {
 
 export const checkForErrors = (response) => {
   if (response.errors) {
+    logger.error("ENGEXPUTILS004", { response });
     throw response.errors;
   }
 };
@@ -28,7 +30,7 @@ export const handleErrors = (errors) => {
       throw new NoOrganisationError(error.msg);
     }
   }
-  throw new Error(errors);
+  throw errors;
 };
 
 export const makeSonarcloudAPICall = async (

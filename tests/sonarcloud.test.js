@@ -49,7 +49,11 @@ describe("handleErrors", () => {
         msg: "some error message",
       },
     ];
-    expect(() => handleErrors(mockErrors)).toThrow(Error(mockErrors));
+    try {
+      handleErrors(mockErrors);
+    } catch (error) {
+      expect(error).toEqual(mockErrors);
+    }
   });
 });
 
