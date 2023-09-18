@@ -8,13 +8,15 @@ In order to use this package locally, you must authenticate with GitHub Packages
 
 The preferred method is to use a PAT token and sign in via `npm login`. You must use the legacy `auth-type` option as below.
 
+**This command should be run in your home directory.**
+
 ```bash
 npm login --scope=@NHSDigital --auth-type=legacy --registry=https://npm.pkg.github.com
 ```
 
 You will be prompted to enter a Username and Password. The Username is your GitHub username and the Password is your PAT token.
 
-**_NOTE:_** This PAT only needs the `read:packages` scope to install packages.
+**_NOTE:_** This PAT only needs the `read:packages` scope to install packages and should be [authorised via SSO to access the organisation](https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-saml-single-sign-on/authorizing-a-personal-access-token-for-use-with-saml-single-sign-on).
 
 ## GitHub Actions
 
