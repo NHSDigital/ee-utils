@@ -17,6 +17,10 @@ export declare class LambdaLogger<T> {
     logReference: keyof LogReferences<T>,
     logArgs: Record<string, any>
   ) => void;
+  debug: (
+    logReference: keyof LogReferences<T>,
+    logArgs: Record<string, any>
+  ) => void;
 
   _getLogTransports: () => Array<transports.ConsoleTransportInstance>;
 

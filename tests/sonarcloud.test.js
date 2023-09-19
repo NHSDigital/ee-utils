@@ -1,9 +1,10 @@
+import { LambdaLogger } from "../src/logger";
 import {
+  checkForErrors,
   createGroup,
   getSonarcloudProjects,
-  makeSonarcloudAPICall,
+  handleErrors,
 } from "../src/sonarcloud";
-import { LambdaLogger } from "../src/logger";
 
 global.fetch = jest.fn();
 
@@ -16,6 +17,53 @@ jest.mock("../src/parameters", () => {
 beforeEach(() => {
   fetch.mockClear();
 });
+
+describe("checkForErrors", () => {
+  it("should check for errors and throw the errors if they exist", () => {
+    const mockResponse = {
+      errors: [
+        {
+          msg: "some error message",
+        },
+      ],
+    };
+    expect(() => checkForErrors(mockResponse)).toThrow();
+  });
+});
+
+describe("handleErrors", () => {
+  it("should handle errors and throw organisation error", () => {
+    const mockErrors = [
+      {
+        msg: "No organization for key 'someOrg'",
+      },
+    ];
+    expect(() => handleErrors(mockErrors)).toThrow("No organization for key");
+  });
+  it("should handle errors and throw project not found error", () => {
+    const mockErrors = [
+      {
+        msg: "Component key 'someProject' not found",
+      },
+    ];
+    expect(() => handleErrors(mockErrors)).toThrow(
+      "Component key 'someProject' not found"
+    );
+  });
+  it("should throw errors", () => {
+    const mockErrors = [
+      {
+        msg: "some error message",
+      },
+    ];
+    try {
+      handleErrors(mockErrors);
+    } catch (error) {
+      expect(error).toEqual(mockErrors);
+    }
+  });
+});
+
 describe("getSonarcloudProjects", () => {
   it("should return an list of sonarcloud projects", async () => {
     const mockSonarcloudResponse = {
