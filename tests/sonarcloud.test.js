@@ -4,6 +4,8 @@ import {
   createGroup,
   getSonarcloudProjects,
   handleErrors,
+  makeSonarcloudAPICall,
+  checkResponse,
 } from "../src/sonarcloud";
 
 global.fetch = jest.fn();
@@ -61,6 +63,35 @@ describe("handleErrors", () => {
     } catch (error) {
       expect(error).toEqual(mockErrors);
     }
+  });
+});
+
+describe("checkResponse", () => {
+  it("should call checkForErrors and throw errors", () => {
+    const mockResponse = {
+      errors: [
+        {
+          msg: "some error message",
+        },
+      ],
+    };
+    expect(() => checkResponse(mockResponse)).toThrow();
+  });
+  it("should return the response", () => {
+    const mockResponse = { some: "response" };
+    expect(checkResponse(mockResponse)).toEqual(mockResponse);
+  });
+  it("should call handleErrors", () => {
+    const mockResponse = {
+      errors: [
+        {
+          msg: "Component key 'someProject' not found",
+        },
+      ],
+    };
+    expect(() => checkResponse(mockResponse)).toThrow(
+      "Component key 'someProject' not found"
+    );
   });
 });
 
