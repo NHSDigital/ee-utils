@@ -6,6 +6,8 @@ import {
   handleErrors,
   makeSonarcloudAPICall,
   checkResponse,
+  makeSonarcloudGetCall,
+  makeSonarcloudPostCall,
 } from "../src/sonarcloud";
 
 global.fetch = jest.fn();
@@ -210,7 +212,8 @@ describe("makeSonarcloudAPICall", () => {
       urlToCall,
       searchParams,
       sonarcloudApiToken,
-      "response"
+      "response",
+      "get"
     );
     const expectedUrl = new URL(
       "https://sonarcloud.io/api/some/url?some=param"
@@ -255,7 +258,8 @@ describe("makeSonarcloudAPICall", () => {
       urlToCall,
       searchParams,
       sonarcloudApiToken,
-      "groups"
+      "groups",
+      "get"
     );
 
     const expectedGroups = [
@@ -283,5 +287,73 @@ describe("makeSonarcloudAPICall", () => {
 
     expect(result).toEqual(mockSonarcloudFirstResponse);
     expect(fetch).toBeCalledTimes(1);
+  });
+});
+
+describe("makeSonarcloudGetCall", () => {
+  it("should call makeSonarcloudAPICall with correct args", async () => {
+    const urlToCall = "/some/url";
+    const searchParams = { some: "param" };
+    const sonarcloudApiToken = "someToken";
+
+    const expectedResponse = { response: ["response"], paging: { total: 1 } };
+    fetch.mockResolvedValue({
+      json: () => Promise.resolve(expectedResponse),
+    });
+    const result = await makeSonarcloudGetCall(
+      urlToCall,
+      searchParams,
+      sonarcloudApiToken,
+      "response"
+    );
+    const expectedUrl = new URL(
+      "https://sonarcloud.io/api/some/url?some=param"
+    );
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledWith(expectedUrl, {
+      method: "get",
+      headers: {
+        Authorization: `basic ${Buffer.from(
+          sonarcloudApiToken,
+          "utf8"
+        ).toString("base64")}`,
+      },
+    });
+    expect(result).toEqual(expectedResponse.response);
+  });
+});
+
+describe("makeSonarcloudPostCall", () => {
+  it("should call makeSonarcloudAPICall with correct args", async () => {
+    const urlToCall = "/some/url";
+    const searchParams = { some: "param" };
+    const sonarcloudApiToken = "someToken";
+
+    const mockSonarcloudResponse = { group: { name: "someGroup" } };
+
+    fetch.mockResolvedValueOnce({
+      json: () => Promise.resolve(mockSonarcloudResponse),
+    });
+
+    const result = await makeSonarcloudPostCall(
+      urlToCall,
+      searchParams,
+      sonarcloudApiToken
+    );
+    const expectedUrl = new URL(
+      "https://sonarcloud.io/api/some/url?some=param"
+    );
+
+    expect(result).toEqual(mockSonarcloudResponse);
+    expect(fetch).toHaveBeenCalledTimes(1);
+    expect(fetch).toHaveBeenCalledWith(expectedUrl, {
+      method: "post",
+      headers: {
+        Authorization: `basic ${Buffer.from(
+          sonarcloudApiToken,
+          "utf8"
+        ).toString("base64")}`,
+      },
+    });
   });
 });

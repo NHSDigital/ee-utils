@@ -58,12 +58,41 @@ export const checkResponse = (response) => {
   return response;
 };
 
+export const makeSonarcloudGetCall = async (
+  urlToCall,
+  searchParams,
+  sonarcloudApiToken,
+  itemKey
+) => {
+  return await makeSonarcloudAPICall(
+    urlToCall,
+    searchParams,
+    sonarcloudApiToken,
+    itemKey,
+    "get"
+  );
+};
+
+export const makeSonarcloudPostCall = async (
+  urlToCall,
+  searchParams,
+  sonarcloudApiToken
+) => {
+  return await makeSonarcloudAPICall(
+    urlToCall,
+    searchParams,
+    sonarcloudApiToken,
+    "",
+    "post"
+  );
+};
+
 export const makeSonarcloudAPICall = async (
   urlToCall,
   searchParams,
   sonarcloudApiToken,
   itemKey,
-  method = "get"
+  method
 ) => {
   const url = new URL(`${SONARCLOUD_BASE_URL}${urlToCall}`);
   url.search = new URLSearchParams(searchParams);
@@ -113,7 +142,7 @@ export const getSonarcloudProjects = async (
 ) => {
   let sonarCloudProjects = [];
   try {
-    sonarCloudProjects = await makeSonarcloudAPICall(
+    sonarCloudProjects = await makeSonarcloudGetCall(
       "/components/search_projects",
       {
         organization: sonarcloudOrganisationName,
@@ -140,15 +169,13 @@ export const createGroup = async (
     logger.info("ENGEXPUTILS002", { group: groupName });
     return groupName;
   }
-  const parsedResponse = await makeSonarcloudAPICall(
+  const parsedResponse = await makeSonarcloudPostCall(
     "/user_groups/create",
     {
       organization: organisation,
       name: groupName,
     },
-    sonarcloudApiToken,
-    "group",
-    "post"
+    sonarcloudApiToken
   );
   logger.info("ENGEXPUTILS001", parsedResponse);
   return parsedResponse.group.name;
