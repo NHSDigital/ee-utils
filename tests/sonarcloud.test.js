@@ -6,8 +6,8 @@ import {
   handleErrors,
   makeSonarcloudAPICall,
   checkResponse,
-  makeSonarcloudGetCall,
-  makeSonarcloudPostCall,
+  makeSonarcloudGetRequest,
+  makeSonarcloudPostRequest,
 } from "../src/sonarcloud";
 
 global.fetch = jest.fn();
@@ -290,7 +290,7 @@ describe("makeSonarcloudAPICall", () => {
   });
 });
 
-describe("makeSonarcloudGetCall", () => {
+describe("makeSonarcloudGetRequest", () => {
   it("should call makeSonarcloudAPICall with correct args", async () => {
     const urlToCall = "/some/url";
     const searchParams = { some: "param" };
@@ -300,7 +300,7 @@ describe("makeSonarcloudGetCall", () => {
     fetch.mockResolvedValue({
       json: () => Promise.resolve(expectedResponse),
     });
-    const result = await makeSonarcloudGetCall(
+    const result = await makeSonarcloudGetRequest(
       urlToCall,
       searchParams,
       sonarcloudApiToken,
@@ -323,7 +323,7 @@ describe("makeSonarcloudGetCall", () => {
   });
 });
 
-describe("makeSonarcloudPostCall", () => {
+describe("makeSonarcloudPostRequest", () => {
   it("should call makeSonarcloudAPICall with correct args", async () => {
     const urlToCall = "/some/url";
     const searchParams = { some: "param" };
@@ -335,7 +335,7 @@ describe("makeSonarcloudPostCall", () => {
       json: () => Promise.resolve(mockSonarcloudResponse),
     });
 
-    const result = await makeSonarcloudPostCall(
+    const result = await makeSonarcloudPostRequest(
       urlToCall,
       searchParams,
       sonarcloudApiToken

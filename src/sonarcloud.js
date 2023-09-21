@@ -58,7 +58,7 @@ export const checkResponse = (response) => {
   return response;
 };
 
-export const makeSonarcloudGetCall = async (
+export const makeSonarcloudGetRequest = async (
   urlToCall,
   searchParams,
   sonarcloudApiToken,
@@ -73,7 +73,7 @@ export const makeSonarcloudGetCall = async (
   );
 };
 
-export const makeSonarcloudPostCall = async (
+export const makeSonarcloudPostRequest = async (
   urlToCall,
   searchParams,
   sonarcloudApiToken
@@ -142,7 +142,7 @@ export const getSonarcloudProjects = async (
 ) => {
   let sonarCloudProjects = [];
   try {
-    sonarCloudProjects = await makeSonarcloudGetCall(
+    sonarCloudProjects = await makeSonarcloudGetRequest(
       "/components/search_projects",
       {
         organization: sonarcloudOrganisationName,
@@ -169,7 +169,7 @@ export const createGroup = async (
     logger.info("ENGEXPUTILS002", { group: groupName });
     return groupName;
   }
-  const parsedResponse = await makeSonarcloudPostCall(
+  const response = await makeSonarcloudPostRequest(
     "/user_groups/create",
     {
       organization: organisation,
@@ -177,6 +177,6 @@ export const createGroup = async (
     },
     sonarcloudApiToken
   );
-  logger.info("ENGEXPUTILS001", parsedResponse);
-  return parsedResponse.group.name;
+  logger.info("ENGEXPUTILS001", response);
+  return response.group.name;
 };
