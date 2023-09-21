@@ -48,62 +48,115 @@ export const handleErrors = (errors) => {
   throw errors;
 };
 
+export const checkResponse = (response) => {
+  try {
+    checkForErrors(response);
+  } catch (errors) {
+    handleErrors(errors);
+  }
+
+  return response;
+};
+
+export const makeSonarcloudGetRequest = async (
+  urlToCall,
+  searchParams,
+  sonarcloudApiToken,
+  itemKey
+) => {
+  return await makeSonarcloudAPICall(
+    urlToCall,
+    searchParams,
+    sonarcloudApiToken,
+    itemKey,
+    "get"
+  );
+};
+
+export const makeSonarcloudPostRequest = async (
+  urlToCall,
+  searchParams,
+  sonarcloudApiToken
+) => {
+  return await makeSonarcloudAPICall(
+    urlToCall,
+    searchParams,
+    sonarcloudApiToken,
+    "",
+    "post"
+  );
+};
+
 export const makeSonarcloudAPICall = async (
   urlToCall,
   searchParams,
   sonarcloudApiToken,
-  method = "get"
+  itemKey,
+  method
 ) => {
   const url = new URL(`${SONARCLOUD_BASE_URL}${urlToCall}`);
   url.search = new URLSearchParams(searchParams);
-  const response = await fetch(url, {
+  const requestInit = {
     method,
     headers: {
       Authorization: `basic ${Buffer.from(sonarcloudApiToken, "utf8").toString(
         "base64"
       )}`,
     },
-  });
-  const responseParsed = await response.json();
-  try {
-    checkForErrors(responseParsed);
-  } catch (errors) {
-    handleErrors(errors);
+  };
+
+  if (method === "post") {
+    const response = await fetch(url, requestInit);
+    const responseParsed = await response.json();
+    return checkResponse(responseParsed);
   }
 
-  return responseParsed;
+  const allItems = [];
+  const firstResponse = await fetch(url, requestInit);
+  const firstResponseParsed = await firstResponse.json();
+
+  const checkedResponse = checkResponse(firstResponseParsed);
+
+  const totalItems = checkedResponse.paging.total;
+  allItems.push(...checkedResponse[itemKey]);
+  let pageCounter = 2;
+
+  while (allItems.length < totalItems) {
+    searchParams.p = pageCounter;
+    url.search = new URLSearchParams(searchParams);
+
+    const response = await fetch(url, requestInit);
+    const responseParsed = await response.json();
+
+    const checkedResponse = checkResponse(responseParsed);
+
+    allItems.push(...checkedResponse[itemKey]);
+    pageCounter++;
+  }
+  return allItems;
 };
 
 export const getSonarcloudProjects = async (
   sonarcloudApiToken,
   sonarcloudOrganisationName
 ) => {
-  const allProjects = [];
-  let allPagesExplored = false;
-  let pageCounter = 1;
-  while (!allPagesExplored) {
-    try {
-      const sonarCloudProjects = await makeSonarcloudAPICall(
-        "/components/search_projects",
-        {
-          p: pageCounter,
-          organization: sonarcloudOrganisationName,
-        },
-        sonarcloudApiToken
-      );
-      const paging = sonarCloudProjects.paging;
-      allPagesExplored =
-        paging.pageIndex == paging.total || paging.pageSize > paging.total;
-      pageCounter += 1;
-      allProjects.push(...sonarCloudProjects.components);
-    } catch (error) {
-      if (error.name === "NoOrganisationError") {
-        return [];
-      }
-      throw error;
+  let sonarCloudProjects = [];
+  try {
+    sonarCloudProjects = await makeSonarcloudGetRequest(
+      "/components/search_projects",
+      {
+        organization: sonarcloudOrganisationName,
+      },
+      sonarcloudApiToken,
+      "components"
+    );
+  } catch (error) {
+    if (error.name === "NoOrganisationError") {
+      return [];
     }
+    throw error;
   }
-  return allProjects.map((project) => project.name);
+  return sonarCloudProjects.map((project) => project.name);
 };
 
 export const createGroup = async (
@@ -116,14 +169,13 @@ export const createGroup = async (
     logger.info("ENGEXPUTILS002", { group: groupName });
     return groupName;
   }
-  const response = await makeSonarcloudAPICall(
+  const response = await makeSonarcloudPostRequest(
     "/user_groups/create",
     {
       organization: organisation,
       name: groupName,
     },
-    sonarcloudApiToken,
-    "post"
+    sonarcloudApiToken
   );
   logger.info("ENGEXPUTILS001", response);
   return response.group.name;
