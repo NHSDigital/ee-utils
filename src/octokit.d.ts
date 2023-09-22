@@ -22,4 +22,6 @@ export type OrgInfo = {
   repoMetaDataAppId: string;
   repoMetaDataPrivateKey: string;
   repoMetaDataInstallationId: string;
+  sonarcloudToken: string;
+  sonarcloudOrgName: string;
 };
