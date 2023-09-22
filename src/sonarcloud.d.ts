@@ -3,12 +3,26 @@ type SonarCloudProject = {
   isPublic: boolean;
 };
 
+export declare const makeSonarcloudGetRequest = async (
+  urlToCall: string,
+  searchParams: object,
+  sonarcloudApiToken: string,
+  itemKey: string
+): Promise<Array> => {};
+
+export declare const makeSonarcloudPostRequest = async (
+  urlToCall: string,
+  searchParams: object,
+  sonarcloudApiToken: string
+): Promise<Array> => {};
+
 export declare const makeSonarcloudAPICall = async (
   urlToCall: string,
   searchParams: object,
   sonarcloudApiToken: string,
-  method: string = "get"
-): Promise<Response> => {};
+  itemKey: string,
+  method: string
+): Promise<Array> => {};
 
 export declare const getSonarcloudProjects = async (
   sonarcloudApiToken: string,
