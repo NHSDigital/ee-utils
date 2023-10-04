@@ -120,7 +120,7 @@ export const makeSonarcloudAPICall = async (
   const requiresPaging = checkedResponse.paging;
 
   if (!requiresPaging) {
-    return [...checkedResponse[itemKey]];
+    return checkedResponse[itemKey];
   }
 
   const totalItems = checkedResponse.paging.total;
