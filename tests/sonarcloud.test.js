@@ -270,6 +270,31 @@ describe("makeSonarcloudAPICall", () => {
     expect(result).toEqual(expectedGroups);
     expect(fetch).toBeCalledTimes(2);
   });
+  it("should handle responses that do not have the paging object", async () => {
+    const mockSonarcloudFirstResponse = {
+      groups: [
+        { id: 1, name: "someGroupName", membersCount: 0, default: false },
+        { id: 2, name: "anotherGroupName", membersCount: 1, default: false },
+      ],
+    };
+
+    fetch.mockResolvedValueOnce({
+      json: () => Promise.resolve(mockSonarcloudFirstResponse),
+    });
+
+    const result = await makeSonarcloudAPICall(
+      urlToCall,
+      searchParams,
+      sonarcloudApiToken,
+      "groups",
+      "get"
+    );
+
+    const expectedGroups = [...mockSonarcloudFirstResponse.groups];
+
+    expect(result).toEqual(expectedGroups);
+    expect(fetch).toBeCalledTimes(1);
+  });
   it("should not paginate for POSTs", async () => {
     const mockSonarcloudFirstResponse = { group: { name: "someGroup" } };
 
