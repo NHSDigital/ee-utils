@@ -117,6 +117,12 @@ export const makeSonarcloudAPICall = async (
 
   const checkedResponse = checkResponse(firstResponseParsed);
 
+  const requiresPaging = checkedResponse.paging;
+
+  if (!requiresPaging) {
+    return [...checkedResponse[itemKey]];
+  }
+
   const totalItems = checkedResponse.paging.total;
   allItems.push(...checkedResponse[itemKey]);
   let pageCounter = 2;
