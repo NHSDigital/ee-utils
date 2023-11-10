@@ -29,6 +29,8 @@
     "@octokit/rest": "^20.0.1",
     "aws-sdk-client-mock": "^3.0.0",
     "aws-sdk-client-mock-jest": "^3.0.0",
+    "mongodb-memory-server": "^9.0.1",
+    "mongoose": "^8.0.0",
     "octokit": "^3.1.0",
     "winston": "^3.10.0"
   },
