@@ -10,9 +10,13 @@ export const createCleanDatabase = async () => {
 };
 
 export const cleanDatabase = async (uri: string) => {
-  await mongoose.connect(uri);
-  await mongoose.connection.dropDatabase();
-  await mongoose.disconnect();
+  if (uri.includes("mongodb://127.0.0.1")) {
+    await mongoose.connect(uri);
+    await mongoose.connection.dropDatabase();
+    await mongoose.disconnect();
+  } else {
+    throw new Error("Not a test database");
+  }
 };
 
 export const stopDatabase = async () => {
