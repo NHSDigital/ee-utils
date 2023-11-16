@@ -29,7 +29,7 @@ jobs:
         run: yarn install --immutable
 
       - name: Build
-        run: yarn build
+        run: yarn build --tag latest
 
       - name: Publish to GitHub packages
         run: yarn publish
