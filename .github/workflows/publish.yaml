@@ -29,9 +29,9 @@ jobs:
         run: yarn install --immutable
 
       - name: Build
-        run: yarn build --tag latest
+        run: yarn build
 
       - name: Publish to GitHub packages
-        run: yarn publish
+        run: yarn publish --tag latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
