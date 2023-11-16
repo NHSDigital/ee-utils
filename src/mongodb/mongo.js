@@ -1,11 +1,7 @@
 import mongoose from "mongoose";
+import { logReferences } from "../logReferences";
 import { LambdaLogger } from "../logger";
 
-const logReferences = {
-  ENGEXPUTILS006: "MONGODB_URI environment variable not set",
-  ENGEXPUTILS007: "Connected To Database",
-  ENGEXPUTILS008: "Connection Failed",
-};
 const logger = new LambdaLogger("ee-utils/mongodb", logReferences);
 
 export const connectToDatabaseViaEnvVar = async () => {
