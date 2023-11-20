@@ -1,8 +1,3 @@
-type SonarCloudProject = {
-  name: string;
-  isPublic: boolean;
-};
-
 export declare const makeSonarcloudGetRequest = async (
   urlToCall: string,
   searchParams: object,
@@ -27,7 +22,7 @@ export declare const makeSonarcloudAPICall = async (
 export declare const getSonarcloudProjects = async (
   sonarcloudApiToken: string,
   sonarcloudOrganisationName: string
-): Promise<Array<SonarCloudProject>> => {};
+): Promise<Array<string>> => {};
 
 export declare const createGroup = async (
   groupName: string,
