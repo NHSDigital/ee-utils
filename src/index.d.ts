@@ -1,5 +1,7 @@
 export * from "./filenames.js";
+export * from "./logReferences.js";
 export * from "./logger.js";
+export * from "./mongodb/mongo.js";
 export * from "./mongodb/testHelpers/helper.js";
 export * from "./octokit.js";
 export * from "./parameters.js";
