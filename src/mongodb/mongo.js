@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { logReferences } from "../logReferences";
-import { LambdaLogger } from "../logger";
+import { logReferences } from "../logReferences.js";
+import { LambdaLogger } from "../logger.js";
 
 const logger = new LambdaLogger("ee-utils/mongodb", logReferences);
 
