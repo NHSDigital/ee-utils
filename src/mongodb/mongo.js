@@ -13,7 +13,6 @@ export const connectToDatabaseViaEnvVar = async () => {
     throw new Error("MONGODB_URI environment variable not set");
   }
   try {
-    console.log("filename", __filename);
     await mongoose.connect(uri, {
       ssl: true,
       tlsCAFile: `${__dirname}/global-bundle.pem`,
