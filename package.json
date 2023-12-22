@@ -1,6 +1,6 @@
 {
   "name": "@NHSDigital/ee-utils",
-  "version": "0.0.35-dev",
+  "version": "0.0.35-dev.1",
   "license": "MIT",
   "type": "module",
   "author": "jacobgill1 <jacob.gill1@nhs.net>",
@@ -46,8 +46,8 @@
   },
   "scripts": {
     "test": "jest",
-    "build-cjs": "babel src --out-dir lib/cjs --keep-file-extension --copy-files --presets=@babel/preset-env",
-    "build-esm": "babel src --out-dir lib/esm --keep-file-extension --copy-files",
+    "build-cjs": "tsc -p tsconfig.json",
+    "build-esm": "tsc -p tsconfig.esm.json",
     "build": "yarn build-cjs && yarn build-esm"
   }
 }
