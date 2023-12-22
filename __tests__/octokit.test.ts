@@ -1,3 +1,4 @@
+import { Octokit } from "@octokit/rest";
 import { App } from "octokit";
 import {
   getAllRepositoriesInOrganisation,
@@ -6,10 +7,11 @@ import {
   getTeamsForRepo,
   getTeamsForRepositoriesInOrganisation,
 } from "../src/octokit";
+import { getParameter } from "../src/parameters";
 
 jest.mock("../src/parameters", () => ({
   ...jest.requireActual("../src/parameters"),
-  getParameter: (parameter) => Promise.resolve(parameter),
+  getParameter: jest.fn((parameter) => Promise.resolve(parameter)),
 }));
 jest.mock("octokit", () => {
   return {
@@ -26,18 +28,22 @@ describe("getOctokit", () => {
   it("gets the octokit with provided parameters", async () => {
     const inputPrivateKey = "private_key";
     const inputAppId = "app_id";
-    const inputInstallationId = "installationId";
+    const inputInstallationId = "installation_id";
     const getInstallationOctokitMock = jest.fn();
-    App.mockImplementation(() => ({
+    (App as jest.MockedFunction<any>).mockImplementation(() => ({
       getInstallationOctokit: getInstallationOctokitMock,
     }));
+    (getParameter as jest.MockedFunction<any>)
+      .mockResolvedValueOnce(inputPrivateKey)
+      .mockResolvedValueOnce(inputAppId)
+      .mockResolvedValueOnce(0);
 
     await getOctokit(inputPrivateKey, inputAppId, inputInstallationId);
     expect(App).toBeCalledWith({
       appId: inputAppId,
       privateKey: inputPrivateKey,
     });
-    expect(getInstallationOctokitMock).toBeCalledWith(inputInstallationId);
+    expect(getInstallationOctokitMock).toBeCalledWith(0);
   });
 });
 
@@ -49,7 +55,8 @@ describe("getAllRepositoriesInOrganisation", () => {
 
     const fakeOctokit = {
       paginate: mockOctokitRequest,
-    };
+      rest: { repos: { listForOrg: jest.fn() } },
+    } as unknown as Octokit;
     const result = await getAllRepositoriesInOrganisation(
       fakeOctokit,
       "NHS-CodeLab"
@@ -90,7 +97,8 @@ describe("getTeamsForRepo", () => {
 
     const fakeOctokit = {
       paginate: () => Promise.resolve(mockOctokitRequest),
-    };
+      rest: { repos: { listTeams: jest.fn() } },
+    } as unknown as Octokit;
 
     const result = await getTeamsForRepo(
       fakeOctokit,
@@ -132,7 +140,8 @@ describe("getContributorsForRepo", () => {
 
     const fakeOctokit = {
       paginate: () => Promise.resolve(mockOctokitRequest),
-    };
+      rest: { repos: { listContributors: jest.fn() } },
+    } as unknown as Octokit;
 
     const result = await getContributorsForRepo(
       fakeOctokit,
@@ -151,7 +160,8 @@ describe("getContributorsForRepo", () => {
 
     const fakeOctokit = {
       paginate: () => Promise.resolve(mockOctokitRequest),
-    };
+      rest: { repos: { listContributors: jest.fn() } },
+    } as unknown as Octokit;
 
     const result = await getContributorsForRepo(
       fakeOctokit,
@@ -176,7 +186,8 @@ describe("getContributorsForRepo", () => {
 
     const fakeOctokit = {
       paginate: () => Promise.resolve(mockOctokitRequest),
-    };
+      rest: { repos: { listContributors: jest.fn() } },
+    } as unknown as Octokit;
 
     const result = await getContributorsForRepo(
       fakeOctokit,
@@ -262,7 +273,8 @@ describe("getTeamsForRepositoriesInOrganisation", () => {
         .mockResolvedValueOnce(mockReposRequest)
         .mockResolvedValueOnce(mockTeamsForRepoRequest1)
         .mockResolvedValueOnce(mockTeamsForRepoRequest2),
-    };
+      rest: { repos: { listTeams: jest.fn(), listForOrg: jest.fn() } },
+    } as unknown as Octokit;
     const expectedTeamsForRepositoriesInOrganisation = {
       repo1: [
         {

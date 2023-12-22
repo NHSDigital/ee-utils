@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
-import { logReferences } from "../logReferences.js";
-import { LambdaLogger } from "../logger.js";
+import { logReferences } from "../logReferences";
+import { LambdaLogger } from "../logger";
 
 const logger = new LambdaLogger("ee-utils/mongodb", logReferences);
 
-export const connectToDatabaseViaEnvVar = async () => {
+export const connectToDatabaseViaEnvVar = async (): Promise<void> => {
   const uri = process.env.MONGODB_URI;
   if (!uri) {
     logger.error("ENGEXPUTILS006", {

@@ -1,9 +1,14 @@
+import { TimestampOptions } from "logform";
 import { v4 as uuidv4 } from "uuid";
-import { createLogger, format, transports } from "winston";
+import { Logger, createLogger, format, transports } from "winston";
 const { combine, timestamp } = format;
 
-const transformLogInfo = (info) => {
-  info.level = info.level.toUpperCase();
+export declare type LogReferences<T extends string | number | symbol> = Record<
+  T,
+  string
+>;
+
+const transformLogInfo = (info: any) => {
   info.log_event_id = `${uuidv4()}`;
   return info;
 };
@@ -13,13 +18,16 @@ export const getTimestamp = () => {
 };
 
 const splunkFormat = combine(
-  timestamp(getTimestamp),
+  timestamp(getTimestamp as TimestampOptions),
   format(transformLogInfo)(),
   format.json()
 );
 
-export class LambdaLogger {
-  constructor(moduleName, logReferences) {
+export class LambdaLogger<T extends string | number | symbol> {
+  private _logger: Logger;
+  private _logReferences: LogReferences<T>;
+  private _reservedFields: string[];
+  constructor(moduleName: string, logReferences: LogReferences<T>) {
     this._logger = this._createWinstonLogger(moduleName);
     this._logReferences = logReferences;
     this._reservedFields = [
@@ -32,18 +40,18 @@ export class LambdaLogger {
     ];
   }
 
-  info(logReference, logArgs = {}) {
+  info(logReference: T, logArgs = {}) {
     this._logger.info(this._buildLog(logReference, logArgs));
   }
 
-  warn(logReference, logArgs = {}) {
+  warn(logReference: T, logArgs = {}) {
     this._logger.warn(this._buildLog(logReference, logArgs));
   }
 
-  error(logReference, logArgs = {}) {
+  error(logReference: T, logArgs = {}) {
     this._logger.error(this._buildLog(logReference, logArgs));
   }
-  debug(logReference, logArgs = {}) {
+  debug(logReference: T, logArgs = {}) {
     this._logger.debug(this._buildLog(logReference, logArgs));
   }
 
@@ -51,7 +59,7 @@ export class LambdaLogger {
     return [new transports.Console()];
   }
 
-  _createWinstonLogger(moduleName) {
+  _createWinstonLogger(moduleName: string) {
     return createLogger({
       level: "info",
       format: splunkFormat,
@@ -60,12 +68,12 @@ export class LambdaLogger {
     });
   }
 
-  _validateLogArgs(logArgs) {
+  _validateLogArgs(logArgs: Record<string, string>) {
     let dictLogArgs = this._convertLogArgsToDict(logArgs);
     return this._removeReservedFields(dictLogArgs);
   }
 
-  _convertLogArgsToDict(logArgs) {
+  _convertLogArgsToDict(logArgs: Record<string, string>) {
     if (
       typeof logArgs === "object" &&
       logArgs !== null &&
@@ -80,7 +88,7 @@ export class LambdaLogger {
     return {};
   }
 
-  _removeReservedFields(logArgs) {
+  _removeReservedFields(logArgs: Record<string, string>) {
     let cleanedArgs = logArgs;
     for (let field of this._reservedFields) {
       if (field in cleanedArgs) {
@@ -94,7 +102,7 @@ export class LambdaLogger {
     return cleanedArgs;
   }
 
-  _buildLog(logReference, logArgs) {
+  _buildLog(logReference: T, logArgs: Record<string, string>) {
     const validatedLogArgs = this._validateLogArgs(logArgs);
 
     return {

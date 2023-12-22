@@ -4,12 +4,13 @@ import mongoose from "mongoose";
 export const createCleanDatabase = async () => {
   const mongod = await MongoMemoryServer.create();
   const uri = mongod.getUri();
+  // @ts-ignore
   global.__MONGO_INSTANCE = mongod;
   await cleanDatabase(uri);
   process.env.MONGODB_URI = uri;
 };
 
-export const cleanDatabase = async (uri) => {
+export const cleanDatabase = async (uri: string) => {
   if (uri.includes("mongodb://127.0.0.1")) {
     await mongoose.connect(uri);
     await mongoose.connection.dropDatabase();
@@ -20,6 +21,7 @@ export const cleanDatabase = async (uri) => {
 };
 
 export const stopDatabase = async () => {
+  // @ts-ignore
   const mongod = global.__MONGO_INSTANCE;
   await mongod.stop();
 };

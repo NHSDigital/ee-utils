@@ -1,11 +1,11 @@
 import { LambdaLogger } from "../src/logger";
 import {
   checkForErrors,
+  checkResponse,
   createGroup,
   getSonarcloudProjects,
   handleErrors,
   makeSonarcloudAPICall,
-  checkResponse,
   makeSonarcloudGetRequest,
   makeSonarcloudPostRequest,
 } from "../src/sonarcloud";
@@ -19,7 +19,7 @@ jest.mock("../src/parameters", () => {
   };
 });
 beforeEach(() => {
-  fetch.mockClear();
+  (fetch as jest.MockedFunction<any>).mockClear();
 });
 
 describe("checkForErrors", () => {
@@ -27,7 +27,7 @@ describe("checkForErrors", () => {
     const mockResponse = {
       errors: [
         {
-          msg: "some error message",
+          message: "some error message",
         },
       ],
     };
@@ -37,29 +37,17 @@ describe("checkForErrors", () => {
 
 describe("handleErrors", () => {
   it("should handle errors and throw organisation error", () => {
-    const mockErrors = [
-      {
-        msg: "No organization for key 'someOrg'",
-      },
-    ];
+    const mockErrors = [Error("No organization for key 'someOrg'")];
     expect(() => handleErrors(mockErrors)).toThrow("No organization for key");
   });
   it("should handle errors and throw project not found error", () => {
-    const mockErrors = [
-      {
-        msg: "Component key 'someProject' not found",
-      },
-    ];
+    const mockErrors = [Error("Component key 'someProject' not found")];
     expect(() => handleErrors(mockErrors)).toThrow(
       "Component key 'someProject' not found"
     );
   });
   it("should throw errors", () => {
-    const mockErrors = [
-      {
-        msg: "some error message",
-      },
-    ];
+    const mockErrors = [Error("some error message")];
     try {
       handleErrors(mockErrors);
     } catch (error) {
@@ -73,7 +61,7 @@ describe("checkResponse", () => {
     const mockResponse = {
       errors: [
         {
-          msg: "some error message",
+          message: "some error message",
         },
       ],
     };
@@ -87,7 +75,7 @@ describe("checkResponse", () => {
     const mockResponse = {
       errors: [
         {
-          msg: "Component key 'someProject' not found",
+          message: "Component key 'someProject' not found",
         },
       ],
     };
@@ -112,7 +100,7 @@ describe("getSonarcloudProjects", () => {
         },
       ],
     };
-    fetch.mockResolvedValue({
+    (fetch as jest.MockedFunction<any>).mockResolvedValue({
       json: () => Promise.resolve(mockSonarcloudResponse),
     });
     const result = await getSonarcloudProjects("api-token", "orgName");
@@ -153,7 +141,7 @@ describe("getSonarcloudProjects", () => {
       .fn()
       .mockReturnValueOnce(Promise.resolve(mockSonarcloudResponsePageOne))
       .mockReturnValueOnce(Promise.resolve(mockSonarcloudResponsePageTwo));
-    fetch.mockResolvedValue({
+    (fetch as jest.MockedFunction<any>).mockResolvedValue({
       json: fetchJsonMock,
     });
     const result = await getSonarcloudProjects("api-token", "orgName");
@@ -187,7 +175,7 @@ describe("createGroup", () => {
   it("create the group and logs the name", async () => {
     const inputGroupName = "someGroup";
     const loggerSpy = jest.spyOn(LambdaLogger.prototype, "info");
-    fetch.mockResolvedValue({
+    (fetch as jest.MockedFunction<any>).mockResolvedValue({
       json: () => Promise.resolve({ group: { name: "someGroup" } }),
     });
     const result = await createGroup(inputGroupName, "someOrg", "someToken");
@@ -205,7 +193,7 @@ describe("makeSonarcloudAPICall", () => {
   const sonarcloudApiToken = "someToken";
   it("should call with provided params", async () => {
     const expectedResponse = { response: ["response"], paging: { total: 1 } };
-    fetch.mockResolvedValue({
+    (fetch as jest.MockedFunction<any>).mockResolvedValue({
       json: () => Promise.resolve(expectedResponse),
     });
     const result = await makeSonarcloudAPICall(
@@ -246,7 +234,7 @@ describe("makeSonarcloudAPICall", () => {
       paging: { pageIndex: 2, pageSize: 2, total: 4 },
     };
 
-    fetch
+    (fetch as jest.MockedFunction<any>)
       .mockResolvedValueOnce({
         json: () => Promise.resolve(mockSonarcloudFirstResponse),
       })
@@ -278,7 +266,7 @@ describe("makeSonarcloudAPICall", () => {
       ],
     };
 
-    fetch.mockResolvedValueOnce({
+    (fetch as jest.MockedFunction<any>).mockResolvedValueOnce({
       json: () => Promise.resolve(mockSonarcloudFirstResponse),
     });
 
@@ -300,7 +288,7 @@ describe("makeSonarcloudAPICall", () => {
       groups: { id: 1, name: "someGroupName", membersCount: 0, default: false },
     };
 
-    fetch.mockResolvedValueOnce({
+    (fetch as jest.MockedFunction<any>).mockResolvedValueOnce({
       json: () => Promise.resolve(mockSonarcloudFirstResponse),
     });
 
@@ -320,7 +308,7 @@ describe("makeSonarcloudAPICall", () => {
   it("should not paginate for POSTs", async () => {
     const mockSonarcloudFirstResponse = { group: { name: "someGroup" } };
 
-    fetch.mockResolvedValueOnce({
+    (fetch as jest.MockedFunction<any>).mockResolvedValueOnce({
       json: () => Promise.resolve(mockSonarcloudFirstResponse),
     });
 
@@ -344,7 +332,7 @@ describe("makeSonarcloudGetRequest", () => {
     const sonarcloudApiToken = "someToken";
 
     const expectedResponse = { response: ["response"], paging: { total: 1 } };
-    fetch.mockResolvedValue({
+    (fetch as jest.MockedFunction<any>).mockResolvedValue({
       json: () => Promise.resolve(expectedResponse),
     });
     const result = await makeSonarcloudGetRequest(
@@ -378,7 +366,7 @@ describe("makeSonarcloudPostRequest", () => {
 
     const mockSonarcloudResponse = { group: { name: "someGroup" } };
 
-    fetch.mockResolvedValueOnce({
+    (fetch as jest.MockedFunction<any>).mockResolvedValueOnce({
       json: () => Promise.resolve(mockSonarcloudResponse),
     });
 

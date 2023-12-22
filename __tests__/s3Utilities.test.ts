@@ -1,9 +1,10 @@
-import { mockClient } from "aws-sdk-client-mock";
 import {
-  S3Client,
-  PutObjectCommand,
   GetObjectCommand,
+  GetObjectCommandOutput,
+  PutObjectCommand,
+  S3Client,
 } from "@aws-sdk/client-s3";
+import { mockClient } from "aws-sdk-client-mock";
 import "aws-sdk-client-mock-jest";
 import {
   getParsedJSONFromS3,
@@ -126,7 +127,7 @@ describe("getJSONFileFromS3", () => {
           return JSON.stringify(s3JSONBody);
         },
       },
-    };
+    } as unknown as GetObjectCommandOutput;
     s3Mock.on(GetObjectCommand).resolves(s3MockResponse);
     const bucketToUse = "some_bucket";
     const fileToGet = "some_file.json";

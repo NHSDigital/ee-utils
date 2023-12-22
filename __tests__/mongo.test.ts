@@ -34,7 +34,9 @@ describe("connectToDatabaseViaEnvVar", () => {
   it("should log an error if the connection to the database fails", async () => {
     const loggerSpy = jest.spyOn(LambdaLogger.prototype, "error");
 
-    mongoose.connect.mockRejectedValue("Connection Failed");
+    (mongoose.connect as jest.MockedFunction<any>).mockRejectedValue(
+      "Connection Failed"
+    );
     process.env.MONGODB_URI = "mongodb://";
 
     try {
