@@ -6,14 +6,9 @@
     "rootDir": "./src",
     "strict": true,
     "esModuleInterop": true,
-    "moduleResolution": "node",
+    "moduleResolution": "node"
   },
-  "include": [
-    "src/**/*.ts",
-    "src/filenames.ts",
-    "src/index.ts",
-    "src/logger.ts"
-  ],
+  "include": ["src/**/*.ts"],
 
   "exclude": ["node_modules"]
 }
