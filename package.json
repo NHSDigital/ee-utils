@@ -32,6 +32,7 @@
     "mongodb-memory-server": "^9.0.1",
     "mongoose": "^8.0.0",
     "octokit": "^3.1.0",
+    "uuid": "^9.0.1",
     "winston": "^3.10.0"
   },
   "devDependencies": {
