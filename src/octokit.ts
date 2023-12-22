@@ -26,9 +26,11 @@ export const getOctokit = async (
   const GITHUB_APP_ID = (await getParameter(appId)) ?? "";
   const GITHUB_INSTALLATION_ID = (await getParameter(installationId)) ?? "0";
   const app = new App({ appId: GITHUB_APP_ID, privateKey: GITHUB_PRIVATE_KEY });
-  return app.getInstallationOctokit(
-    parseInt(GITHUB_INSTALLATION_ID)
-  ) as unknown as Octokit;
+  const parsedInstallationId = parseInt(GITHUB_INSTALLATION_ID);
+  if (isNaN(parsedInstallationId)) {
+    throw new Error("installation_id is not a number");
+  }
+  return app.getInstallationOctokit(parsedInstallationId) as unknown as Octokit;
 };
 
 export const getAllRepositoriesInOrganisation = async (

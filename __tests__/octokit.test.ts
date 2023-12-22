@@ -7,7 +7,6 @@ import {
   getTeamsForRepo,
   getTeamsForRepositoriesInOrganisation,
 } from "../src/octokit";
-import { getParameter } from "../src/parameters";
 
 jest.mock("../src/parameters", () => ({
   ...jest.requireActual("../src/parameters"),
@@ -25,7 +24,7 @@ afterEach(() => {
 });
 
 describe("getOctokit", () => {
-  it("gets the octokit with provided parameters", async () => {
+  it("throws error when installation id is not a number", async () => {
     const inputPrivateKey = "private_key";
     const inputAppId = "app_id";
     const inputInstallationId = "installation_id";
@@ -33,17 +32,26 @@ describe("getOctokit", () => {
     (App as jest.MockedFunction<any>).mockImplementation(() => ({
       getInstallationOctokit: getInstallationOctokitMock,
     }));
-    (getParameter as jest.MockedFunction<any>)
-      .mockResolvedValueOnce(inputPrivateKey)
-      .mockResolvedValueOnce(inputAppId)
-      .mockResolvedValueOnce(0);
+
+    await expect(
+      getOctokit(inputPrivateKey, inputAppId, inputInstallationId)
+    ).rejects.toThrow("installation_id is not a number");
+  });
+  it("gets the octokit with provided parameters", async () => {
+    const inputPrivateKey = "private_key";
+    const inputAppId = "app_id";
+    const inputInstallationId = "123";
+    const getInstallationOctokitMock = jest.fn();
+    (App as jest.MockedFunction<any>).mockImplementation(() => ({
+      getInstallationOctokit: getInstallationOctokitMock,
+    }));
 
     await getOctokit(inputPrivateKey, inputAppId, inputInstallationId);
     expect(App).toBeCalledWith({
       appId: inputAppId,
       privateKey: inputPrivateKey,
     });
-    expect(getInstallationOctokitMock).toBeCalledWith(0);
+    expect(getInstallationOctokitMock).toBeCalledWith(123);
   });
 });
 
