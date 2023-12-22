@@ -1,4 +1,4 @@
-import { repoBranchProtectionModel as RepoBranchProtectionModel } from "../branchProtectionSchemas";
+import { RepoBranchProtectionModel } from "../branchProtectionSchemas";
 
 describe("RepoBranchProtectionSchema", () => {
   describe("validation", () => {

@@ -9,7 +9,7 @@ export interface IRepoBranchProtection {
   conversationResolutionRequired: boolean;
 }
 
-export const repoBranchProtectionSchema =
+export const RepoBranchProtectionSchema =
   new mongoose.Schema<IRepoBranchProtection>({
     repo: { type: String, required: true },
     pullRequestRequired: { type: Boolean, default: false },
@@ -19,7 +19,7 @@ export const repoBranchProtectionSchema =
     conversationResolutionRequired: { type: Boolean, default: false },
   });
 
-export const repoBranchProtectionModel = mongoose.model<IRepoBranchProtection>(
+export const RepoBranchProtectionModel = mongoose.model<IRepoBranchProtection>(
   "RepoBranchProtection",
-  repoBranchProtectionSchema
+  RepoBranchProtectionSchema
 );
