@@ -38,21 +38,24 @@ export const createSonarcloudMetricSchema = <T extends string | number>(
   } as unknown as SchemaDefinitionProperty<T, IRepoSonarcloud>;
 };
 
-export const RepoSonarcloudSchema = new mongoose.Schema<IRepoSonarcloud>({
-  repo: {
-    type: String,
-    required: true,
+export const RepoSonarcloudSchema = new mongoose.Schema<IRepoSonarcloud>(
+  {
+    repo: {
+      type: String,
+      required: true,
+    },
+    isEnabled: Boolean,
+    reliabilityRating: createSonarcloudMetricSchema<string>(String),
+    securityRating: createSonarcloudMetricSchema<string>(String),
+    sqaleRating: createSonarcloudMetricSchema<string>(String),
+    codeCoverage: createSonarcloudMetricSchema<number>(Number),
+    linesOfCode: createSonarcloudMetricSchema<number>(Number),
+    bugs: createSonarcloudMetricSchema<number>(Number),
+    codeSmells: createSonarcloudMetricSchema<number>(Number),
+    duplicatedLinesDensity: createSonarcloudMetricSchema<number>(Number),
   },
-  isEnabled: Boolean,
-  reliabilityRating: createSonarcloudMetricSchema<string>(String),
-  securityRating: createSonarcloudMetricSchema<string>(String),
-  sqaleRating: createSonarcloudMetricSchema<string>(String),
-  codeCoverage: createSonarcloudMetricSchema<number>(Number),
-  linesOfCode: createSonarcloudMetricSchema<number>(Number),
-  bugs: createSonarcloudMetricSchema<number>(Number),
-  codeSmells: createSonarcloudMetricSchema<number>(Number),
-  duplicatedLinesDensity: createSonarcloudMetricSchema<number>(Number),
-});
+  { timestamps: { createdAt: "document_created_at" } }
+);
 
 export const RepoSonarcloudModel = mongoose.model<IRepoSonarcloud>(
   "RepoSonarcloud",

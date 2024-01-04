@@ -7,15 +7,18 @@ export interface IUniqueContributors {
 }
 
 export const UniqueContributorsSchema =
-  new mongoose.Schema<IUniqueContributors>({
-    repo: { type: String, required: true },
-    contributors: { type: [String], default: [] },
-    numContributors: {
-      type: Number,
-      default: 0,
-      min: [0, "Cannot be a negative number"],
+  new mongoose.Schema<IUniqueContributors>(
+    {
+      repo: { type: String, required: true },
+      contributors: { type: [String], default: [] },
+      numContributors: {
+        type: Number,
+        default: 0,
+        min: [0, "Cannot be a negative number"],
+      },
     },
-  });
+    { timestamps: { createdAt: "document_created_at" } }
+  );
 
 export const UniqueContributorsModel = mongoose.model<IUniqueContributors>(
   "UniqueContributors",

@@ -31,17 +31,20 @@ const dependabotFindingSchema: SchemaDefinitionProperty<
   default: 0,
 };
 
-export const RepoDependabotSchema = new mongoose.Schema<IRepoDependabot>({
-  repo: {
-    type: String,
-    required: true,
+export const RepoDependabotSchema = new mongoose.Schema<IRepoDependabot>(
+  {
+    repo: {
+      type: String,
+      required: true,
+    },
+    dependabotEnabled: { type: Boolean, required: true },
+    criticalDependabot: { ...dependabotFindingSchema },
+    highDependabot: { ...dependabotFindingSchema },
+    mediumDependabot: { ...dependabotFindingSchema },
+    lowDependabot: { ...dependabotFindingSchema },
   },
-  dependabotEnabled: { type: Boolean, required: true },
-  criticalDependabot: { ...dependabotFindingSchema },
-  highDependabot: { ...dependabotFindingSchema },
-  mediumDependabot: { ...dependabotFindingSchema },
-  lowDependabot: { ...dependabotFindingSchema },
-});
+  { timestamps: { createdAt: "document_created_at" } }
+);
 
 export const RepoDependabotModel = mongoose.model<IRepoDependabot>(
   "RepoDependabot",

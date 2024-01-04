@@ -13,8 +13,8 @@ describe("RepoSchema", () => {
         language: "javascript",
         size: 10000,
         pushed_at: "2020-09-25T17:01:11Z",
-        created_at: "2019-09-25T17:01:11Z",
-        updated_at: "2020-09-25T17:01:11Z",
+        repo_created_at: "2019-09-25T17:01:11Z",
+        repo_updated_at: "2020-09-25T17:01:11Z",
         archived: false,
         url: "some_url",
       });
@@ -29,8 +29,8 @@ describe("RepoSchema", () => {
       expect(validModel.language).toEqual("javascript");
       expect(validModel.size).toEqual(10000);
       expect(validModel.pushed_at).toEqual("2020-09-25T17:01:11Z");
-      expect(validModel.created_at).toEqual("2019-09-25T17:01:11Z");
-      expect(validModel.updated_at).toEqual("2020-09-25T17:01:11Z");
+      expect(validModel.repo_created_at).toEqual("2019-09-25T17:01:11Z");
+      expect(validModel.repo_updated_at).toEqual("2020-09-25T17:01:11Z");
       expect(validModel.archived).toEqual(false);
       expect(validModel.url).toEqual("some_url");
     });
@@ -50,8 +50,8 @@ describe("RepoSchema", () => {
       "language",
       "size",
       "pushed_at",
-      "created_at",
-      "updated_at",
+      "repo_created_at",
+      "repo_updated_at",
       "archived",
       "url",
     ];
