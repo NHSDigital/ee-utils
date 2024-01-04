@@ -1,14 +1,19 @@
 import {
-  S3Client,
-  PutObjectCommand,
   GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
 } from "@aws-sdk/client-s3";
 
-export const outputToS3 = async (body, bucket, key, isJson = true) => {
+export const outputToS3 = async (
+  body: string | object,
+  bucket: string,
+  key: string,
+  isJson: boolean = true
+): Promise<any> => {
   const s3Client = new S3Client({ region: "eu-west-2" });
 
   const putCommand = new PutObjectCommand({
-    Body: isJson ? JSON.stringify(body) : body,
+    Body: isJson ? JSON.stringify(body) : (body as string),
     Bucket: bucket,
     Key: key,
   });
@@ -18,11 +23,11 @@ export const outputToS3 = async (body, bucket, key, isJson = true) => {
 };
 
 export const writeToS3HandleErrors = async (
-  dataToWrite,
-  bucketName,
-  filename,
-  isJson = true
-) => {
+  dataToWrite: string | object,
+  bucketName: string,
+  filename: string,
+  isJson: boolean = true
+): Promise<void> => {
   try {
     const s3Response = await outputToS3(
       dataToWrite,
@@ -37,7 +42,7 @@ export const writeToS3HandleErrors = async (
   }
 };
 
-export const getParsedJSONFromS3 = async (bucket, file) => {
+export const getParsedJSONFromS3 = async (bucket: string, file: string) => {
   const s3Client = new S3Client({ region: "eu-west-2" });
 
   const command = new GetObjectCommand({
@@ -46,7 +51,7 @@ export const getParsedJSONFromS3 = async (bucket, file) => {
   });
   const s3Response = await s3Client.send(command);
   if (s3Response && s3Response["$metadata"].httpStatusCode === 200) {
-    return JSON.parse(await s3Response.Body.transformToString());
+    return JSON.parse(await s3Response.Body!.transformToString());
   } else {
     throw new Error(
       "File or Bucket was not found or incorrect permissions to access!"

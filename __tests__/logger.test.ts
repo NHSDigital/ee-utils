@@ -15,7 +15,9 @@ describe("LambdaLogger - log methods", () => {
 
 describe("LambdaLogger - _buildLog", () => {
   it("set the message to not found if the log reference is not found", () => {
-    const logger = new LambdaLogger("test", {});
+    const logger = new LambdaLogger("test", {
+      LOGREF001: "Test Log Reference",
+    });
 
     const nonExistentLogReference = "SOMELOG001";
     const expectedLog = {
@@ -23,6 +25,7 @@ describe("LambdaLogger - _buildLog", () => {
       message: "log reference not found",
     };
 
+    // @ts-ignore - typescript doesn't like that we're passing a non-existent log reference
     const actualLog = logger._buildLog(nonExistentLogReference, {});
 
     expect(actualLog).toEqual(expectedLog);
@@ -34,6 +37,7 @@ describe("LambdaLogger - _convertLogArgsToDict", () => {
     const logger = new LambdaLogger("test", {});
 
     const expectedLogArgs = {};
+    // @ts-ignore - typescript doesn't like that we're passing a non-object log args
     const actualLogArgs = logger._convertLogArgsToDict("non-object");
 
     expect(actualLogArgs).toEqual(expectedLogArgs);

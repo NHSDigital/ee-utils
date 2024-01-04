@@ -1,4 +1,4 @@
-export const logReferences = {
+export const logReferences: Record<string, string> = {
   ENGEXPUTILS001: "Sonarcloud Group Created",
   ENGEXPUTILS002: "Sonarcloud Group Would Be Created",
   ENGEXPUTILS003: "Organisation doesn't exist in Sonarcloud",

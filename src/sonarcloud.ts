@@ -1,62 +1,62 @@
-import { logReferences } from "./logReferences.js";
-import { LambdaLogger } from "./logger.js";
+import { logReferences } from "./logReferences";
+import { LambdaLogger } from "./logger";
 
 const logger = new LambdaLogger("ee-utils/sonarcloud", logReferences);
 
 export const SONARCLOUD_BASE_URL = "https://sonarcloud.io/api";
 export class NoOrganisationError extends Error {
-  constructor(message) {
+  constructor(message: string) {
     super(message);
     this.name = "NoOrganisationError";
   }
 }
 
 export class ProjectNotFoundError extends Error {
-  constructor(message) {
+  constructor(message: string) {
     super(message);
     this.name = "ProjectNotFoundError";
   }
 }
 
-export const checkForErrors = (response) => {
+export const checkForErrors = (response: any) => {
   if (response.errors) {
     logger.error("ENGEXPUTILS004", { response });
     throw response.errors;
   }
 };
 
-export const handleErrors = (errors) => {
+export const handleErrors = (errors: Error[]) => {
   for (const error of errors) {
-    if (error.msg.includes("No organization for key")) {
+    if (error.message.includes("No organization for key")) {
       logger.warn("ENGEXPUTILS003", { error });
-      throw new NoOrganisationError(error.msg);
+      throw new NoOrganisationError(error.message);
     }
     if (
-      error.msg.includes("Component key") &&
-      error.msg.includes("not found")
+      error.message.includes("Component key") &&
+      error.message.includes("not found")
     ) {
       logger.warn("ENGEXPUTILS005", { error });
-      throw new ProjectNotFoundError(error.msg);
+      throw new ProjectNotFoundError(error.message);
     }
   }
   throw errors;
 };
 
-export const checkResponse = (response) => {
+export const checkResponse = (response: any) => {
   try {
     checkForErrors(response);
   } catch (errors) {
-    handleErrors(errors);
+    handleErrors(errors as Error[]);
   }
 
   return response;
 };
 
 export const makeSonarcloudGetRequest = async (
-  urlToCall,
-  searchParams,
-  sonarcloudApiToken,
-  itemKey
+  urlToCall: string,
+  searchParams: Record<string, string>,
+  sonarcloudApiToken: string,
+  itemKey: string
 ) => {
   return await makeSonarcloudAPICall(
     urlToCall,
@@ -68,9 +68,9 @@ export const makeSonarcloudGetRequest = async (
 };
 
 export const makeSonarcloudPostRequest = async (
-  urlToCall,
-  searchParams,
-  sonarcloudApiToken
+  urlToCall: string,
+  searchParams: Record<string, string>,
+  sonarcloudApiToken: string
 ) => {
   return await makeSonarcloudAPICall(
     urlToCall,
@@ -82,14 +82,14 @@ export const makeSonarcloudPostRequest = async (
 };
 
 export const makeSonarcloudAPICall = async (
-  urlToCall,
-  searchParams,
-  sonarcloudApiToken,
-  itemKey,
-  method
+  urlToCall: string,
+  searchParams: Record<string, string>,
+  sonarcloudApiToken: string,
+  itemKey: string,
+  method: string
 ) => {
   const url = new URL(`${SONARCLOUD_BASE_URL}${urlToCall}`);
-  url.search = new URLSearchParams(searchParams);
+  url.search = new URLSearchParams(searchParams).toString();
   const requestInit = {
     method,
     headers: {
@@ -122,8 +122,8 @@ export const makeSonarcloudAPICall = async (
   let pageCounter = 2;
 
   while (allItems.length < totalItems) {
-    searchParams.p = pageCounter;
-    url.search = new URLSearchParams(searchParams);
+    searchParams.p = pageCounter.toString();
+    url.search = new URLSearchParams(searchParams).toString();
 
     const response = await fetch(url, requestInit);
     const responseParsed = await response.json();
@@ -136,9 +136,14 @@ export const makeSonarcloudAPICall = async (
   return allItems;
 };
 
+type SonarcloudProject = {
+  name: string;
+  visibility: string;
+};
+
 export const getSonarcloudProjects = async (
-  sonarcloudApiToken,
-  sonarcloudOrganisationName
+  sonarcloudApiToken: string,
+  sonarcloudOrganisationName: string
 ) => {
   let sonarCloudProjects = [];
   try {
@@ -150,19 +155,19 @@ export const getSonarcloudProjects = async (
       sonarcloudApiToken,
       "components"
     );
-  } catch (error) {
-    if (error.name === "NoOrganisationError") {
+  } catch (error: unknown) {
+    if (error instanceof NoOrganisationError) {
       return [];
     }
     throw error;
   }
-  return sonarCloudProjects.map((project) => project.name);
+  return sonarCloudProjects.map((project: SonarcloudProject) => project.name);
 };
 
 export const createGroup = async (
-  groupName,
-  organisation,
-  sonarcloudApiToken,
+  groupName: string,
+  organisation: string,
+  sonarcloudApiToken: string,
   dryRunMode = false
 ) => {
   if (dryRunMode) {
