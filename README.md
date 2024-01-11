@@ -33,14 +33,6 @@ You will also need to create a `.npmrc` file in the root of your repository with
 **_NOTE:_** This package is currently set to private, so the repo using it must be given read access in the [package settings](https://github.com/orgs/NHSDigital/packages/npm/ee-utils/settings).
 
 ```yaml
-- name: Setup Node
-  uses: actions/setup-node@v3
-  with:
-    node-version: "18"
-    cache: yarn
-    registry-url: "https://npm.pkg.github.com"
-    scope: "@NHSDigital"
-
 - name: Install dependencies
   run: make install
   env:
