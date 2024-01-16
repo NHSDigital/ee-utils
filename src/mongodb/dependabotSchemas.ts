@@ -71,6 +71,7 @@ export const RepoDependabotSchema = new mongoose.Schema<IRepoDependabot>(
     highDependabot: { ...dependabotFindingSchema },
     mediumDependabot: { ...dependabotFindingSchema },
     lowDependabot: { ...dependabotFindingSchema },
+    dependabotScore: { type: String, default: "Grey" },
   },
   { timestamps: { createdAt: "document_created_at" } }
 );
