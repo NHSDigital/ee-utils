@@ -7,6 +7,7 @@ export interface IRepoDependabot {
   highDependabot: number;
   mediumDependabot: number;
   lowDependabot: number;
+  dependabotScore: HealthStatuses;
 }
 
 export const validateDependabotEnabledForFinding = function (
@@ -17,6 +18,34 @@ export const validateDependabotEnabledForFinding = function (
     return false;
   }
   return true;
+};
+
+export const calculateDependabotScore = (schema: IRepoDependabot) => {
+  if (!schema.dependabotEnabled) {
+    return "Grey";
+  }
+
+  const CRITICAL_ALERT_MULTIPLIER = 100;
+  const HIGH_ALERT_MULTIPLIER = 10;
+  const MEDIUM_ALERT_MULTIPLIER = 5;
+  const LOW_ALERT_MULTIPLIER = 1;
+
+  const dependabotScore =
+    schema.criticalDependabot * CRITICAL_ALERT_MULTIPLIER +
+    schema.highDependabot * HIGH_ALERT_MULTIPLIER +
+    schema.mediumDependabot * MEDIUM_ALERT_MULTIPLIER +
+    schema.lowDependabot * LOW_ALERT_MULTIPLIER;
+
+  if (dependabotScore <= 10) {
+    return "Green";
+  }
+  if (dependabotScore < 100) {
+    return "Amber";
+  }
+  if (dependabotScore >= 100) {
+    return "Red";
+  }
+  return "Grey";
 };
 
 const dependabotFindingSchema: SchemaDefinitionProperty<
@@ -45,6 +74,11 @@ export const RepoDependabotSchema = new mongoose.Schema<IRepoDependabot>(
   },
   { timestamps: { createdAt: "document_created_at" } }
 );
+
+RepoDependabotSchema.pre<IRepoDependabot>("save", function (next) {
+  this.dependabotScore = calculateDependabotScore(this);
+  next();
+});
 
 export const RepoDependabotModel = mongoose.model<IRepoDependabot>(
   "RepoDependabot",

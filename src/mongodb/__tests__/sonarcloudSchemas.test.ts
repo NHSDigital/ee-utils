@@ -1,10 +1,23 @@
-import { SchemaDefinitionProperty } from "mongoose";
+import mongoose, { SchemaDefinitionProperty } from "mongoose";
 import {
   IRepoSonarcloud,
+  RepoSonarcloudModel,
   RepoSonarcloudSchema,
+  calculateCodeCoverageScore,
   createSonarcloudMetricSchema,
   validateSonarcloudMetric,
 } from "../sonarcloudSchemas";
+import { createCleanDatabase, stopDatabase } from "../testHelpers/helper";
+
+beforeAll(async () => {
+  await createCleanDatabase();
+  await mongoose.connect(process.env.MONGODB_URI!);
+});
+
+afterAll(async () => {
+  await mongoose.disconnect();
+  await stopDatabase();
+});
 
 describe("validateSonarcloudMetric", () => {
   it("should return false if sonarcloud is disabled and the metric is not null", () => {
@@ -50,6 +63,22 @@ describe("createSonarcloudMetricSchema", () => {
   });
 });
 
+describe("calculateCodeCoverageScore", () => {
+  it.each([
+    [{ repo: "repo", isEnabled: false }, "Grey"],
+    [{ repo: "repo", isEnabled: true, codeCoverage: null }, "Grey"],
+    [{ repo: "repo", isEnabled: true, codeCoverage: 80 }, "Green"],
+    [{ repo: "repo", isEnabled: true, codeCoverage: 79 }, "Amber"],
+    [{ repo: "repo", isEnabled: true, codeCoverage: 50 }, "Amber"],
+    [{ repo: "repo", isEnabled: true, codeCoverage: 49 }, "Red"],
+    [{ repo: "repo", isEnabled: true, codeCoverage: 0 }, "Red"],
+  ])("should calculate the code coverage score", (schema, expectedScore) => {
+    const sonarcloudSchema = new RepoSonarcloudModel(schema);
+
+    expect(calculateCodeCoverageScore(sonarcloudSchema)).toEqual(expectedScore);
+  });
+});
+
 describe("RepoSonarcloudSchema", () => {
   describe("validations", () => {
     it.each([
@@ -69,6 +98,26 @@ describe("RepoSonarcloudSchema", () => {
             .validator ?? function () {};
         const result = validator.call({ isEnabled: false }, 1);
         expect(result).toBe(false);
+      }
+    );
+  });
+
+  describe("pre middleware", () => {
+    it.each([
+      [{ repo: "repo", isEnabled: false }, "Grey"],
+      [{ repo: "repo", isEnabled: true, codeCoverage: null }, "Grey"],
+      [{ repo: "repo", isEnabled: true, codeCoverage: 80 }, "Green"],
+      [{ repo: "repo", isEnabled: true, codeCoverage: 79 }, "Amber"],
+      [{ repo: "repo", isEnabled: true, codeCoverage: 50 }, "Amber"],
+      [{ repo: "repo", isEnabled: true, codeCoverage: 49 }, "Red"],
+      [{ repo: "repo", isEnabled: true, codeCoverage: 0 }, "Red"],
+    ])(
+      "should calculate the code coverage score",
+      async (schema, expectedScore) => {
+        const sonarcloudSchema = new RepoSonarcloudModel(schema);
+
+        await sonarcloudSchema.save();
+        expect(sonarcloudSchema.codeCoverageScore).toEqual(expectedScore);
       }
     );
   });
