@@ -1,4 +1,53 @@
-import { RepoBranchProtectionModel } from "../branchProtectionSchemas";
+import mongoose from "mongoose";
+import {
+  RepoBranchProtectionModel,
+  calculateCompliance,
+} from "../branchProtectionSchemas";
+import { createCleanDatabase, stopDatabase } from "../testHelpers/helper";
+
+beforeAll(async () => {
+  await createCleanDatabase();
+  await mongoose.connect(process.env.MONGODB_URI!);
+});
+
+afterAll(async () => {
+  await mongoose.disconnect();
+  await stopDatabase();
+});
+
+describe("calculateCompliance", () => {
+  it.each([
+    [{ repo: "repo" }, "Red"],
+    [{ repo: "repo", pullRequestRequired: true }, "Red"],
+    [{ repo: "repo", approvalsRequired: true }, "Red"],
+    [{ repo: "repo", signaturesRequired: true }, "Red"],
+    [
+      { repo: "repo", signaturesRequired: true, pullRequestRequired: true },
+      "Amber",
+    ],
+    [
+      { repo: "repo", approvalsRequired: true, pullRequestRequired: true },
+      "Amber",
+    ],
+    [
+      { repo: "repo", approvalsRequired: true, signaturesRequired: true },
+      "Amber",
+    ],
+    [
+      {
+        repo: "repo",
+        approvalsRequired: true,
+        signaturesRequired: true,
+        pullRequestRequired: true,
+      },
+      "Green",
+    ],
+  ])("should correctly calculate compliance", (schema, expectedScore) => {
+    const repoBranchProtection = new RepoBranchProtectionModel(schema);
+
+    expect(calculateCompliance(repoBranchProtection)).toEqual(expectedScore);
+  });
+});
 
 describe("RepoBranchProtectionSchema", () => {
   describe("validation", () => {
@@ -26,5 +75,42 @@ describe("RepoBranchProtectionSchema", () => {
         "Path `repo` is required."
       );
     });
+  });
+
+  describe("pre middleware", () => {
+    it.each([
+      [{ repo: "repo" }, "Red"],
+      [{ repo: "repo", pullRequestRequired: true }, "Red"],
+      [{ repo: "repo", approvalsRequired: true }, "Red"],
+      [{ repo: "repo", signaturesRequired: true }, "Red"],
+      [
+        { repo: "repo", signaturesRequired: true, pullRequestRequired: true },
+        "Amber",
+      ],
+      [
+        { repo: "repo", approvalsRequired: true, pullRequestRequired: true },
+        "Amber",
+      ],
+      [
+        { repo: "repo", approvalsRequired: true, signaturesRequired: true },
+        "Amber",
+      ],
+      [
+        {
+          repo: "repo",
+          approvalsRequired: true,
+          signaturesRequired: true,
+          pullRequestRequired: true,
+        },
+        "Green",
+      ],
+    ])(
+      "should calculate the compliance score and set the compliance field",
+      async (schema, expectedScore) => {
+        const repoBranchProtection = new RepoBranchProtectionModel(schema);
+        await repoBranchProtection.save();
+        expect(repoBranchProtection.compliance).toEqual(expectedScore);
+      }
+    );
   });
 });
