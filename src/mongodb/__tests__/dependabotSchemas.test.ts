@@ -1,9 +1,22 @@
+import mongoose from "mongoose";
 import {
   IRepoDependabot,
   RepoDependabotModel,
   RepoDependabotSchema,
+  calculateDependabotScore,
   validateDependabotEnabledForFinding,
 } from "../dependabotSchemas";
+import { createCleanDatabase, stopDatabase } from "../testHelpers/helper";
+
+beforeAll(async () => {
+  await createCleanDatabase();
+  await mongoose.connect(process.env.MONGODB_URI!);
+});
+
+afterAll(async () => {
+  await mongoose.disconnect();
+  await stopDatabase();
+});
 
 describe("validateDependabotEnabledForFinding", () => {
   it("should return false if dependabot is disabled and the finding is greater than 0", () => {
@@ -35,6 +48,66 @@ describe("validateDependabotEnabledForFinding", () => {
 
     expect(validation).toBe(true);
   });
+});
+
+describe("calculateDependabotScore", () => {
+  it.each([
+    [
+      {
+        repo: "repo",
+        dependabotEnabled: false,
+      },
+      "Grey",
+    ],
+    [
+      {
+        repo: "repo",
+      },
+      "Grey",
+    ],
+    [
+      {
+        repo: "repo",
+        dependabotEnabled: true,
+        criticalDependabot: 0,
+        highDependabot: 0,
+        mediumDependabot: 1,
+        lowDependabot: 2,
+      },
+      "Green",
+    ],
+    [
+      {
+        repo: "repo",
+        dependabotEnabled: true,
+        criticalDependabot: 0,
+        highDependabot: 2,
+        mediumDependabot: 1,
+        lowDependabot: 2,
+      },
+      "Amber",
+    ],
+    [
+      {
+        repo: "repo",
+        dependabotEnabled: true,
+        criticalDependabot: 2,
+        highDependabot: 2,
+        mediumDependabot: 1,
+        lowDependabot: 2,
+      },
+      "Red",
+    ],
+    [undefined, "Grey"],
+  ])(
+    "should calculate the dependabot score correctly - %s",
+    (schema, expectedScore) => {
+      const dependabotSchema = new RepoDependabotModel(schema);
+
+      const score = calculateDependabotScore(dependabotSchema);
+      expect(score).toEqual(expectedScore);
+    }
+  );
 });
 
 describe("repoDependabotSchema", () => {
@@ -118,5 +191,51 @@ describe("repoDependabotSchema", () => {
       expect(validDependabotSchema.mediumDependabot).toEqual(0);
       expect(validDependabotSchema.lowDependabot).toEqual(0);
     });
+  });
+
+  describe("pre middleware", () => {
+    it.each([
+      [{ repo: "repo", dependabotEnabled: false }, "Grey"],
+      [
+        {
+          repo: "repo",
+          dependabotEnabled: true,
+          criticalDependabot: 0,
+          highDependabot: 0,
+          mediumDependabot: 1,
+          lowDependabot: 2,
+        },
+        "Green",
+      ],
+      [
+        {
+          repo: "repo",
+          dependabotEnabled: true,
+          criticalDependabot: 0,
+          highDependabot: 2,
+          mediumDependabot: 1,
+          lowDependabot: 2,
+        },
+        "Amber",
+      ],
+      [
+        {
+          repo: "repo",
+          dependabotEnabled: true,
+          criticalDependabot: 2,
+          highDependabot: 2,
+          mediumDependabot: 1,
+          lowDependabot: 2,
+        },
+        "Red",
+      ],
+    ])(
+      "should calculate the dependabot score",
+      async (schema, expectedScore) => {
+        const dependabotSchema = new RepoDependabotModel(schema);
+        await dependabotSchema.save();
+        expect(dependabotSchema.dependabotScore).toEqual(expectedScore);
+      }
+    );
   });
 });
