@@ -11,6 +11,7 @@ export interface IRepoSonarcloud {
   bugs: number;
   codeSmells: number;
   duplicatedLinesDensity: number;
+  codeCoverageScore: HealthStatuses;
 }
 
 export const validateSonarcloudMetric = function (
@@ -38,6 +39,19 @@ export const createSonarcloudMetricSchema = <T extends string | number>(
   } as unknown as SchemaDefinitionProperty<T, IRepoSonarcloud>;
 };
 
+export const calculateCodeCoverageScore = (schema: IRepoSonarcloud) => {
+  if (!schema.isEnabled || schema.codeCoverage === null) {
+    return "Grey";
+  }
+  if (schema.codeCoverage >= 80) {
+    return "Green";
+  }
+  if (schema.codeCoverage < 80 && schema.codeCoverage >= 50) {
+    return "Amber";
+  }
+  return "Red";
+};
+
 export const RepoSonarcloudSchema = new mongoose.Schema<IRepoSonarcloud>(
   {
     repo: {
@@ -56,6 +70,11 @@ export const RepoSonarcloudSchema = new mongoose.Schema<IRepoSonarcloud>(
   },
   { timestamps: { createdAt: "document_created_at" } }
 );
+
+RepoSonarcloudSchema.pre("save", function (next) {
+  this.codeCoverageScore = calculateCodeCoverageScore(this);
+  next();
+});
 
 export const RepoSonarcloudModel = mongoose.model<IRepoSonarcloud>(
   "RepoSonarcloud",
