@@ -67,6 +67,7 @@ export const RepoSonarcloudSchema = new mongoose.Schema<IRepoSonarcloud>(
     bugs: createSonarcloudMetricSchema<number>(Number),
     codeSmells: createSonarcloudMetricSchema<number>(Number),
     duplicatedLinesDensity: createSonarcloudMetricSchema<number>(Number),
+    codeCoverageScore: { type: String, default: "Grey" },
   },
   { timestamps: { createdAt: "document_created_at" } }
 );

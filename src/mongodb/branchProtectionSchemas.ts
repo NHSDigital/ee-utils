@@ -37,6 +37,7 @@ export const RepoBranchProtectionSchema =
       stalePullRequestApprovalsDismissed: { type: Boolean, default: false },
       signaturesRequired: { type: Boolean, default: false },
       conversationResolutionRequired: { type: Boolean, default: false },
+      compliance: { type: String, default: "Red" },
     },
     { timestamps: { createdAt: "document_created_at" } }
   );
