@@ -39,7 +39,6 @@ describe("validateSonarcloudMetric", () => {
   it("should return true if sonarcloud is disabled and the metric is null", () => {
     const validation = validateSonarcloudMetric.call(
       { isEnabled: false } as unknown as IRepoSonarcloud,
-      // @ts-ignore
       null
     );
 

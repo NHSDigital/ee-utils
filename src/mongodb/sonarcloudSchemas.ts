@@ -14,9 +14,9 @@ export interface IRepoSonarcloud {
   codeCoverageScore: HealthStatuses;
 }
 
-export const validateSonarcloudMetric = function (
+export const validateSonarcloudMetric = function <T>(
   this: IRepoSonarcloud,
-  finding: number
+  finding: T
 ) {
   if (this.isEnabled) {
     return true;
@@ -33,7 +33,7 @@ export const createSonarcloudMetricSchema = <T extends string | number>(
   return {
     type,
     validate: {
-      validator: validateSonarcloudMetric,
+      validator: validateSonarcloudMetric<T | null>,
     },
     default: null,
   } as unknown as SchemaDefinitionProperty<T, IRepoSonarcloud>;
