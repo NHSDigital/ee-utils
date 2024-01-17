@@ -1,6 +1,5 @@
 import { Octokit } from "@octokit/rest";
 import { App } from "octokit";
-import { loggers } from "winston";
 import { LambdaLogger } from "../src/logger";
 import {
   getAllRepositoriesInOrganisation,
