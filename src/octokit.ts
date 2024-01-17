@@ -1,8 +1,8 @@
 import { Octokit } from "@octokit/rest";
 import { App } from "octokit";
-import { getParameter } from "./parameters";
-import { LambdaLogger } from "./logger";
 import { logReferences } from "./logReferences";
+import { LambdaLogger } from "./logger";
+import { getParameter } from "./parameters";
 
 export type OrgInfo = {
   orgName: string;
@@ -30,7 +30,6 @@ export const getOctokit = async (
   const GITHUB_APP_ID = (await getParameter(appId)) ?? "";
   const GITHUB_INSTALLATION_ID = (await getParameter(installationId)) ?? "0";
   logger.info("ENGEXPUTILS009", {
-    GITHUB_PRIVATE_KEY,
     GITHUB_APP_ID,
     GITHUB_INSTALLATION_ID,
   });

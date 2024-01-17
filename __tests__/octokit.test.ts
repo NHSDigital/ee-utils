@@ -57,7 +57,6 @@ describe("getOctokit", () => {
     expect(getInstallationOctokitMock).toBeCalledWith(123);
     expect(loggerSpy).toHaveBeenCalledTimes(2);
     expect(loggerSpy).toHaveBeenNthCalledWith(1, "ENGEXPUTILS009", {
-      GITHUB_PRIVATE_KEY: inputPrivateKey,
       GITHUB_APP_ID: inputAppId,
       GITHUB_INSTALLATION_ID: inputInstallationId,
     });
