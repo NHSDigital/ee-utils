@@ -7,4 +7,6 @@ export const logReferences: Record<string, string> = {
   ENGEXPUTILS006: "MONGODB_URI environment variable not set",
   ENGEXPUTILS007: "Connected To Database",
   ENGEXPUTILS008: "Connection Failed",
+  ENGEXPUTILS009: "Octokit Parameters Fetched",
+  ENGEXPUTILS010: "Octokit App Fetched",
 };

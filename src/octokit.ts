@@ -1,6 +1,8 @@
 import { Octokit } from "@octokit/rest";
 import { App } from "octokit";
 import { getParameter } from "./parameters";
+import { LambdaLogger } from "./logger";
+import { logReferences } from "./logReferences";
 
 export type OrgInfo = {
   orgName: string;
@@ -17,6 +19,8 @@ export type OrgInfo = {
   sonarcloudOrgName: string;
 };
 
+const logger = new LambdaLogger("ee-utils/octokit", logReferences);
+
 export const getOctokit = async (
   privateKey: string,
   appId: string,
@@ -25,7 +29,13 @@ export const getOctokit = async (
   const GITHUB_PRIVATE_KEY = (await getParameter(privateKey, true)) ?? "";
   const GITHUB_APP_ID = (await getParameter(appId)) ?? "";
   const GITHUB_INSTALLATION_ID = (await getParameter(installationId)) ?? "0";
+  logger.info("ENGEXPUTILS009", {
+    GITHUB_PRIVATE_KEY,
+    GITHUB_APP_ID,
+    GITHUB_INSTALLATION_ID,
+  });
   const app = new App({ appId: GITHUB_APP_ID, privateKey: GITHUB_PRIVATE_KEY });
+  logger.info("ENGEXPUTILS010", { app });
   const parsedInstallationId = parseInt(GITHUB_INSTALLATION_ID);
   if (isNaN(parsedInstallationId)) {
     throw new Error("installation_id is not a number");
