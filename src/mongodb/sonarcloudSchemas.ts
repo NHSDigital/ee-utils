@@ -1,4 +1,5 @@
 import mongoose, { SchemaDefinitionProperty } from "mongoose";
+import { HealthStatuses } from "./stateTypes";
 
 export interface IRepoSonarcloud {
   repo: string;
