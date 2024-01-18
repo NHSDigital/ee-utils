@@ -1,12 +1,12 @@
 import mongoose, { SchemaDefinitionProperty } from "mongoose";
-import { HealthStatuses } from "./stateTypes";
+import { HealthStatuses, MetricRating } from "./stateTypes";
 
 export interface IRepoSonarcloud {
   repo: string;
   isEnabled: boolean;
-  reliabilityRating: string;
-  securityRating: string;
-  sqaleRating: string;
+  reliabilityRating: MetricRating;
+  securityRating: MetricRating;
+  sqaleRating: MetricRating;
   codeCoverage: number;
   linesOfCode: number;
   bugs: number;
@@ -60,9 +60,9 @@ export const RepoSonarcloudSchema = new mongoose.Schema<IRepoSonarcloud>(
       required: true,
     },
     isEnabled: Boolean,
-    reliabilityRating: createSonarcloudMetricSchema<string>(String),
-    securityRating: createSonarcloudMetricSchema<string>(String),
-    sqaleRating: createSonarcloudMetricSchema<string>(String),
+    reliabilityRating: createSonarcloudMetricSchema<MetricRating>(String),
+    securityRating: createSonarcloudMetricSchema<MetricRating>(String),
+    sqaleRating: createSonarcloudMetricSchema<MetricRating>(String),
     codeCoverage: createSonarcloudMetricSchema<number>(Number),
     linesOfCode: createSonarcloudMetricSchema<number>(Number),
     bugs: createSonarcloudMetricSchema<number>(Number),
