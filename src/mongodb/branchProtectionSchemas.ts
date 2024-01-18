@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { HealthStatuses } from "./stateTypes";
 
 export interface IRepoBranchProtection {
   repo: string;
