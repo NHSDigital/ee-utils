@@ -1,23 +1,24 @@
-import { RepoModel } from "../repoSchemas";
+import { IRepo, RepoModel } from "../repoSchemas";
 
 describe("RepoSchema", () => {
+  const validRepo: IRepo = {
+    github_id: 1,
+    node_id: "abcd",
+    name: "Repo-Name",
+    full_name: "owner/Repo-Name",
+    owner: "owner",
+    visibility: "public",
+    language: "javascript",
+    size: 10000,
+    pushed_at: "2020-09-25T17:01:11Z",
+    repo_created_at: "2019-09-25T17:01:11Z",
+    repo_updated_at: "2020-09-25T17:01:11Z",
+    archived: false,
+    url: "some_url",
+  };
   describe("validation", () => {
     it("should succeed with a valid model", () => {
-      const validModel = new RepoModel({
-        github_id: 1,
-        node_id: "abcd",
-        name: "Repo-Name",
-        full_name: "owner/Repo-Name",
-        owner: "owner",
-        visibility: "public",
-        language: "javascript",
-        size: 10000,
-        pushed_at: "2020-09-25T17:01:11Z",
-        repo_created_at: "2019-09-25T17:01:11Z",
-        repo_updated_at: "2020-09-25T17:01:11Z",
-        archived: false,
-        url: "some_url",
-      });
+      const validModel = new RepoModel(validRepo);
 
       expect(validModel.validateSync()).toBeUndefined();
       expect(validModel.github_id).toEqual(1);
@@ -35,49 +36,34 @@ describe("RepoSchema", () => {
       expect(validModel.url).toEqual("some_url");
     });
   });
-  it("should fail if all details are not provided", () => {
-    const invalidModel = new RepoModel({});
+  it.each([
+    ["github_id"],
+    ["node_id"],
+    ["name"],
+    ["full_name"],
+    ["owner"],
+    ["visibility"],
+    ["language"],
+    ["size"],
+    ["pushed_at"],
+    ["repo_created_at"],
+    ["repo_updated_at"],
+    ["archived"],
+    ["url"],
+  ])("should fail if all details are not provided", (field) => {
+    const invalidRepo = { ...validRepo };
+    delete invalidRepo[field as keyof IRepo];
+    const invalidModel = new RepoModel(invalidRepo);
 
     const error = invalidModel.validateSync();
     expect(error).toBeDefined();
-    const requiredFields = [
-      "github_id",
-      "node_id",
-      "name",
-      "full_name",
-      "owner",
-      "visibility",
-      "language",
-      "size",
-      "pushed_at",
-      "repo_created_at",
-      "repo_updated_at",
-      "archived",
-      "url",
-    ];
-
-    requiredFields.forEach((field) => {
-      expect(error?.errors[field].message).toEqual(
-        `Path \`${field}\` is required.`
-      );
-    });
+    expect(error?.errors[field].message).toEqual(
+      `Path \`${field}\` is required.`
+    );
   });
   it("should fail if the size is negative", () => {
-    const invalidModel = new RepoModel({
-      github_id: 1,
-      node_id: "abcd",
-      name: "Repo-Name",
-      full_name: "owner/Repo-Name",
-      owner: "owner",
-      visibility: "public",
-      language: "javascript",
-      size: -10000,
-      pushed_at: "2020-09-25T17:01:11Z",
-      created_at: "2019-09-25T17:01:11Z",
-      updated_at: "2020-09-25T17:01:11Z",
-      archived: false,
-      url: "some_url",
-    });
+    const invalidRepo = { ...validRepo, size: -10000 };
+    const invalidModel = new RepoModel(invalidRepo);
 
     const error = invalidModel.validateSync();
     expect(error).toBeDefined();
