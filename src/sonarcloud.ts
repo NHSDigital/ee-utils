@@ -32,23 +32,20 @@ type SonarcloudError = {
 
 export const handleErrors = (errors: SonarcloudError[]) => {
   for (let error of errors) {
-    const errorKeys = Object.keys(error);
-    if (!errorKeys.includes("message") && !errorKeys.includes("msg")) {
+    if (!(error.message || error.msg)) {
       throw new Error(`Error message not found: ${error}`);
     }
-    if (errorKeys.includes("msg")) {
-      error.message = error.msg;
-    }
-    if (error.message?.includes("No organization for key")) {
+    const errorMessage = error.message || error.msg;
+    if (errorMessage?.includes("No organization for key")) {
       logger.warn("ENGEXPUTILS003", { error });
-      throw new NoOrganisationError(error.message);
+      throw new NoOrganisationError(errorMessage);
     }
     if (
-      error.message?.includes("Component key") &&
-      error.message.includes("not found")
+      errorMessage?.includes("Component key") &&
+      errorMessage.includes("not found")
     ) {
       logger.warn("ENGEXPUTILS005", { error });
-      throw new ProjectNotFoundError(error.message);
+      throw new ProjectNotFoundError(errorMessage);
     }
   }
   throw errors;
