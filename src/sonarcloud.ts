@@ -25,18 +25,27 @@ export const checkForErrors = (response: any) => {
   }
 };
 
-export const handleErrors = (errors: Error[]) => {
-  for (const error of errors) {
-    if (error.message.includes("No organization for key")) {
+type SonarcloudError = {
+  message?: string;
+  msg?: string;
+};
+
+export const handleErrors = (errors: SonarcloudError[]) => {
+  for (let error of errors) {
+    if (!(error.message || error.msg)) {
+      throw new Error(`Error message not found: ${error}`);
+    }
+    const errorMessage = error.message || error.msg;
+    if (errorMessage?.includes("No organization for key")) {
       logger.warn("ENGEXPUTILS003", { error });
-      throw new NoOrganisationError(error.message);
+      throw new NoOrganisationError(errorMessage);
     }
     if (
-      error.message.includes("Component key") &&
-      error.message.includes("not found")
+      errorMessage?.includes("Component key") &&
+      errorMessage.includes("not found")
     ) {
       logger.warn("ENGEXPUTILS005", { error });
-      throw new ProjectNotFoundError(error.message);
+      throw new ProjectNotFoundError(errorMessage);
     }
   }
   throw errors;
@@ -46,7 +55,7 @@ export const checkResponse = (response: any) => {
   try {
     checkForErrors(response);
   } catch (errors) {
-    handleErrors(errors as Error[]);
+    handleErrors(errors as SonarcloudError[]);
   }
 
   return response;

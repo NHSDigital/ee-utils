@@ -40,14 +40,27 @@ describe("handleErrors", () => {
     const mockErrors = [Error("No organization for key 'someOrg'")];
     expect(() => handleErrors(mockErrors)).toThrow("No organization for key");
   });
+  it("should handle errors and throw error if no message property exists", () => {
+    const brokenError = { someAttr: "" };
+    const mockErrors = [brokenError];
+    // @ts-ignore
+    expect(() => handleErrors(mockErrors)).toThrow(
+      `Error message not found: ${brokenError}`
+    );
+  });
+  it("should handle errors and throw organisation error for different properties", () => {
+    const mockErrors = [{ msg: "No organization for key 'someOrg'" }];
+    // @ts-ignore
+    expect(() => handleErrors(mockErrors)).toThrow("No organization for key");
+  });
   it("should handle errors and throw project not found error", () => {
-    const mockErrors = [Error("Component key 'someProject' not found")];
+    const mockErrors = [{ message: "Component key 'someProject' not found" }];
     expect(() => handleErrors(mockErrors)).toThrow(
       "Component key 'someProject' not found"
     );
   });
   it("should throw errors", () => {
-    const mockErrors = [Error("some error message")];
+    const mockErrors = [{ message: "some error message" }];
     try {
       handleErrors(mockErrors);
     } catch (error) {
