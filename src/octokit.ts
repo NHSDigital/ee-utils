@@ -46,6 +46,9 @@ export const getAllRepositoriesInOrganisation = async (
   octokit: Octokit,
   organisationName: string
 ) => {
+  logger.info("ENGEXPUTILS011", {
+    organisationName,
+  });
   const orgRepos = await octokit.paginate(octokit.rest.repos.listForOrg, {
     org: organisationName,
     per_page: 100,
