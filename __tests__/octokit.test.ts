@@ -86,9 +86,7 @@ describe("getAllRepositoriesInOrganisation", () => {
     expect(result).toEqual(["Test", "Other"]);
     expect(loggerSpy).toHaveBeenCalledTimes(1);
     expect(loggerSpy).toHaveBeenNthCalledWith(1,"ENGEXPUTILS011", {
-      app: {
-        organisationName: "NHS-CodeLab",
-      }
+      organisationName: "NHS-CodeLab",
     });
   });
 });
