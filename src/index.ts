@@ -4,6 +4,7 @@ export * from "./logger";
 export * from "./mongodb/branchProtectionSchemas";
 export * from "./mongodb/dependabotSchemas";
 export * from "./mongodb/githubActionMinutesSchemas";
+export * from "./mongodb/hierarchySchemas";
 export * from "./mongodb/mongo";
 export * from "./mongodb/repoSchemas";
 export * from "./mongodb/sonarcloudSchemas";
