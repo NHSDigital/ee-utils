@@ -9,4 +9,5 @@ export const logReferences: Record<string, string> = {
   ENGEXPUTILS008: "Connection Failed",
   ENGEXPUTILS009: "Octokit Parameters Fetched",
   ENGEXPUTILS010: "Octokit App Fetched",
+  ENGEXPUTILS011: "Retrieving all repositories in org"
 };

@@ -72,6 +72,7 @@ describe("getAllRepositoriesInOrganisation", () => {
     const mockOctokitRequest = jest.fn(() => {
       return [{ name: "Test" }, { name: "Other" }];
     });
+    const loggerSpy = jest.spyOn(LambdaLogger.prototype, "info");
 
     const fakeOctokit = {
       paginate: mockOctokitRequest,
@@ -83,6 +84,10 @@ describe("getAllRepositoriesInOrganisation", () => {
     );
     expect(mockOctokitRequest).toBeCalled();
     expect(result).toEqual(["Test", "Other"]);
+    expect(loggerSpy).toHaveBeenCalledTimes(1);
+    expect(loggerSpy).toHaveBeenNthCalledWith(1,"ENGEXPUTILS011", {
+      organisationName: "NHS-CodeLab",
+    });
   });
 });
 
