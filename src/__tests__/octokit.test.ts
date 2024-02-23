@@ -1,16 +1,16 @@
 import { Octokit } from "@octokit/rest";
 import { App } from "octokit";
-import { LambdaLogger } from "../src/logger";
+import { LambdaLogger } from "../logger";
 import {
   getAllRepositoriesInOrganisation,
   getContributorsForRepo,
   getOctokit,
   getTeamsForRepo,
   getTeamsForRepositoriesInOrganisation,
-} from "../src/octokit";
+} from "../octokit";
 
-jest.mock("../src/parameters", () => ({
-  ...jest.requireActual("../src/parameters"),
+jest.mock("../parameters", () => ({
+  ...jest.requireActual("../parameters"),
   getParameter: jest.fn((parameter) => Promise.resolve(parameter)),
 }));
 jest.mock("octokit", () => {
@@ -85,7 +85,7 @@ describe("getAllRepositoriesInOrganisation", () => {
     expect(mockOctokitRequest).toBeCalled();
     expect(result).toEqual(["Test", "Other"]);
     expect(loggerSpy).toHaveBeenCalledTimes(1);
-    expect(loggerSpy).toHaveBeenNthCalledWith(1,"ENGEXPUTILS011", {
+    expect(loggerSpy).toHaveBeenNthCalledWith(1, "ENGEXPUTILS011", {
       organisationName: "NHS-CodeLab",
     });
   });
@@ -161,7 +161,7 @@ describe("getTeamsForRepo", () => {
 
 describe("getContributorsForRepo", () => {
   it("gets empty list when repo contains no contributors", async () => {
-    const mockOctokitRequest = [];
+    const mockOctokitRequest: any[] = [];
 
     const fakeOctokit = {
       paginate: () => Promise.resolve(mockOctokitRequest),
@@ -229,7 +229,7 @@ describe("getContributorsForRepo", () => {
 
 describe("getTeamsForRepositoriesInOrganisation", () => {
   it("returns all teams by repos in the organisation", async () => {
-    jest.mock("../src/octokit", () => ({
+    jest.mock("../octokit", () => ({
       getAllRepositoriesInOrganisation: jest
         .fn()
         .mockResolvedValue(["repo1", "repo2"]),

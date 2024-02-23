@@ -1,4 +1,4 @@
-import { LambdaLogger } from "../src/logger";
+import { LambdaLogger } from "../logger";
 import {
   checkForErrors,
   checkResponse,
@@ -8,13 +8,13 @@ import {
   makeSonarcloudAPICall,
   makeSonarcloudGetRequest,
   makeSonarcloudPostRequest,
-} from "../src/sonarcloud";
+} from "../sonarcloud";
 
 global.fetch = jest.fn();
 
-jest.mock("../src/parameters", () => {
+jest.mock("../parameters", () => {
   return {
-    ...jest.requireActual("../src/parameters"),
+    ...jest.requireActual("../parameters"),
     getParameter: () => "some_parameter",
   };
 });

@@ -10,7 +10,7 @@ import {
   getParsedJSONFromS3,
   outputToS3,
   writeToS3HandleErrors,
-} from "../src/s3Utilities";
+} from "../s3Utilities";
 
 const s3Mock = mockClient(S3Client);
 

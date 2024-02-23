@@ -1,4 +1,4 @@
-import { LambdaLogger, getTimestamp } from "../src/logger";
+import { LambdaLogger, getTimestamp } from "../logger";
 
 describe("LambdaLogger - log methods", () => {
   it("should log out the message as info", () => {

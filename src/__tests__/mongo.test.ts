@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
-import { LambdaLogger } from "../src/logger";
-import { connectToDatabaseViaEnvVar } from "../src/mongodb/mongo";
+import { LambdaLogger } from "../logger";
+import { connectToDatabaseViaEnvVar } from "../mongodb/mongo";
 
 jest.mock("mongoose");
 
@@ -12,7 +12,7 @@ describe("connectToDatabaseViaEnvVar", () => {
 
     try {
       await connectToDatabaseViaEnvVar();
-    } catch (error) {
+    } catch (error: any) {
       expect(error.message).toEqual("MONGODB_URI environment variable not set");
     }
 
