@@ -9,6 +9,8 @@ export * from "./mongodb/mongo";
 export * from "./mongodb/repoSchemas";
 export * from "./mongodb/sonarcloudSchemas";
 export * from "./mongodb/testHelpers/helper";
+export * from "./mongodb/testHelpers/seedData/repos";
+export * from "./mongodb/testHelpers/seedDatabase";
 export * from "./mongodb/uniqueContributorsSchemas";
 export * from "./octokit";
 export * from "./parameters";
