@@ -1,3 +1,4 @@
+export * from "./authentication";
 export * from "./filenames";
 export * from "./logReferences";
 export * from "./logger";
@@ -14,5 +15,6 @@ export * from "./mongodb/testHelpers/seedDatabase";
 export * from "./mongodb/uniqueContributorsSchemas";
 export * from "./octokit";
 export * from "./parameters";
+export * from "./response";
 export * from "./s3Utilities";
 export * from "./sonarcloud";
