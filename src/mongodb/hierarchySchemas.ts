@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 export interface IHierarchy {
-  repo: string;
-  directorate?: string;
+  repo?: string;
+  directorate: string;
   function_name?: string;
   subdirectorate?: string;
   area?: string;
