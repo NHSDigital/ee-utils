@@ -7,18 +7,16 @@ import {
   createSonarcloudMetricSchema,
   validateSonarcloudMetric,
 } from "../sonarcloudSchemas";
-import { createCleanDatabase, stopDatabase } from "../testHelpers/helper";
+import { cleanDatabase, connectToDatabase } from "../testHelpers/helper";
 
 beforeAll(async () => {
-  await createCleanDatabase();
-  await mongoose.connect(process.env.MONGODB_URI!);
+  await cleanDatabase(process.env.MONGODB_URI!);
+  await connectToDatabase(process.env.MONGODB_URI!);
 });
 
 afterAll(async () => {
   await mongoose.disconnect();
-  await stopDatabase();
 });
-
 describe("validateSonarcloudMetric", () => {
   it("should return false if sonarcloud is disabled and the metric is not null", () => {
     const validation = validateSonarcloudMetric.call(
