@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { RepoBranchProtectionModel } from "../branchProtectionSchemas";
 import { RepoDependabotModel } from "../dependabotSchemas";
 import { GithubActionMinutesModel } from "../githubActionMinutesSchemas";
@@ -6,7 +7,11 @@ import { RepoModel } from "../repoSchemas";
 import { RepoSonarcloudModel } from "../sonarcloudSchemas";
 import { UniqueContributorsModel } from "../uniqueContributorsSchemas";
 import { AREA_1, AREA_2, AREA_3, AREA_4 } from "./seedData/areas";
-import { DIRECTORATE_1, DIRECTORATE_2 } from "./seedData/directorates";
+import {
+  DIRECTORATE_1,
+  DIRECTORATE_2,
+  UNALLOCATED,
+} from "./seedData/directorates";
 import {
   FUNCTION_1,
   FUNCTION_2,
@@ -33,13 +38,15 @@ import {
   SUBDIRECTORATE_4,
 } from "./seedData/subdirectorates";
 
-export const seedDatabase = async () => {
+export const seedDatabase = async (uri: string) => {
+  await mongoose.connect(uri);
   await insertRepos();
   await insertDirectorates();
   await insertFunctions();
   await insertSubdirectorates();
   await insertAreas();
   await insertServices();
+  await mongoose.disconnect();
 };
 
 export const insertRepos = async () => {
@@ -88,6 +95,7 @@ export const insertRepos = async () => {
   await new Promise((resolve) => setTimeout(resolve, 2000));
 
   await RepoModel.insertMany([REPO_1.repo]);
+
   await RepoDependabotModel.insertMany([REPO_1.dependabot]);
   await RepoBranchProtectionModel.insertMany([REPO_1.branchProtection]);
   await GithubActionMinutesModel.insertMany([REPO_1.githubActionMinutes]);
@@ -97,7 +105,7 @@ export const insertRepos = async () => {
 };
 
 export const insertDirectorates = async () => {
-  await HierarchyModel.insertMany([DIRECTORATE_1, DIRECTORATE_2]);
+  await HierarchyModel.insertMany([DIRECTORATE_1, DIRECTORATE_2, UNALLOCATED]);
 };
 
 export const insertFunctions = async () => {

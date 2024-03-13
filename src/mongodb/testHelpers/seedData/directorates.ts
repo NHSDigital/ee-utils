@@ -4,3 +4,7 @@ export const DIRECTORATE_1 = {
 export const DIRECTORATE_2 = {
   directorate: "Directorate 2",
 };
+
+export const UNALLOCATED = {
+  directorate: "Unallocated",
+};
