@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
 
 export interface IHierarchy {
-  repo: string;
-  directorate?: string;
+  repo?: string;
+  directorate: string;
   function_name?: string;
   subdirectorate?: string;
   area?: string;
@@ -10,12 +10,35 @@ export interface IHierarchy {
 }
 
 export const HierarchySchema = new mongoose.Schema({
-  repo: { type: String, required: true },
-  directorate: { type: String, default: "Unallocated" },
-  function_name: { type: String, default: "Unallocated" },
-  subdirectorate: { type: String, default: "Unallocated" },
-  area: { type: String, default: "Unallocated" },
-  service: { type: String, default: "Unallocated" },
+  repo: { type: String },
+  directorate: { type: String, required: true },
+  function_name: {
+    type: String,
+    required: function (this: IHierarchy) {
+      return (
+        (this.subdirectorate || this.area || this.service || this.repo) &&
+        !this.function_name
+      );
+    },
+  },
+  subdirectorate: {
+    type: String,
+    required: function (this: IHierarchy) {
+      return (this.area || this.service || this.repo) && !this.subdirectorate;
+    },
+  },
+  area: {
+    type: String,
+    required: function (this: IHierarchy) {
+      return (this.service || this.repo) && !this.area;
+    },
+  },
+  service: {
+    type: String,
+    required: function (this: IHierarchy) {
+      return this.repo && !this.service;
+    },
+  },
 });
 
 export const HierarchyModel = mongoose.model<IHierarchy>(
