@@ -4,7 +4,12 @@ import { LambdaLogger } from "../logger";
 
 const logger = new LambdaLogger("ee-utils/mongodb", logReferences);
 
-export const connectToDatabaseViaEnvVar = async (): Promise<void> => {
+export const connectToDatabaseViaEnvVar = async (
+  options = {
+    ssl: true,
+    tlsCAFile: `${__dirname}/global-bundle.pem`,
+  }
+): Promise<void> => {
   const uri = process.env.MONGODB_URI;
   if (!uri) {
     logger.error("ENGEXPUTILS006", {
@@ -13,11 +18,7 @@ export const connectToDatabaseViaEnvVar = async (): Promise<void> => {
     throw new Error("MONGODB_URI environment variable not set");
   }
   try {
-    await mongoose.connect(uri, {
-      ssl: true,
-      tlsCAFile: `${__dirname}/global-bundle.pem`,
-      retryWrites: false,
-    });
+    await mongoose.connect(uri, options);
     logger.info("ENGEXPUTILS007", {
       database: uri,
     });

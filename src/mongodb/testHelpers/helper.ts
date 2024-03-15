@@ -4,10 +4,15 @@ import mongoose from "mongoose";
 export const createCleanDatabase = async () => {
   const mongod = await MongoMemoryServer.create();
   const uri = mongod.getUri();
-  // @ts-ignore
-  global.__MONGO_INSTANCE = mongod;
   await cleanDatabase(uri);
-  process.env.MONGODB_URI = uri;
+  return { uri, mongod };
+};
+
+export const connectToDatabase = async (uri: string) => {
+  await mongoose.connect(uri);
+};
+export const disconnectFromDatabase = async () => {
+  await mongoose.disconnect();
 };
 
 export const cleanDatabase = async (uri: string) => {
@@ -18,10 +23,4 @@ export const cleanDatabase = async (uri: string) => {
   } else {
     throw new Error("Not a test database");
   }
-};
-
-export const stopDatabase = async () => {
-  // @ts-ignore
-  const mongod = global.__MONGO_INSTANCE;
-  await mongod.stop();
 };

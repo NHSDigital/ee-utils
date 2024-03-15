@@ -1,4 +1,15 @@
+import mongoose from "mongoose";
 import { IRepo, RepoModel } from "../repoSchemas";
+import { cleanDatabase, connectToDatabase } from "../testHelpers/helper";
+
+beforeAll(async () => {
+  await cleanDatabase(process.env.MONGODB_URI!);
+  await connectToDatabase(process.env.MONGODB_URI!);
+});
+
+afterAll(async () => {
+  await mongoose.disconnect();
+});
 
 describe("RepoSchema", () => {
   const validRepo: IRepo = {

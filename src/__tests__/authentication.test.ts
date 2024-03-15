@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { authenticateRequest } from "../authentication";
+import { authenticateLambda, authenticateRequest } from "../authentication";
 
 const MOCK_SIGNING_KEY = "mockSigningKey";
 
@@ -35,5 +35,45 @@ describe("authenticateRequest", () => {
     await expect(authenticateRequest(expiredToken, "tenant")).rejects.toThrow(
       "Token has expired"
     );
+  });
+});
+
+describe("authenticateLambda", () => {
+  it("should return an error if there are no authorization headers", async () => {
+    const headers = {};
+    const [authorized, error] = await authenticateLambda(headers, "tenant_id");
+
+    expect(authorized).toBeNull();
+    expect(error).toEqual("No authorization headers");
+  });
+  it("should return an error if authentication fails", async () => {
+    const expiredToken = jwt.sign(
+      { foo: "bar", exp: Math.floor(Date.now() / 1000) - 3600 },
+      MOCK_SIGNING_KEY
+    );
+    const mockHeaders = {
+      authorization: expiredToken,
+    };
+
+    const [authorized, error] = await authenticateLambda(
+      mockHeaders,
+      "tenant_id"
+    );
+
+    expect(authorized).toBeNull();
+    expect(error).toEqual("Token has expired");
+  });
+  it("should return a success if authentication is successful", async () => {
+    const token = jwt.sign({ foo: "bar" }, MOCK_SIGNING_KEY);
+    const mockHeaders = {
+      authorization: token,
+    };
+    const [authorized, error] = await authenticateLambda(
+      mockHeaders,
+      "tenant_id"
+    );
+
+    expect(authorized).toEqual(true);
+    expect(error).toBeNull();
   });
 });
