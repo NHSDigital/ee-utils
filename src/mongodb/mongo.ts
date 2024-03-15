@@ -8,7 +8,6 @@ export const connectToDatabaseViaEnvVar = async (
   options = {
     ssl: true,
     tlsCAFile: `${__dirname}/global-bundle.pem`,
-    retryWrites: false,
   }
 ): Promise<void> => {
   const uri = process.env.MONGODB_URI;
