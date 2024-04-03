@@ -1,3 +1,5 @@
+import { MetricRating } from "../../stateTypes";
+
 const createDependabot = (repo: string) => ({
   repo: `ORG/${repo}`,
   dependabotEnabled: true,
@@ -38,7 +40,7 @@ const createRepo = (node_id: string, name: string, date: string) => ({
 });
 
 const generateRandomRating = () => {
-  const ratings = ["A", "B", "C", "D", "E"];
+  const ratings: Array<MetricRating> = ["A", "B", "C", "D", "E"];
   return ratings[Math.floor(Math.random() * ratings.length)];
 };
 
