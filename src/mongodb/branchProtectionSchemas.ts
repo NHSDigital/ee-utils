@@ -32,7 +32,7 @@ export const calculateCompliance = (schema: IRepoBranchProtection) => {
 export const RepoBranchProtectionSchema =
   new mongoose.Schema<IRepoBranchProtection>(
     {
-      repo: { type: String, required: true },
+      repo: { type: String, required: true, index: true },
       pullRequestRequired: { type: Boolean, default: false },
       approvalsRequired: { type: Boolean, default: false },
       stalePullRequestApprovalsDismissed: { type: Boolean, default: false },

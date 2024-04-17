@@ -9,7 +9,7 @@ export interface IUniqueContributors {
 export const UniqueContributorsSchema =
   new mongoose.Schema<IUniqueContributors>(
     {
-      repo: { type: String, required: true },
+      repo: { type: String, required: true, index: true },
       contributors: { type: [String], default: [] },
       numContributors: {
         type: Number,

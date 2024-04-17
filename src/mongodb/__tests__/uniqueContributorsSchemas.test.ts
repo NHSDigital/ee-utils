@@ -39,4 +39,15 @@ describe("UniqueContributorsSchema", () => {
       );
     });
   });
+
+  it("should have an index on repo", () => {
+    const validModel = new UniqueContributorsModel({
+      repo: "test",
+    });
+
+    const indexes = validModel.schema.indexes();
+    const index = indexes.find((index) => index[0].repo === 1);
+
+    expect(index).toBeDefined();
+  });
 });

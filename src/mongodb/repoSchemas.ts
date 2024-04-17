@@ -21,7 +21,7 @@ export const RepoSchema = new mongoose.Schema(
     github_id: { type: Number, required: true },
     node_id: { type: String, required: true },
     name: { type: String, required: true },
-    full_name: { type: String, required: true },
+    full_name: { type: String, required: true, index: true },
     owner: { type: String, required: true },
     visibility: { type: String, required: true },
     language: { type: String, required: true },

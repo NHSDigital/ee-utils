@@ -237,4 +237,16 @@ describe("repoDependabotSchema", () => {
       }
     );
   });
+
+  it("should have an index on repo", () => {
+    const repoDependabot = new RepoDependabotModel({
+      repo: "test",
+      dependabotEnabled: true,
+    });
+
+    const indexes = repoDependabot.schema.indexes();
+    const index = indexes.find((index) => index[0].repo === 1);
+
+    expect(index).toBeDefined();
+  });
 });

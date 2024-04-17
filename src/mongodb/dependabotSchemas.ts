@@ -66,6 +66,7 @@ export const RepoDependabotSchema = new mongoose.Schema<IRepoDependabot>(
     repo: {
       type: String,
       required: true,
+      index: true,
     },
     dependabotEnabled: { type: Boolean, required: true },
     criticalDependabot: { ...dependabotFindingSchema },

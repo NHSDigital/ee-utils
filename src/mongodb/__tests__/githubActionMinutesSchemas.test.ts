@@ -27,5 +27,27 @@ describe("githubActionMinutesSchema", () => {
         "Cannot be a negative number"
       );
     });
+    it("should fail if repo is not set", () => {
+      const invalidGithubActionMinutesSchema = new GithubActionMinutesModel({
+        githubActionMinutes: 27,
+      });
+
+      const validation = invalidGithubActionMinutesSchema.validateSync();
+
+      expect(validation?.errors.repo.message).toEqual(
+        "Path `repo` is required."
+      );
+    });
+  });
+
+  it("should have an index on repo", () => {
+    const validGithubActionMinutesSchema = new GithubActionMinutesModel({
+      repo: "repo",
+    });
+
+    const indexes = validGithubActionMinutesSchema.schema.indexes();
+    const index = indexes.find((index) => index[0].repo === 1);
+
+    expect(index).toBeDefined();
   });
 });
