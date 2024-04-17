@@ -58,6 +58,7 @@ export const RepoSonarcloudSchema = new mongoose.Schema<IRepoSonarcloud>(
     repo: {
       type: String,
       required: true,
+      index: true,
     },
     isEnabled: Boolean,
     reliabilityRating: createSonarcloudMetricSchema<MetricRating>(String),

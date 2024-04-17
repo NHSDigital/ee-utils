@@ -112,4 +112,14 @@ describe("RepoBranchProtectionSchema", () => {
       }
     );
   });
+  it("should have an index on repo", () => {
+    const repoBranchProtection = new RepoBranchProtectionModel({
+      repo: "test",
+    });
+
+    const indexes = repoBranchProtection.schema.indexes();
+    const index = indexes.find((index) => index[0].repo === 1);
+
+    expect(index).toBeDefined();
+  });
 });

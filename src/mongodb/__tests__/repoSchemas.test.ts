@@ -47,6 +47,14 @@ describe("RepoSchema", () => {
       expect(validModel.url).toEqual("some_url");
     });
   });
+  it("should have an index on the full_name", () => {
+    const validModel = new RepoModel(validRepo);
+
+    const indexes = validModel.schema.indexes();
+    const index = indexes.find((index) => index[0].full_name === 1);
+
+    expect(index).toBeDefined();
+  });
   it.each([
     ["github_id"],
     ["node_id"],

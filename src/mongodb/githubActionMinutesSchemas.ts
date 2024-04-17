@@ -8,7 +8,7 @@ export interface IGithubActionMinutes {
 export const GithubActionMinutesSchema =
   new mongoose.Schema<IGithubActionMinutes>(
     {
-      repo: String,
+      repo: { type: String, index: true, required: true },
       githubActionMinutes: {
         type: Number,
         default: 0,

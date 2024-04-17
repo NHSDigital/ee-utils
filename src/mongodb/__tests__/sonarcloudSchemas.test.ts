@@ -118,4 +118,15 @@ describe("RepoSonarcloudSchema", () => {
       }
     );
   });
+
+  it("should have an index on repo", () => {
+    const repoSonarcloud = new RepoSonarcloudModel({
+      repo: "test",
+    });
+
+    const indexes = repoSonarcloud.schema.indexes();
+    const index = indexes.find((index) => index[0].repo === 1);
+
+    expect(index).toBeDefined();
+  });
 });
