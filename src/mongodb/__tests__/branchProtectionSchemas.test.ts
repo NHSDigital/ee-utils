@@ -107,7 +107,13 @@ describe("RepoBranchProtectionSchema", () => {
       "should calculate the compliance score and set the compliance field",
       async (schema, expectedScore) => {
         const repoBranchProtection = new RepoBranchProtectionModel(schema);
-        await repoBranchProtection.save();
+        const insertedRecord = await repoBranchProtection.save();
+        const foundRecord = await RepoBranchProtectionModel.findOne({
+          _id: insertedRecord.id,
+        });
+        expect(foundRecord).toBeDefined();
+        // @ts-ignore
+        expect(foundRecord.compliance).toEqual(expectedScore);
         expect(repoBranchProtection.compliance).toEqual(expectedScore);
       }
     );
