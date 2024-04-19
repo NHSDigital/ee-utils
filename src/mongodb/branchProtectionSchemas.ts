@@ -17,9 +17,7 @@ export const calculateCompliance = (schema: IRepoBranchProtection) => {
     schema.approvalsRequired,
     schema.signaturesRequired,
   ];
-
   const complianceScore = complianceValues.filter(Boolean).length;
-
   const complianceByScore: Record<number, HealthStatuses> = {
     3: "Green",
     2: "Amber",
@@ -38,15 +36,10 @@ export const RepoBranchProtectionSchema =
       stalePullRequestApprovalsDismissed: { type: Boolean, default: false },
       signaturesRequired: { type: Boolean, default: false },
       conversationResolutionRequired: { type: Boolean, default: false },
-      compliance: { type: String, default: "Red" },
+      compliance: { type: String, default: calculateCompliance },
     },
     { timestamps: { createdAt: "document_created_at" } }
   );
-
-RepoBranchProtectionSchema.pre("save", function (next) {
-  this.compliance = calculateCompliance(this);
-  next();
-});
 
 export const RepoBranchProtectionModel = mongoose.model<IRepoBranchProtection>(
   "RepoBranchProtection",
