@@ -2,13 +2,20 @@ import mongoose from "mongoose";
 import { logReferences } from "../logReferences";
 import { LambdaLogger } from "../logger";
 
-const logger = new LambdaLogger("ee-utils/mongodb", logReferences);
+const defaultLogger = new LambdaLogger("ee-utils/mongodb", logReferences);
+
+export interface ILog {
+  info: (message: string, args?: Record<string, any>) => void;
+  error: (message: string, args?: Record<string, any>) => void;
+}
 
 export const connectToDatabaseViaEnvVar = async (
   options = {
     ssl: true,
     tlsCAFile: `${__dirname}/global-bundle.pem`,
-  }
+    serverSelectionTimeoutMS: 5000,
+  },
+  logger: ILog = defaultLogger
 ): Promise<void> => {
   const uri = process.env.MONGODB_URI;
   if (!uri) {
@@ -19,12 +26,14 @@ export const connectToDatabaseViaEnvVar = async (
   }
   try {
     await mongoose.connect(uri, options);
+    logger.info("ENGEXPUTILS012", { database: uri });
+    await mongoose.connection.db.admin().command({ ping: 1 });
     logger.info("ENGEXPUTILS007", {
       database: uri,
     });
-  } catch (error) {
+  } catch (error: any) {
     logger.error("ENGEXPUTILS008", {
-      error,
+      error: error.toString(),
     });
     throw error;
   }
