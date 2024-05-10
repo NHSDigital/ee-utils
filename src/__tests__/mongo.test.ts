@@ -3,6 +3,7 @@ import { connectToDatabaseViaEnvVar, ILog } from "../mongodb/mongo";
 
 import { Writable } from 'stream';
 import winston from 'winston';
+import { LambdaLogger } from "../logger";
 
 const fakeLogger = (): [ILog, string[]] => {
   let output: any[] = [];
@@ -86,5 +87,19 @@ describe("connectToDatabaseViaEnvVar", () => {
 
     const errorLog = logOutput.find((log) => log.includes("ENGEXPUTILS008"))!;
     expect(JSON.parse(errorLog)["error"]).toEqual("MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:6666");
+  });
+
+  it("should default to the LambdaLogger if no logger is provided", async () => {
+    jest.spyOn(LambdaLogger.prototype, "error");
+
+    delete process.env.MONGODB_URI;
+
+    try {
+      await connectToDatabaseViaEnvVar({ssl: false, tlsCAFile: "", serverSelectionTimeoutMS: 0});
+    } catch (error: any) {
+      expect(error.message).toEqual("MONGODB_URI environment variable not set");
+    }
+
+    expect(LambdaLogger.prototype.error).toHaveBeenCalledWith("ENGEXPUTILS006", { error: "MONGODB_URI environment variable not set" });
   });
 });
