@@ -1,6 +1,6 @@
 {
   "name": "@NHSDigital/ee-utils",
-  "version": "0.0.55",
+  "version": "0.0.56",
   "license": "MIT",
   "type": "module",
   "author": "jacobgill1 <jacob.gill1@nhs.net>",
@@ -26,6 +26,8 @@
     "@aws-sdk/client-s3": "^3.515.0",
     "@aws-sdk/client-ssm": "^3.519.0",
     "@aws-sdk/middleware-retry": "^3.374.0",
+    "@octokit/core": "^6.1.2",
+    "@octokit/plugin-throttling": "^9.2.1",
     "@octokit/rest": "^20.0.1",
     "jsonwebtoken": "^9.0.2",
     "jwks-rsa": "^3.1.0",
