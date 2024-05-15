@@ -7,6 +7,7 @@ export interface IHierarchy {
   subdirectorate?: string;
   area?: string;
   service?: string;
+  _id?: mongoose.Types.ObjectId;
 }
 
 export const HierarchySchema = new mongoose.Schema({
