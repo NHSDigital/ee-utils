@@ -9,6 +9,10 @@ export interface IHierarchy {
   service?: string;
 }
 
+export interface IStoredHierarchy extends IHierarchy {
+  _id: mongoose.Types.ObjectId;
+}
+
 export const HierarchySchema = new mongoose.Schema({
   repo: { type: String },
   directorate: { type: String, required: true },
