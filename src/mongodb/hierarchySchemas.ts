@@ -1,13 +1,14 @@
-import mongoose from "mongoose";
-
-export interface IHierarchy {
+import mongoose from "mongoose";export interface IHierarchy {
   repo?: string;
   directorate: string;
   function_name?: string;
   subdirectorate?: string;
   area?: string;
   service?: string;
-  _id?: mongoose.Types.ObjectId;
+}
+
+export interface IStoredHierarchy extends IHierarchy {
+  _id: mongoose.Types.ObjectId;
 }
 
 export const HierarchySchema = new mongoose.Schema({
