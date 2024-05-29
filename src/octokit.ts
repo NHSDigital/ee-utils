@@ -24,7 +24,8 @@ const logger = new LambdaLogger("ee-utils/octokit", logReferences);
 export const getOctokit = async (
   privateKey: string,
   appId: string,
-  installationId: string
+  installationId: string,
+  defaultRequestTimeout: number = 0
 ): Promise<Octokit> => {
   const GITHUB_PRIVATE_KEY = (await getParameter(privateKey, true)) ?? "";
   const GITHUB_APP_ID = (await getParameter(appId)) ?? "";
@@ -39,7 +40,9 @@ export const getOctokit = async (
   if (isNaN(parsedInstallationId)) {
     throw new Error("installation_id is not a number");
   }
-  return app.getInstallationOctokit(parsedInstallationId) as unknown as Octokit;
+  const octokit = await app.getInstallationOctokit(parsedInstallationId) as unknown as Octokit;
+  octokit.request.defaults({request: {timeout: defaultRequestTimeout}});
+  return octokit;
 };
 
 export const getAllRepositoriesInOrganisation = async (

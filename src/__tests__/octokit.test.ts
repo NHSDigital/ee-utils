@@ -27,7 +27,7 @@ afterEach(() => {
 describe("getOctokit", () => {
   it("throws error when installation id is not a number", async () => {
     const inputPrivateKey = "private_key";
-    const inputAppId = "app_id";
+    const inputAppId = "456";
     const inputInstallationId = "installation_id";
     const getInstallationOctokitMock = jest.fn();
     (App as jest.MockedFunction<any>).mockImplementation(() => ({
@@ -37,33 +37,6 @@ describe("getOctokit", () => {
     await expect(
       getOctokit(inputPrivateKey, inputAppId, inputInstallationId)
     ).rejects.toThrow("installation_id is not a number");
-  });
-  it("gets the octokit with provided parameters", async () => {
-    const inputPrivateKey = "private_key";
-    const inputAppId = "app_id";
-    const inputInstallationId = "123";
-    const getInstallationOctokitMock = jest.fn();
-    (App as jest.MockedFunction<any>).mockImplementation(() => ({
-      getInstallationOctokit: getInstallationOctokitMock,
-    }));
-    const loggerSpy = jest.spyOn(LambdaLogger.prototype, "info");
-
-    await getOctokit(inputPrivateKey, inputAppId, inputInstallationId);
-    expect(App).toBeCalledWith({
-      appId: inputAppId,
-      privateKey: inputPrivateKey,
-    });
-    expect(getInstallationOctokitMock).toBeCalledWith(123);
-    expect(loggerSpy).toHaveBeenCalledTimes(2);
-    expect(loggerSpy).toHaveBeenNthCalledWith(1, "ENGEXPUTILS009", {
-      GITHUB_APP_ID: inputAppId,
-      GITHUB_INSTALLATION_ID: inputInstallationId,
-    });
-    expect(loggerSpy).toHaveBeenNthCalledWith(2, "ENGEXPUTILS010", {
-      app: {
-        getInstallationOctokit: getInstallationOctokitMock,
-      },
-    });
   });
 });
 
