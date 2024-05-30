@@ -1,6 +1,7 @@
 import { TimestampOptions } from "logform";
 import { v4 as uuidv4 } from "uuid";
 import { Logger, createLogger, format, transports } from "winston";
+import * as Transport from "winston-transport";
 const { combine, timestamp } = format;
 
 export declare type LogReferences<T extends string | number | symbol> = Record<
@@ -27,8 +28,8 @@ export class LambdaLogger<T extends string | number | symbol> {
   private _logger: Logger;
   private _logReferences: LogReferences<T>;
   private _reservedFields: string[];
-  constructor(moduleName: string, logReferences: LogReferences<T>) {
-    this._logger = this._createWinstonLogger(moduleName);
+  constructor(moduleName: string, logReferences: LogReferences<T>, level: string = "info") {
+    this._logger = this._createWinstonLogger(moduleName, level);
     this._logReferences = logReferences;
     this._reservedFields = [
       "level",
@@ -55,13 +56,13 @@ export class LambdaLogger<T extends string | number | symbol> {
     this._logger.debug(this._buildLog(logReference, logArgs));
   }
 
-  _getLogTransports() {
+  _getLogTransports(): Transport[] {
     return [new transports.Console()];
   }
 
-  _createWinstonLogger(moduleName: string) {
+  _createWinstonLogger(moduleName: string, level: string = "info") {
     return createLogger({
-      level: "info",
+      level,
       format: splunkFormat,
       defaultMeta: { module: moduleName },
       transports: this._getLogTransports(),
