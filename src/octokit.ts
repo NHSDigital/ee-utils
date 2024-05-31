@@ -47,7 +47,8 @@ export const getOctokit = async (
 
 export const getAllRepositoriesInOrganisation = async (
   octokit: Octokit,
-  organisationName: string
+  organisationName: string,
+  filterFn?: (repo: any) => boolean
 ) => {
   logger.info("ENGEXPUTILS011", {
     organisationName,
@@ -56,7 +57,8 @@ export const getAllRepositoriesInOrganisation = async (
     org: organisationName,
     per_page: 100,
   });
-  return orgRepos.map((repo) => repo.name);
+  if (!filterFn) { filterFn = () => true; }
+  return orgRepos.filter(filterFn).map((repo) => repo.name);
 };
 
 export const getTeamsForRepositoriesInOrganisation = async (

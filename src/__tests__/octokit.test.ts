@@ -41,26 +41,44 @@ describe("getOctokit", () => {
 });
 
 describe("getAllRepositoriesInOrganisation", () => {
-  it("gets all repository names in an organisation", async () => {
-    const mockOctokitRequest = jest.fn(() => {
-      return [{ name: "Test" }, { name: "Other" }];
-    });
-    const loggerSpy = jest.spyOn(LambdaLogger.prototype, "info");
+  let loggerSpy: jest.SpyInstance;
+  beforeEach(() => {
+    loggerSpy = jest.spyOn(LambdaLogger.prototype, "info");
+  });
 
-    const fakeOctokit = {
-      paginate: mockOctokitRequest,
+  const buildFakeOctokit = (resultToReturn: any[]) => {
+    return {
+      paginate: () => Promise.resolve(resultToReturn),
       rest: { repos: { listForOrg: jest.fn() } },
     } as unknown as Octokit;
+  }
+
+  it("gets all repository names in an organisation", async () => {
+    const repositories = [{ name: "Test" }, { name: "Other" }];
+    const fakeOctokit = buildFakeOctokit(repositories);
+
     const result = await getAllRepositoriesInOrganisation(
       fakeOctokit,
       "NHS-CodeLab"
     );
-    expect(mockOctokitRequest).toBeCalled();
+
     expect(result).toEqual(["Test", "Other"]);
-    expect(loggerSpy).toHaveBeenCalledTimes(1);
-    expect(loggerSpy).toHaveBeenNthCalledWith(1, "ENGEXPUTILS011", {
+  });
+
+  it("logs the organisation name", async () => {
+    await getAllRepositoriesInOrganisation(buildFakeOctokit([]), "NHS-CodeLab");
+
+    expect(loggerSpy).toHaveBeenCalledWith("ENGEXPUTILS011", {
       organisationName: "NHS-CodeLab",
     });
+  });
+
+  it("filters by a passed-in function", async () => {
+    const repositories = [{ name: "Test" }, { name: "Other" }];
+    const fakeOctokit = buildFakeOctokit(repositories);
+
+    const result = await getAllRepositoriesInOrganisation(fakeOctokit, "NHS-CodeLab", (repo) => repo.name === "Test");
+    expect(result).toEqual(["Test"]);
   });
 });
 
