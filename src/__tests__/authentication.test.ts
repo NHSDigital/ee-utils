@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
-import { authenticateLambda, authenticateRequest } from "../authentication.js";
-import { LambdaLogger } from "../logger.js";
+import { authenticateLambda, authenticateRequest } from "../authentication";
+import { LambdaLogger } from "../logger";
 
 const MOCK_SIGNING_KEY = "mockSigningKey";
 
