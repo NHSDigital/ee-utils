@@ -30,12 +30,12 @@ export const getOctokit = async (
   const GITHUB_PRIVATE_KEY = (await getParameter(privateKey, true)) ?? "";
   const GITHUB_APP_ID = (await getParameter(appId)) ?? "";
   const GITHUB_INSTALLATION_ID = (await getParameter(installationId)) ?? "0";
-  logger.info("ENGEXPUTILS009", {
+  logger.debug("ENGEXPUTILS009", {
     GITHUB_APP_ID,
     GITHUB_INSTALLATION_ID,
   });
   const app = new App({ appId: GITHUB_APP_ID, privateKey: GITHUB_PRIVATE_KEY });
-  logger.info("ENGEXPUTILS010", { app });
+  logger.debug("ENGEXPUTILS010", { app });
   const parsedInstallationId = parseInt(GITHUB_INSTALLATION_ID);
   if (isNaN(parsedInstallationId)) {
     throw new Error("installation_id is not a number");
@@ -50,7 +50,7 @@ export const getAllRepositoriesInOrganisation = async (
   organisationName: string,
   filterFn?: (repo: any) => boolean
 ) => {
-  logger.info("ENGEXPUTILS011", {
+  logger.debug("ENGEXPUTILS011", {
     organisationName,
   });
   const orgRepos = await octokit.paginate(octokit.rest.repos.listForOrg, {
