@@ -25,11 +25,13 @@ const splunkFormat = combine(
 );
 
 export class LambdaLogger<T extends string | number | symbol> {
+  [key: string]: any;
+
   private _logger: Logger;
   private _logReferences: LogReferences<T>;
   private _reservedFields: string[];
-  constructor(moduleName: string, logReferences: LogReferences<T>, level: string = "info") {
-    this._logger = this._createWinstonLogger(moduleName, level);
+  constructor(moduleName: string, logReferences: LogReferences<T>, level: string = "info", transports?: Transport[]) {
+    this._logger = this._createWinstonLogger(moduleName, level, transports);
     this._logReferences = logReferences;
     this._reservedFields = [
       "level",
@@ -60,12 +62,16 @@ export class LambdaLogger<T extends string | number | symbol> {
     return [new transports.Console()];
   }
 
-  _createWinstonLogger(moduleName: string, level: string = "info") {
+  _createWinstonLogger(
+    moduleName: string,
+    level: string = "info",
+    transports?: Transport[]
+  ) {
     return createLogger({
       level,
       format: splunkFormat,
       defaultMeta: { module: moduleName },
-      transports: this._getLogTransports(),
+      transports: transports ?? this._getLogTransports(),
     });
   }
 
