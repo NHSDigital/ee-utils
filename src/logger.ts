@@ -30,7 +30,12 @@ export class LambdaLogger<T extends string | number | symbol> {
   private _logger: Logger;
   private _logReferences: LogReferences<T>;
   private _reservedFields: string[];
-  constructor(moduleName: string, logReferences: LogReferences<T>, level: string = "info", transports?: Transport[]) {
+  constructor(
+    moduleName: string,
+    logReferences: LogReferences<T>,
+    level: string = "info",
+    transports?: Transport[]
+  ) {
     this._logger = this._createWinstonLogger(moduleName, level, transports);
     this._logReferences = logReferences;
     this._reservedFields = [

@@ -8,21 +8,24 @@ const jsonTransport = () => {
     write: (chunk, encoding, next) => {
       buffer.push(JSON.parse(chunk.toString()));
       next();
-    }
+    },
   });
-  return {buffer, transport: new transports.Stream({ stream })};
+  return { buffer, transport: new transports.Stream({ stream }) };
 };
 
 const jsonLogger = (logReferences: any, level: string) => {
-  const {buffer, transport} = jsonTransport();
-  return {buffer, logger: new LambdaLogger("test", logReferences, level, [transport])};
-}
+  const { buffer, transport } = jsonTransport();
+  return {
+    buffer,
+    logger: new LambdaLogger("test", logReferences, level, [transport]),
+  };
+};
 
 describe("LambdaLogger - log methods", () => {
   const logRefs = { TEST001: "Test Log Reference" };
 
   it("should log out the message as info", () => {
-    const {buffer, logger} = jsonLogger(logRefs, "info");
+    const { buffer, logger } = jsonLogger(logRefs, "info");
     const logArgs = { extraArgs: "some more information" };
 
     logger.info("TEST001", logArgs);
@@ -32,15 +35,15 @@ describe("LambdaLogger - log methods", () => {
   });
 
   it("logs nothing below the given level", () => {
-    const {buffer, logger} = jsonLogger(logRefs, "error");
+    const { buffer, logger } = jsonLogger(logRefs, "error");
 
     logger.info("TEST001");
 
     expect(buffer.length).toEqual(0);
   });
 
-  it.each(["warn", "error", "info"])("logs at %s level", level => {
-    const {buffer, logger} = jsonLogger(logRefs, level);
+  it.each(["warn", "error", "info"])("logs at %s level", (level) => {
+    const { buffer, logger } = jsonLogger(logRefs, level);
 
     logger[level]("TEST001");
     logger.debug("TEST001");
@@ -49,7 +52,7 @@ describe("LambdaLogger - log methods", () => {
   });
 
   it("logs at debug level", () => {
-    const {buffer, logger} = jsonLogger(logRefs, "debug");
+    const { buffer, logger } = jsonLogger(logRefs, "debug");
 
     logger.debug("TEST001");
 
