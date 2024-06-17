@@ -43,7 +43,7 @@ describe("getOctokit", () => {
 describe("getAllRepositoriesInOrganisation", () => {
   let loggerSpy: jest.SpyInstance;
   beforeEach(() => {
-    loggerSpy = jest.spyOn(LambdaLogger.prototype, "info");
+    loggerSpy = jest.spyOn(LambdaLogger.prototype, "debug");
   });
 
   const buildFakeOctokit = (resultToReturn: any[]) => {
