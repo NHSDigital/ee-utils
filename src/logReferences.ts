@@ -11,4 +11,6 @@ export const logReferences: Record<string, string> = {
   ENGEXPUTILS010: "Octokit App Fetched",
   ENGEXPUTILS011: "Retrieving all repositories in org",
   ENGEXPUTILS012: "Checking database connection",
+  ENGEXPUTILS013: "Starting Authentication",
+  ENGEXPUTILS014: "Finished Authentication",
 };

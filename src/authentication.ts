@@ -1,6 +1,7 @@
 import { APIGatewayProxyEventHeaders } from "aws-lambda";
 import jwt, { TokenExpiredError } from "jsonwebtoken";
 import { JwksClient } from "jwks-rsa";
+import { LambdaLogger } from "./logger";
 
 export const authenticateRequest = async (token: string, tenantId: string) => {
   const client = new JwksClient({
@@ -25,13 +26,16 @@ export const authenticateRequest = async (token: string, tenantId: string) => {
 
 export const authenticateLambda = async (
   headers: APIGatewayProxyEventHeaders,
-  tenantId: string
+  tenantId: string,
+  logger: LambdaLogger<any>
 ) => {
   if (!headers.authorization) {
     return [null, "No authorization headers"] as const;
   }
   try {
+    logger.info("ENGEXPUTILS013");
     await authenticateRequest(headers.authorization, tenantId);
+    logger.info("ENGEXPUTILS014");
     return [true, null] as const;
   } catch (error: any) {
     return [null, error.message] as const;
