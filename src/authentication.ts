@@ -33,9 +33,9 @@ export const authenticateLambda = async (
     return [null, "No authorization headers"] as const;
   }
   try {
-    logger.info("ENGEXPUTILS013");
+    logger.debug("ENGEXPUTILS013");
     await authenticateRequest(headers.authorization, tenantId);
-    logger.info("ENGEXPUTILS014");
+    logger.debug("ENGEXPUTILS014");
     return [true, null] as const;
   } catch (error: any) {
     return [null, error.message] as const;
