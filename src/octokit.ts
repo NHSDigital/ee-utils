@@ -21,11 +21,15 @@ export type OrgInfo = {
 
 const logger = new LambdaLogger("ee-utils/octokit", logReferences);
 
-export const octokitApp = (appId: string, privateKey: string, octokitOptions: any) => {
+export const octokitApp = (
+  appId: string,
+  privateKey: string,
+  octokitOptions: any
+): App => {
   return new App({
     appId,
     privateKey,
-    Octokit: Octokit.defaults(octokitOptions)
+    Octokit: Octokit.defaults(octokitOptions),
   });
 };
 
@@ -44,7 +48,7 @@ export const getOctokit = async (
     GITHUB_INSTALLATION_ID,
   });
 
-  const app = octokitApp(GITHUB_APP_ID,GITHUB_PRIVATE_KEY, octokitOptions);
+  const app = octokitApp(GITHUB_APP_ID, GITHUB_PRIVATE_KEY, octokitOptions);
 
   logger.debug("ENGEXPUTILS010", { app });
   const parsedInstallationId = parseInt(GITHUB_INSTALLATION_ID);
@@ -67,7 +71,8 @@ export const getAllRepositoriesInOrganisation = async (
     org: organisationName,
     per_page: 100,
   });
-  if (!filterFn) { filterFn = () => true; }
+
+  filterFn ??= () => true;
   return orgRepos.filter(filterFn).map((repo) => repo.name);
 };
 

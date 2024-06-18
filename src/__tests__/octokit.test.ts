@@ -51,7 +51,7 @@ O2jTmeaB83H2ulP6pWTzQOU=
 -----END PRIVATE KEY-----`;
 
   class JWTToken {
-    token: string="";
+    token: string = "";
 
     set(payload: any) {
       const [bearer, token] = payload.split(" ");
@@ -73,12 +73,11 @@ O2jTmeaB83H2ulP6pWTzQOU=
   }
 
   const extractAuthorizationCallback = (jwtToken: JWTToken) => {
-    return (_endpoint: string, req: {headers: {authorization: string}}) => {
+    return (_endpoint: string, req: { headers: { authorization: string } }) => {
       jwtToken.set(req.headers.authorization);
       throw new Error("early halt");
     };
   };
-
 
   it("configures the app ID", async () => {
     const appId = "456";
@@ -87,7 +86,7 @@ O2jTmeaB83H2ulP6pWTzQOU=
     const app = octokitApp(appId, privateKey, { request: { fetch } });
     const octokit = await app.getInstallationOctokit(123);
 
-    await octokit.rest.repos.listForOrg({ org: "Anything" }).catch(() => { });
+    await octokit.rest.repos.listForOrg({ org: "Anything" }).catch(() => {});
 
     expect(jwtToken.getPayload().iss).toBe(Number.parseInt(appId));
   });
@@ -98,7 +97,7 @@ O2jTmeaB83H2ulP6pWTzQOU=
     const app = octokitApp("456", privateKey, { request: { fetch } });
     const octokit = await app.getInstallationOctokit(123);
 
-    await octokit.rest.repos.listForOrg({ org: "Anything" }).catch(() => { });
+    await octokit.rest.repos.listForOrg({ org: "Anything" }).catch(() => {});
 
     expect(jwtToken.validates(privateKey)).toBe(true);
   });
@@ -125,7 +124,7 @@ describe("getAllRepositoriesInOrganisation", () => {
       paginate: () => Promise.resolve(resultToReturn),
       rest: { repos: { listForOrg: jest.fn() } },
     } as unknown as Octokit;
-  }
+  };
 
   it("gets all repository names in an organisation", async () => {
     const repositories = [{ name: "Test" }, { name: "Other" }];
@@ -151,7 +150,11 @@ describe("getAllRepositoriesInOrganisation", () => {
     const repositories = [{ name: "Test" }, { name: "Other" }];
     const fakeOctokit = buildFakeOctokit(repositories);
 
-    const result = await getAllRepositoriesInOrganisation(fakeOctokit, "NHS-CodeLab", (repo) => repo.name === "Test");
+    const result = await getAllRepositoriesInOrganisation(
+      fakeOctokit,
+      "NHS-CodeLab",
+      (repo) => repo.name === "Test"
+    );
     expect(result).toEqual(["Test"]);
   });
 });
