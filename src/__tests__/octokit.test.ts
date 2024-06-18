@@ -1,5 +1,6 @@
 import { Octokit } from "@octokit/rest";
 import { App } from "octokit";
+import jwt from "jsonwebtoken";
 import { LambdaLogger } from "../logger";
 import {
   getAllRepositoriesInOrganisation,
@@ -7,35 +8,108 @@ import {
   getOctokit,
   getTeamsForRepo,
   getTeamsForRepositoriesInOrganisation,
+  octokitApp,
 } from "../octokit";
 
 jest.mock("../parameters", () => ({
   ...jest.requireActual("../parameters"),
   getParameter: jest.fn((parameter) => Promise.resolve(parameter)),
 }));
-jest.mock("octokit", () => {
-  return {
-    ...jest.requireActual("octokit"),
-    App: jest.fn(),
-  };
-});
 
 afterEach(() => {
   jest.restoreAllMocks();
 });
 
+describe("octokitApp", () => {
+  const privateKey = `-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDeTPIs0jUKXBEs
+bzwSg8NeWpGErIAK09/p1QL9Bob9SWigN+kD0h6YWLxHCnALEEtEkYHAniod6s7h
+5WaKwbJAj81YQGyTCMMzrJWkXBA4f7G8s/vjLfuF4/rMC+Q3LP1FAO9W9q1Rz3ab
+fQXzwuObRcg6l1j1/hLveg7lFXjpgdDmUuf1IB7qoiHpnyKWZ0Jnd8Ca3PQE6Xfg
+80RGgI3fy+Bd4o4S4SjFjRRFjxtU2xGfL6iDLwi+Pmas9lR3M47HBou6oeQgDGnd
+pPyvk8Xtv9/GbTt9Ovq9NX0TpEfzk7vZtHREogRqSgJAZnpGqTmbEF9r/Wsxb0cc
+sHOn2w1fAgMBAAECggEAEXDnCpY0JsvCEILqVdI0WKmcGNUx4eeX/fAXoRjLLCx/
+bXFFh7u2E8zZJMJlt7B/v0b376VZIj9txjJp4QFrxf33pfC+tACFftSPvwqhaSq3
+nARhAwTKDZ9X6idqsIYymXXb0VkJkHge/aRe/Fjc4634v4QSrOYnaoDgkfT6fL4X
+BIbUmfdA2XVm9V5jAh6Zj+em2G0UL3YvmNEMz5akVbskxW0fPVLCXNw6yw5biK2Y
+vLiXGxhlrvjovdNWYijWHvu9N9tUAGRyHL9wNSdIKYqsz+ha7NpDr3qNT33ghl1u
+lzi8IgA5wxXxxVMdCmI9lfL26IuWREUWbA2BAgXrIQKBgQD4kQeKuDT2cMYpXKGk
+O+dz3t51rGMKwzDAToEzofCdOCtB5oHvTmvSOPledFJw8c8MwKaIdUf5hdHRWSq4
+X4m+rcHAtG41CwjATrL5vseBeS7s/EK2VIL7EgPMmiBGCVfpMP6CoiBZcjEg/sF2
+J1cnq/9p1dkdwoI4/tgieM6WPwKBgQDk8tSH/adqIItRqD+VpUIk215U5Lz6WTYN
+/rwZ69xPVRjbLc4JdxR95F1b/HH3lLhjYjlwudxdubn51kSzGDEWssVo1o+h2jv4
+08yZJ1/BigIGBS5alIqISEduovZ+UoZB9+X/CnQjLJ8IHFFhJpm5b2Iaj8kqy+dJ
+bF9FnXcA4QKBgQCq5Ptsck1nig2T7m3rvovY7EfCW60UfzKLZO4Lk7EcRrvm6RY4
+c5BJzoYUXKE5qeaSe/mDJC9B7LFe35Exhe3sPQZS+To0GcwAe5stfe8ooyqSILW1
+KdGL0Mzv5J9/x3i7iMXTBqh7FrmUV9Km61FOo0BNgYtunIZvrTboLGrMfQKBgDAY
+DqtOjoeNtJZ/uHOwFnf1mRhOQKB6cw93jn4HfO0xXBpWwexdFnHnsfDr0+kFVcKS
+1KwobvFFXZrs9tuEXnN9NFj0kZGXbXe0zkrx6XyXiBtJpVYj1AIS5OaJ1yvsHAXp
+lGgCAymMaw/iGvpEiJBapIod4E1cLgbPfCf8jw4hAoGARuMShkTzMgrOclu+OWoI
+V2J4zz/Aqu8Syz1wnLkFmJOUni5yZEtpRhP1ISc0rYlGhKWcNCpfcm3G9EqPAs4K
+wNCdZiE4xDiZ7POhsUN0c4YEVrc+LcCneIyh5Wgd+hSWk1psJW2La078VIgd2l47
+O2jTmeaB83H2ulP6pWTzQOU=
+-----END PRIVATE KEY-----`;
+
+  class JWTToken {
+    token: string="";
+
+    set(payload: any) {
+      const [bearer, token] = payload.split(" ");
+      this.token = token;
+    }
+
+    getPayload() {
+      return jwt.decode(this.token) as any;
+    }
+
+    validates(key: string) {
+      try {
+        jwt.verify(this.token, key);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+  }
+
+  const extractAuthorizationCallback = (jwtToken: JWTToken) => {
+    return (_endpoint: string, req: {headers: {authorization: string}}) => {
+      jwtToken.set(req.headers.authorization);
+      throw new Error("early halt");
+    };
+  };
+
+
+  it("configures the app ID", async () => {
+    const appId = "456";
+    const jwtToken = new JWTToken();
+    const fetch = extractAuthorizationCallback(jwtToken);
+    const app = octokitApp(appId, privateKey, { request: { fetch } });
+    const octokit = await app.getInstallationOctokit(123);
+
+    await octokit.rest.repos.listForOrg({ org: "Anything" }).catch(() => { });
+
+    expect(jwtToken.getPayload().iss).toBe(Number.parseInt(appId));
+  });
+
+  it("configures the private key", async () => {
+    const jwtToken = new JWTToken();
+    const fetch = extractAuthorizationCallback(jwtToken);
+    const app = octokitApp("456", privateKey, { request: { fetch } });
+    const octokit = await app.getInstallationOctokit(123);
+
+    await octokit.rest.repos.listForOrg({ org: "Anything" }).catch(() => { });
+
+    expect(jwtToken.validates(privateKey)).toBe(true);
+  });
+});
+
 describe("getOctokit", () => {
   it("throws error when installation id is not a number", async () => {
-    const inputPrivateKey = "private_key";
-    const inputAppId = "456";
     const inputInstallationId = "installation_id";
-    const getInstallationOctokitMock = jest.fn();
-    (App as jest.MockedFunction<any>).mockImplementation(() => ({
-      getInstallationOctokit: getInstallationOctokitMock,
-    }));
 
     await expect(
-      getOctokit(inputPrivateKey, inputAppId, inputInstallationId)
+      getOctokit("private_key", "456", inputInstallationId)
     ).rejects.toThrow("installation_id is not a number");
   });
 });

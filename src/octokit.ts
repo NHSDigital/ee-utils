@@ -21,28 +21,38 @@ export type OrgInfo = {
 
 const logger = new LambdaLogger("ee-utils/octokit", logReferences);
 
+export const octokitApp = (appId: string, privateKey: string, octokitOptions: any) => {
+  return new App({
+    appId,
+    privateKey,
+    Octokit: Octokit.defaults(octokitOptions)
+  });
+};
+
 export const getOctokit = async (
   privateKey: string,
   appId: string,
   installationId: string,
-  defaultRequestTimeout: number = 0
+  octokitOptions: any = {}
 ): Promise<Octokit> => {
   const GITHUB_PRIVATE_KEY = (await getParameter(privateKey, true)) ?? "";
   const GITHUB_APP_ID = (await getParameter(appId)) ?? "";
   const GITHUB_INSTALLATION_ID = (await getParameter(installationId)) ?? "0";
+
   logger.debug("ENGEXPUTILS009", {
     GITHUB_APP_ID,
     GITHUB_INSTALLATION_ID,
   });
-  const app = new App({ appId: GITHUB_APP_ID, privateKey: GITHUB_PRIVATE_KEY });
+
+  const app = octokitApp(GITHUB_APP_ID,GITHUB_PRIVATE_KEY, octokitOptions);
+
   logger.debug("ENGEXPUTILS010", { app });
   const parsedInstallationId = parseInt(GITHUB_INSTALLATION_ID);
   if (isNaN(parsedInstallationId)) {
     throw new Error("installation_id is not a number");
   }
-  const octokit = await app.getInstallationOctokit(parsedInstallationId) as unknown as Octokit;
-  octokit.request.defaults({request: {timeout: defaultRequestTimeout}});
-  return octokit;
+
+  return app.getInstallationOctokit(parsedInstallationId) as unknown as Octokit;
 };
 
 export const getAllRepositoriesInOrganisation = async (
