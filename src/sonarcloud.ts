@@ -107,9 +107,11 @@ export const makeSonarcloudAPICall = async (
       )}`,
     },
   };
-
   if (method === "post") {
     const response = await fetch(url, requestInit);
+    if (response.status === 204) {
+      return { success: true };
+    }
     const responseParsed = await response.json();
     return checkResponse(responseParsed);
   }
