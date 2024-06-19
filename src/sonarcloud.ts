@@ -1,3 +1,4 @@
+import { log } from "winston";
 import { logReferences } from "./logReferences";
 import { LambdaLogger } from "./logger";
 
@@ -107,15 +108,19 @@ export const makeSonarcloudAPICall = async (
       )}`,
     },
   };
-
   if (method === "post") {
     const response = await fetch(url, requestInit);
+    if (response.status === 204) {
+      return { success: true };
+    }
     const responseParsed = await response.json();
     return checkResponse(responseParsed);
   }
 
   const allItems = [];
   const firstResponse = await fetch(url, requestInit);
+  console.log;
+  log("NOT POST", firstResponse);
   const firstResponseParsed = await firstResponse.json();
 
   const checkedResponse = checkResponse(firstResponseParsed);
