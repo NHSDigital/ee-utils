@@ -336,6 +336,21 @@ describe("makeSonarcloudAPICall", () => {
     expect(result).toEqual(mockSonarcloudFirstResponse);
     expect(fetch).toBeCalledTimes(1);
   });
+  it("should not attempt to parse the response as json for a 204", async () => {
+    (fetch as jest.MockedFunction<any>).mockResolvedValueOnce({
+      status: 204,
+    });
+
+    const result = await makeSonarcloudAPICall(
+      urlToCall,
+      searchParams,
+      sonarcloudApiToken,
+      "group",
+      "post"
+    );
+
+    expect(result).toEqual({ success: true });
+  });
 });
 
 describe("makeSonarcloudGetRequest", () => {
