@@ -13,4 +13,5 @@ export const logReferences: Record<string, string> = {
   ENGEXPUTILS012: "Checking database connection",
   ENGEXPUTILS013: "Starting Authentication",
   ENGEXPUTILS014: "Finished Authentication",
+  ENGEXPUTILS015: "Fetch Failed",
 };
