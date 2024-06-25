@@ -102,17 +102,21 @@ export const makeSonarcloudAPICall = async (
   const requestInit = {
     method,
     headers: {
-      Authorization: `basic ${Buffer.from(sonarcloudApiToken, "utf8").toString(
+      Authorization: `Bearer ${Buffer.from(sonarcloudApiToken, "utf8").toString(
         "base64"
       )}`,
     },
   };
   if (method === "post") {
-    const response = await fetch(url, requestInit);
+    const response = (await fetch(url, requestInit).catch((error) => {
+      logger.error("ENGEXPUTILS015", { error });
+    })) ?? { status: 500 };
     if (response.status === 204) {
       return { success: true };
+    } else if (response.status === 500) {
+      return { success: false };
     }
-    const responseParsed = await response.json();
+    const responseParsed = await (response as Response).json();
     return checkResponse(responseParsed);
   }
 

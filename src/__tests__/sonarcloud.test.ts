@@ -223,7 +223,7 @@ describe("makeSonarcloudAPICall", () => {
     expect(fetch).toHaveBeenCalledWith(expectedUrl, {
       method: "get",
       headers: {
-        Authorization: `basic ${Buffer.from(
+        Authorization: `Bearer ${Buffer.from(
           sonarcloudApiToken,
           "utf8"
         ).toString("base64")}`,
@@ -351,6 +351,23 @@ describe("makeSonarcloudAPICall", () => {
 
     expect(result).toEqual({ success: true });
   });
+  it("should log out an error with fetch", async () => {
+    (fetch as jest.MockedFunction<any>).mockRejectedValueOnce("some error");
+    const loggerSpy = jest.spyOn(LambdaLogger.prototype, "error");
+
+    const response = await makeSonarcloudAPICall(
+      urlToCall,
+      searchParams,
+      sonarcloudApiToken,
+      "group",
+      "post"
+    );
+
+    expect(loggerSpy).toHaveBeenCalledWith("ENGEXPUTILS015", {
+      error: "some error",
+    });
+    expect(response).toEqual({ success: false });
+  });
 });
 
 describe("makeSonarcloudGetRequest", () => {
@@ -376,7 +393,7 @@ describe("makeSonarcloudGetRequest", () => {
     expect(fetch).toHaveBeenCalledWith(expectedUrl, {
       method: "get",
       headers: {
-        Authorization: `basic ${Buffer.from(
+        Authorization: `Bearer ${Buffer.from(
           sonarcloudApiToken,
           "utf8"
         ).toString("base64")}`,
@@ -412,7 +429,7 @@ describe("makeSonarcloudPostRequest", () => {
     expect(fetch).toHaveBeenCalledWith(expectedUrl, {
       method: "post",
       headers: {
-        Authorization: `basic ${Buffer.from(
+        Authorization: `Bearer ${Buffer.from(
           sonarcloudApiToken,
           "utf8"
         ).toString("base64")}`,
