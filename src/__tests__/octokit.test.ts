@@ -1,5 +1,6 @@
 import { Octokit } from "@octokit/rest";
-import { App } from "octokit";
+import jwt from "jsonwebtoken";
+import { generateKeyPairSync } from "crypto";
 import { LambdaLogger } from "../logger";
 import {
   getAllRepositoriesInOrganisation,
@@ -7,87 +8,136 @@ import {
   getOctokit,
   getTeamsForRepo,
   getTeamsForRepositoriesInOrganisation,
+  octokitApp,
 } from "../octokit";
 
 jest.mock("../parameters", () => ({
   ...jest.requireActual("../parameters"),
   getParameter: jest.fn((parameter) => Promise.resolve(parameter)),
 }));
-jest.mock("octokit", () => {
-  return {
-    ...jest.requireActual("octokit"),
-    App: jest.fn(),
-  };
-});
 
 afterEach(() => {
   jest.restoreAllMocks();
 });
 
+describe("octokitApp", () => {
+  let privateKey: string;
+
+  beforeAll(() => {
+    const keys = generateKeyPairSync("rsa", {
+      modulusLength: 2048,
+      publicKeyEncoding: { type: "spki", format: "pem" },
+      privateKeyEncoding: { type: "pkcs8", format: "pem" },
+    });
+    privateKey = keys.privateKey;
+  });
+
+  class JWTToken {
+    token: string = "";
+
+    set(payload: any) {
+      const [bearer, token] = payload.split(" ");
+      this.token = token;
+    }
+
+    getPayload() {
+      return jwt.decode(this.token) as any;
+    }
+
+    validates(key: string) {
+      try {
+        jwt.verify(this.token, key);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+  }
+
+  const extractAuthorizationCallback = (jwtToken: JWTToken) => {
+    return (_endpoint: string, req: { headers: { authorization: string } }) => {
+      jwtToken.set(req.headers.authorization);
+      throw new Error("early halt");
+    };
+  };
+
+  it("configures the app ID", async () => {
+    const appId = "456";
+    const jwtToken = new JWTToken();
+    const fetch = extractAuthorizationCallback(jwtToken);
+    const app = octokitApp(appId, privateKey, { request: { fetch } });
+    const octokit = await app.getInstallationOctokit(123);
+
+    await octokit.rest.repos.listForOrg({ org: "Anything" }).catch(() => {});
+
+    expect(jwtToken.getPayload().iss).toBe(Number.parseInt(appId));
+  });
+
+  it("configures the private key", async () => {
+    const jwtToken = new JWTToken();
+    const fetch = extractAuthorizationCallback(jwtToken);
+    const app = octokitApp("456", privateKey, { request: { fetch } });
+    const octokit = await app.getInstallationOctokit(123);
+
+    await octokit.rest.repos.listForOrg({ org: "Anything" }).catch(() => {});
+
+    expect(jwtToken.validates(privateKey)).toBe(true);
+  });
+});
+
 describe("getOctokit", () => {
   it("throws error when installation id is not a number", async () => {
-    const inputPrivateKey = "private_key";
-    const inputAppId = "app_id";
     const inputInstallationId = "installation_id";
-    const getInstallationOctokitMock = jest.fn();
-    (App as jest.MockedFunction<any>).mockImplementation(() => ({
-      getInstallationOctokit: getInstallationOctokitMock,
-    }));
 
     await expect(
-      getOctokit(inputPrivateKey, inputAppId, inputInstallationId)
+      getOctokit("private_key", "456", inputInstallationId)
     ).rejects.toThrow("installation_id is not a number");
-  });
-  it("gets the octokit with provided parameters", async () => {
-    const inputPrivateKey = "private_key";
-    const inputAppId = "app_id";
-    const inputInstallationId = "123";
-    const getInstallationOctokitMock = jest.fn();
-    (App as jest.MockedFunction<any>).mockImplementation(() => ({
-      getInstallationOctokit: getInstallationOctokitMock,
-    }));
-    const loggerSpy = jest.spyOn(LambdaLogger.prototype, "info");
-
-    await getOctokit(inputPrivateKey, inputAppId, inputInstallationId);
-    expect(App).toBeCalledWith({
-      appId: inputAppId,
-      privateKey: inputPrivateKey,
-    });
-    expect(getInstallationOctokitMock).toBeCalledWith(123);
-    expect(loggerSpy).toHaveBeenCalledTimes(2);
-    expect(loggerSpy).toHaveBeenNthCalledWith(1, "ENGEXPUTILS009", {
-      GITHUB_APP_ID: inputAppId,
-      GITHUB_INSTALLATION_ID: inputInstallationId,
-    });
-    expect(loggerSpy).toHaveBeenNthCalledWith(2, "ENGEXPUTILS010", {
-      app: {
-        getInstallationOctokit: getInstallationOctokitMock,
-      },
-    });
   });
 });
 
 describe("getAllRepositoriesInOrganisation", () => {
-  it("gets all repository names in an organisation", async () => {
-    const mockOctokitRequest = jest.fn(() => {
-      return [{ name: "Test" }, { name: "Other" }];
-    });
-    const loggerSpy = jest.spyOn(LambdaLogger.prototype, "info");
+  let loggerSpy: jest.SpyInstance;
+  beforeEach(() => {
+    loggerSpy = jest.spyOn(LambdaLogger.prototype, "debug");
+  });
 
-    const fakeOctokit = {
-      paginate: mockOctokitRequest,
+  const buildFakeOctokit = (resultToReturn: any[]) => {
+    return {
+      paginate: () => Promise.resolve(resultToReturn),
       rest: { repos: { listForOrg: jest.fn() } },
     } as unknown as Octokit;
+  };
+
+  it("gets all repository names in an organisation", async () => {
+    const repositories = [{ name: "Test" }, { name: "Other" }];
+    const fakeOctokit = buildFakeOctokit(repositories);
+
     const result = await getAllRepositoriesInOrganisation(
       fakeOctokit,
       "NHS-CodeLab"
     );
-    expect(mockOctokitRequest).toBeCalled();
+
     expect(result).toEqual(["Test", "Other"]);
-    expect(loggerSpy).toHaveBeenCalledTimes(1);
-    expect(loggerSpy).toHaveBeenNthCalledWith(1, "ENGEXPUTILS011", {
+  });
+
+  it("logs the organisation name", async () => {
+    await getAllRepositoriesInOrganisation(buildFakeOctokit([]), "NHS-CodeLab");
+
+    expect(loggerSpy).toHaveBeenCalledWith("ENGEXPUTILS011", {
       organisationName: "NHS-CodeLab",
     });
+  });
+
+  it("filters by a passed-in function", async () => {
+    const repositories = [{ name: "Test" }, { name: "Other" }];
+    const fakeOctokit = buildFakeOctokit(repositories);
+
+    const result = await getAllRepositoriesInOrganisation(
+      fakeOctokit,
+      "NHS-CodeLab",
+      (repo) => repo.name === "Test"
+    );
+    expect(result).toEqual(["Test"]);
   });
 });
 
