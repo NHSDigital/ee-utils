@@ -113,7 +113,7 @@ export const makeSonarcloudAPICall = async (
       response = await fetch(url, requestInit);
       if (response.status === 204) {
         return { success: true };
-      } else if (response.status === 500) {
+      } else if (response.status >= 400) {
         return { success: false };
       }
     } catch (error) {

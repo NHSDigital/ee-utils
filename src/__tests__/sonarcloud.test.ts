@@ -351,6 +351,21 @@ describe("makeSonarcloudAPICall", () => {
 
     expect(result).toEqual({ success: true });
   });
+  it("should return a success false for error codes", async () => {
+    (fetch as jest.MockedFunction<any>).mockResolvedValueOnce({
+      status: 400,
+    });
+
+    const result = await makeSonarcloudAPICall(
+      urlToCall,
+      searchParams,
+      sonarcloudApiToken,
+      "group",
+      "post"
+    );
+
+    expect(result).toEqual({ success: false });
+  });
   it("should log out an error with fetch", async () => {
     (fetch as jest.MockedFunction<any>).mockRejectedValueOnce("some error");
     const loggerSpy = jest.spyOn(LambdaLogger.prototype, "error");
