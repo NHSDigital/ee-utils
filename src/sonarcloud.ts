@@ -108,12 +108,16 @@ export const makeSonarcloudAPICall = async (
     },
   };
   if (method === "post") {
-    const response = (await fetch(url, requestInit).catch((error) => {
+    let response;
+    try {
+      response = await fetch(url, requestInit);
+      if (response.status === 204) {
+        return { success: true };
+      } else if (response.status === 500) {
+        return { success: false };
+      }
+    } catch (error) {
       logger.error("ENGEXPUTILS015", { error });
-    })) ?? { status: 500 };
-    if (response.status === 204) {
-      return { success: true };
-    } else if (response.status === 500) {
       return { success: false };
     }
     const responseParsed = await (response as Response).json();
