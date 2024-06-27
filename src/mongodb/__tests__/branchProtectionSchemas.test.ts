@@ -20,6 +20,7 @@ describe("calculateCompliance", () => {
     [{ repo: "repo", pullRequestRequired: true }, "Red"],
     [{ repo: "repo", approvalsRequired: true }, "Red"],
     [{ repo: "repo", signaturesRequired: true }, "Red"],
+    [{ repo: "repo", stalePullRequestApprovalsDismissed: true }, "Red"],
     [
       { repo: "repo", signaturesRequired: true, pullRequestRequired: true },
       "Amber",
@@ -36,8 +37,69 @@ describe("calculateCompliance", () => {
       {
         repo: "repo",
         approvalsRequired: true,
+        stalePullRequestApprovalsDismissed: true,
+      },
+      "Amber",
+    ],
+    [
+      {
+        repo: "repo",
+        pullRequestRequired: true,
+        stalePullRequestApprovalsDismissed: true,
+      },
+      "Amber",
+    ],
+    [
+      {
+        repo: "repo",
+        signaturesRequired: true,
+        stalePullRequestApprovalsDismissed: true,
+      },
+      "Amber",
+    ],
+    [
+      {
+        repo: "repo",
+        approvalsRequired: true,
         signaturesRequired: true,
         pullRequestRequired: true,
+      },
+      "Amber",
+    ],
+    [
+      {
+        repo: "repo",
+        stalePullRequestApprovalsDismissed: true,
+        signaturesRequired: true,
+        pullRequestRequired: true,
+      },
+      "Amber",
+    ],
+    [
+      {
+        repo: "repo",
+        stalePullRequestApprovalsDismissed: true,
+        approvalsRequired: true,
+        pullRequestRequired: true,
+      },
+      "Amber",
+    ],
+    [
+      {
+        repo: "repo",
+        stalePullRequestApprovalsDismissed: true,
+        approvalsRequired: true,
+        signaturesRequired: true,
+      },
+      "Amber",
+    ],
+    [
+      {
+        repo: "repo",
+        pullRequestRequired: true,
+        stalePullRequestApprovalsDismissed: true,
+        approvalsRequired: true,
+        signaturesRequired: true,
       },
       "Green",
     ],

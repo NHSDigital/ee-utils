@@ -16,10 +16,12 @@ export const calculateCompliance = (schema: IRepoBranchProtection) => {
     schema.pullRequestRequired,
     schema.approvalsRequired,
     schema.signaturesRequired,
+    schema.stalePullRequestApprovalsDismissed,
   ];
   const complianceScore = complianceValues.filter(Boolean).length;
   const complianceByScore: Record<number, HealthStatuses> = {
-    3: "Green",
+    4: "Green",
+    3: "Amber",
     2: "Amber",
     1: "Red",
     0: "Red",
