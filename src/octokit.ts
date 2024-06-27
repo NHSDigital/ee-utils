@@ -50,7 +50,7 @@ export const getOctokit = async (
 
   const app = octokitApp(GITHUB_APP_ID, GITHUB_PRIVATE_KEY, octokitOptions);
 
-  logger.debug("ENGEXPUTILS010", { app });
+  logger.debug("ENGEXPUTILS010");
   const parsedInstallationId = parseInt(GITHUB_INSTALLATION_ID);
   if (isNaN(parsedInstallationId)) {
     throw new Error("installation_id is not a number");
