@@ -223,10 +223,7 @@ describe("makeSonarcloudAPICall", () => {
     expect(fetch).toHaveBeenCalledWith(expectedUrl, {
       method: "get",
       headers: {
-        Authorization: `Bearer ${Buffer.from(
-          sonarcloudApiToken,
-          "utf8"
-        ).toString("base64")}`,
+        Authorization: `Bearer ${sonarcloudApiToken}`,
       },
     });
     expect(result).toEqual(expectedResponse.response);
@@ -408,10 +405,7 @@ describe("makeSonarcloudGetRequest", () => {
     expect(fetch).toHaveBeenCalledWith(expectedUrl, {
       method: "get",
       headers: {
-        Authorization: `Bearer ${Buffer.from(
-          sonarcloudApiToken,
-          "utf8"
-        ).toString("base64")}`,
+        Authorization: `Bearer ${sonarcloudApiToken}`,
       },
     });
     expect(result).toEqual(expectedResponse.response);
@@ -444,10 +438,7 @@ describe("makeSonarcloudPostRequest", () => {
     expect(fetch).toHaveBeenCalledWith(expectedUrl, {
       method: "post",
       headers: {
-        Authorization: `Bearer ${Buffer.from(
-          sonarcloudApiToken,
-          "utf8"
-        ).toString("base64")}`,
+        Authorization: `Bearer ${sonarcloudApiToken}`,
       },
     });
   });

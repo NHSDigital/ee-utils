@@ -102,9 +102,7 @@ export const makeSonarcloudAPICall = async (
   const requestInit = {
     method,
     headers: {
-      Authorization: `Bearer ${Buffer.from(sonarcloudApiToken, "utf8").toString(
-        "base64"
-      )}`,
+      Authorization: `Bearer ${sonarcloudApiToken}`,
     },
   };
   if (method === "post") {
