@@ -163,6 +163,16 @@ describe("RepoBranchProtectionSchema", () => {
           signaturesRequired: true,
           pullRequestRequired: true,
         },
+        "Amber",
+      ],
+      [
+        {
+          repo: "repo",
+          approvalsRequired: true,
+          signaturesRequired: true,
+          pullRequestRequired: true,
+          stalePullRequestApprovalsDismissed: true,
+        },
         "Green",
       ],
     ])(
