@@ -14,4 +14,7 @@ export const logReferences: Record<string, string> = {
   ENGEXPUTILS013: "Starting Authentication",
   ENGEXPUTILS014: "Finished Authentication",
   ENGEXPUTILS015: "Fetch Failed",
+  ENGEXPUTILS016: "Attempting To Create Sonarcloud Group",
+  ENGEXPUTILS017: "Failed To Create Sonarcloud Group",
+  ENGEXPUTILS018: "Sonarcloud Post Request Failure",
 };

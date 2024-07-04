@@ -112,6 +112,7 @@ export const makeSonarcloudAPICall = async (
       if (response.status === 204) {
         return { success: true };
       } else if (response.status >= 400) {
+        logger.error("ENGEXPUTILS018", { response });
         return { success: false };
       }
     } catch (error) {
@@ -191,6 +192,7 @@ export const createGroup = async (
     logger.info("ENGEXPUTILS002", { group: groupName });
     return groupName;
   }
+  logger.info("ENGEXPUTILS016", { group: groupName });
   const response = await makeSonarcloudPostRequest(
     "/user_groups/create",
     {
@@ -199,6 +201,10 @@ export const createGroup = async (
     },
     sonarcloudApiToken
   );
-  logger.info("ENGEXPUTILS001", response);
+  if (response.hasOwnProperty("success") && !response.success) {
+    logger.error("ENGEXPUTILS017", { response, group: groupName });
+    throw new Error("Failed to create group");
+  }
+  logger.info("ENGEXPUTILS001", { response, group: groupName });
   return response.group.name;
 };
