@@ -289,6 +289,50 @@ describe("makeSonarcloudAPICall", () => {
     expect(result).toEqual(expectedGroups);
     expect(fetch).toBeCalledTimes(2);
   });
+  it("should handle pagination for other pagination objects", async () => {
+    const mockSonarcloudFirstResponse = {
+      groups: [
+        { id: 1, name: "someGroupName", membersCount: 0, default: false },
+        { id: 2, name: "anotherGroupName", membersCount: 1, default: false },
+      ],
+      p: 1,
+      ps: 2,
+      total: 4,
+    };
+    const mockSonarcloudSecondResponse = {
+      groups: [
+        { id: 3, name: "Members", membersCount: 10, default: true },
+        { id: 4, name: "Owners", membersCount: 5, default: false },
+      ],
+      p: 2,
+      ps: 2,
+      total: 4,
+    };
+
+    (fetch as jest.MockedFunction<any>)
+      .mockResolvedValueOnce({
+        json: () => Promise.resolve(mockSonarcloudFirstResponse),
+      })
+      .mockResolvedValueOnce({
+        json: () => Promise.resolve(mockSonarcloudSecondResponse),
+      });
+
+    const result = await makeSonarcloudAPICall(
+      urlToCall,
+      searchParams,
+      sonarcloudApiToken,
+      "groups",
+      "get"
+    );
+
+    const expectedGroups = [
+      ...mockSonarcloudFirstResponse.groups,
+      ...mockSonarcloudSecondResponse.groups,
+    ];
+
+    expect(result).toEqual(expectedGroups);
+    expect(fetch).toBeCalledTimes(2);
+  });
   it("should handle responses that do not have the paging object", async () => {
     const mockSonarcloudFirstResponse = {
       groups: [
