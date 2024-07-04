@@ -124,7 +124,17 @@ export const makeSonarcloudAPICall = async (
   }
 
   const allItems = [];
-  const firstResponse = await fetch(url, requestInit);
+  let firstResponse;
+  try {
+    firstResponse = await fetch(url, requestInit);
+    if (firstResponse.status >= 400) {
+      logger.error("ENGEXPUTILS015", { response: firstResponse });
+      return { success: false };
+    }
+  } catch (e: any) {
+    logger.error("ENGEXPUTILS015", { error: e.message });
+    return { success: false };
+  }
   const firstResponseParsed = await firstResponse.json();
 
   const checkedResponse = checkResponse(firstResponseParsed);
