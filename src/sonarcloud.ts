@@ -112,6 +112,7 @@ export const makeSonarcloudAPICall = async (
       if (response.status === 204) {
         return { success: true };
       } else if (response.status >= 400) {
+        logger.error("ENGEXPUTILS018", { response });
         return { success: false };
       }
     } catch (error) {

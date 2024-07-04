@@ -369,10 +369,12 @@ describe("makeSonarcloudAPICall", () => {
 
     expect(result).toEqual({ success: true });
   });
-  it("should return a success false for error codes", async () => {
+  it("should return a success false and log for error codes", async () => {
     (fetch as jest.MockedFunction<any>).mockResolvedValueOnce({
       status: 400,
+      message: "Unauthorised Error",
     });
+    const loggerSpy = jest.spyOn(LambdaLogger.prototype, "error");
 
     const result = await makeSonarcloudAPICall(
       urlToCall,
@@ -383,6 +385,9 @@ describe("makeSonarcloudAPICall", () => {
     );
 
     expect(result).toEqual({ success: false });
+    expect(loggerSpy).toHaveBeenCalledWith("ENGEXPUTILS018", {
+      response: { status: 400, message: "Unauthorised Error" },
+    });
   });
   it("should log out an error with fetch", async () => {
     (fetch as jest.MockedFunction<any>).mockRejectedValueOnce("some error");
