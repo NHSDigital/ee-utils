@@ -201,7 +201,7 @@ export const createGroup = async (
     },
     sonarcloudApiToken
   );
-  if (response.hasOwnProperty("success") && response.success == false) {
+  if (response.hasOwnProperty("success") && !response.success) {
     logger.error("ENGEXPUTILS017", { response, group: groupName });
     throw new Error("Failed to create group");
   }
