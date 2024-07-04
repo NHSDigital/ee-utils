@@ -225,6 +225,9 @@ describe("makeSonarcloudAPICall", () => {
   const urlToCall = "/some/url";
   const searchParams = { some: "param" };
   const sonarcloudApiToken = "someToken";
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   it("should call with provided params", async () => {
     const expectedResponse = { response: ["response"], paging: { total: 1 } };
     (fetch as jest.MockedFunction<any>).mockResolvedValue({
@@ -433,7 +436,7 @@ describe("makeSonarcloudAPICall", () => {
       response: { status: 400, message: "Unauthorised Error" },
     });
   });
-  it("should log out an error with fetch", async () => {
+  it("should log out an error with fetch - POST", async () => {
     (fetch as jest.MockedFunction<any>).mockRejectedValueOnce("some error");
     const loggerSpy = jest.spyOn(LambdaLogger.prototype, "error");
 
@@ -447,6 +450,45 @@ describe("makeSonarcloudAPICall", () => {
 
     expect(loggerSpy).toHaveBeenCalledWith("ENGEXPUTILS015", {
       error: "some error",
+    });
+    expect(response).toEqual({ success: false });
+  });
+  it("should log out an error with fetch - GET", async () => {
+    (fetch as jest.MockedFunction<any>).mockRejectedValueOnce(
+      Error("some error")
+    );
+    const loggerSpy = jest.spyOn(LambdaLogger.prototype, "error");
+
+    const response = await makeSonarcloudAPICall(
+      urlToCall,
+      searchParams,
+      sonarcloudApiToken,
+      "group",
+      "get"
+    );
+
+    expect(loggerSpy).toHaveBeenNthCalledWith(1, "ENGEXPUTILS015", {
+      error: "some error",
+    });
+    expect(response).toEqual({ success: false });
+  });
+  it("should log out an error with fetch - GET response not ok", async () => {
+    (fetch as jest.MockedFunction<any>).mockResolvedValueOnce({
+      status: 400,
+      message: "Unauthorised Error",
+    });
+    const loggerSpy = jest.spyOn(LambdaLogger.prototype, "error");
+
+    const response = await makeSonarcloudAPICall(
+      urlToCall,
+      searchParams,
+      sonarcloudApiToken,
+      "group",
+      "get"
+    );
+
+    expect(loggerSpy).toHaveBeenNthCalledWith(1, "ENGEXPUTILS015", {
+      response: { status: 400, message: "Unauthorised Error" },
     });
     expect(response).toEqual({ success: false });
   });
