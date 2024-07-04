@@ -170,6 +170,9 @@ describe("getSonarcloudProjects", () => {
 });
 
 describe("createGroup", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   it("returns the group name and logs if in dry run mode", async () => {
     const inputGroupName = "someGroup";
     const loggerSpy = jest.spyOn(LambdaLogger.prototype, "info");
@@ -179,10 +182,10 @@ describe("createGroup", () => {
       "someToken",
       true
     );
-
     expect(loggerSpy).toHaveBeenCalledWith("ENGEXPUTILS002", {
       group: "someGroup",
     });
+
     expect(result).toEqual(inputGroupName);
   });
   it("create the group and logs the name", async () => {
@@ -193,10 +196,28 @@ describe("createGroup", () => {
     });
     const result = await createGroup(inputGroupName, "someOrg", "someToken");
 
-    expect(loggerSpy).toHaveBeenCalledWith("ENGEXPUTILS001", {
-      group: { name: "someGroup" },
+    expect(loggerSpy).toHaveBeenNthCalledWith(1, "ENGEXPUTILS016", {
+      group: "someGroup",
+    });
+    expect(loggerSpy).toHaveBeenNthCalledWith(2, "ENGEXPUTILS001", {
+      response: { group: { name: "someGroup" } },
+      group: "someGroup",
     });
     expect(result).toEqual(inputGroupName);
+  });
+  it("should log and throw error if the group creation is unsuccessful", async () => {
+    const inputGroupName = "someGroup";
+    const loggerSpy = jest.spyOn(LambdaLogger.prototype, "error");
+    (fetch as jest.MockedFunction<any>).mockResolvedValue({
+      json: () => Promise.resolve({ success: false }),
+    });
+    await expect(() =>
+      createGroup(inputGroupName, "someOrg", "someToken")
+    ).rejects.toThrow();
+    expect(loggerSpy).toHaveBeenCalledWith("ENGEXPUTILS017", {
+      group: "someGroup",
+      response: { success: false },
+    });
   });
 });
 

@@ -191,6 +191,7 @@ export const createGroup = async (
     logger.info("ENGEXPUTILS002", { group: groupName });
     return groupName;
   }
+  logger.info("ENGEXPUTILS016", { group: groupName });
   const response = await makeSonarcloudPostRequest(
     "/user_groups/create",
     {
@@ -199,6 +200,10 @@ export const createGroup = async (
     },
     sonarcloudApiToken
   );
-  logger.info("ENGEXPUTILS001", response);
+  if (response.success == false) {
+    logger.error("ENGEXPUTILS017", { response, group: groupName });
+    throw new Error("Failed to create group");
+  }
+  logger.info("ENGEXPUTILS001", { response, group: groupName });
   return response.group.name;
 };
