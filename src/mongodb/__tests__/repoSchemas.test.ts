@@ -51,7 +51,7 @@ describe("RepoSchema", () => {
     const validModel = new RepoModel(validRepo);
 
     const indexes = validModel.schema.indexes();
-    const index = indexes.find((index) => index[0].full_name === 1);
+    const index = indexes.find((index: any) => index[0].full_name === 1);
 
     expect(index).toBeDefined();
   });

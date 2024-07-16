@@ -28,6 +28,9 @@ jobs:
       - name: Test and coverage
         run: yarn jest --coverage
 
+      - name: Check types
+        run: yarn tsc --noEmit
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:

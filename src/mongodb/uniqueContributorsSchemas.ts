@@ -20,7 +20,9 @@ export const UniqueContributorsSchema =
     { timestamps: { createdAt: "document_created_at" } }
   );
 
-export const UniqueContributorsModel = mongoose.model<IUniqueContributors>(
-  "UniqueContributors",
-  UniqueContributorsSchema
-);
+export const UniqueContributorsModel =
+  mongoose.models.UniqueContributorsModel ||
+  mongoose.model<IUniqueContributors>(
+    "UniqueContributors",
+    UniqueContributorsSchema
+  );

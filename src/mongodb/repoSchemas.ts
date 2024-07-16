@@ -39,4 +39,5 @@ export const RepoSchema = new mongoose.Schema(
   { timestamps: { createdAt: "document_created_at" } }
 );
 
-export const RepoModel = mongoose.model<IRepo>("Repo", RepoSchema);
+export const RepoModel =
+  mongoose.models.RepoModel || mongoose.model<IRepo>("Repo", RepoSchema);

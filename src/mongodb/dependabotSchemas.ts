@@ -83,7 +83,6 @@ RepoDependabotSchema.pre<IRepoDependabot>("save", function (next) {
   next();
 });
 
-export const RepoDependabotModel = mongoose.model<IRepoDependabot>(
-  "RepoDependabot",
-  RepoDependabotSchema
-);
+export const RepoDependabotModel =
+  mongoose.models.RepoDependabotModel ||
+  mongoose.model<IRepoDependabot>("RepoDependabot", RepoDependabotSchema);
