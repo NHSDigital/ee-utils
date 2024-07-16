@@ -31,6 +31,9 @@ jobs:
       - name: Check types
         run: yarn tsc --noEmit
 
+      - name: Build package
+        run: yarn build
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:

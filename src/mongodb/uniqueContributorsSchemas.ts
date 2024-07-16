@@ -21,7 +21,7 @@ export const UniqueContributorsSchema =
   );
 
 export const UniqueContributorsModel =
-  mongoose.models.UniqueContributorsModel ||
+  mongoose.models.UniqueContributors ||
   mongoose.model<IUniqueContributors>(
     "UniqueContributors",
     UniqueContributorsSchema
