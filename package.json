@@ -40,6 +40,7 @@
   "devDependencies": {
     "@types/aws-lambda": "^8.10.136",
     "@types/jest": "^29.5.12",
+    "@types/semver": "^7.5.8",
     "@types/uuid": "^9.0.8",
     "aws-sdk-client-mock": "^3.0.1",
     "aws-sdk-client-mock-jest": "^3.0.1",
