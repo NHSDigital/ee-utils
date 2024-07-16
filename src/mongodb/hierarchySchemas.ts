@@ -45,7 +45,6 @@ export const HierarchySchema = new mongoose.Schema({
   },
 });
 
-export const HierarchyModel = mongoose.model<IHierarchy>(
-  "Hierarchy",
-  HierarchySchema
-);
+export const HierarchyModel =
+  mongoose.models.HierarchyModel ||
+  mongoose.model<IHierarchy>("Hierarchy", HierarchySchema);

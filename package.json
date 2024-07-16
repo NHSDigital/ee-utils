@@ -1,6 +1,6 @@
 {
   "name": "@NHSDigital/ee-utils",
-  "version": "0.0.65",
+  "version": "0.0.66-dev.9",
   "license": "MIT",
   "type": "module",
   "author": "jacobgill1 <jacob.gill1@nhs.net>",
@@ -52,12 +52,12 @@
     "clean": "rm -rf lib",
     "build": "yarn clean && yarn build:types && yarn build:package",
     "build:package": "yarn build:cjs && yarn build:esm && yarn build:clean-package",
-    "build:cjs": "esbuild --platform=node --format=cjs --outdir=lib/cjs src/*.ts src/**/*.ts",
-    "build:esm": "esbuild --platform=node --format=esm --outdir=lib/esm src/*.ts src/**/*.ts --tsconfig=tsconfig.esm.json",
+    "build:cjs": "esbuild --platform=node --format=cjs --outdir=lib/cjs `find src \\( -name '*.ts' \\)`",
+    "build:esm": "esbuild --platform=node --format=esm --outdir=lib/esm `find src \\( -name '*.ts' \\)` --tsconfig=tsconfig.esm.json",
     "build:types": "yarn build:types-cjs && yarn build:types-esm",
     "build:types-cjs": "yarn tsc --emitDeclarationOnly --declaration -p tsconfig.json",
     "build:types-esm": "yarn tsc --emitDeclarationOnly --declaration -p tsconfig.esm.json",
-    "build:clean-package": "rm -rf lib/**/__tests__"
+    "build:clean-package": "find lib -type d -name '__tests__' -exec rm -rf {} +"
   },
   "packageManager": "yarn@1.22.22+sha512.a6b2f7906b721bba3d67d4aff083df04dad64c399707841b7acf00f6b133b7ac24255f2652fa22ae3534329dc6180534e98d17432037ff6fd140556e2bb3137e"
 }

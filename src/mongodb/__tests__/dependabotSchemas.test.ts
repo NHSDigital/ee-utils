@@ -245,7 +245,7 @@ describe("repoDependabotSchema", () => {
     });
 
     const indexes = repoDependabot.schema.indexes();
-    const index = indexes.find((index) => index[0].repo === 1);
+    const index = indexes.find((index: any) => index[0].repo === 1);
 
     expect(index).toBeDefined();
   });

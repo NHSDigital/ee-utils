@@ -18,7 +18,9 @@ export const GithubActionMinutesSchema =
     { timestamps: { createdAt: "document_created_at" } }
   );
 
-export const GithubActionMinutesModel = mongoose.model<IGithubActionMinutes>(
-  "GithubActionMinutes",
-  GithubActionMinutesSchema
-);
+export const GithubActionMinutesModel =
+  mongoose.models.GithubActionMinutesModel ||
+  mongoose.model<IGithubActionMinutes>(
+    "GithubActionMinutes",
+    GithubActionMinutesSchema
+  );

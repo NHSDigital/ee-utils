@@ -43,7 +43,9 @@ export const RepoBranchProtectionSchema =
     { timestamps: { createdAt: "document_created_at" } }
   );
 
-export const RepoBranchProtectionModel = mongoose.model<IRepoBranchProtection>(
-  "RepoBranchProtection",
-  RepoBranchProtectionSchema
-);
+export const RepoBranchProtectionModel =
+  mongoose.models.RepoBranchProtection ||
+  mongoose.model<IRepoBranchProtection>(
+    "RepoBranchProtection",
+    RepoBranchProtectionSchema
+  );

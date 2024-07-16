@@ -79,7 +79,6 @@ RepoSonarcloudSchema.pre("save", function (next) {
   next();
 });
 
-export const RepoSonarcloudModel = mongoose.model<IRepoSonarcloud>(
-  "RepoSonarcloud",
-  RepoSonarcloudSchema
-);
+export const RepoSonarcloudModel =
+  mongoose.models.RepoSonarcloudModel ||
+  mongoose.model<IRepoSonarcloud>("RepoSonarcloud", RepoSonarcloudSchema);
