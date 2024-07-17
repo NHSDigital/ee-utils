@@ -40,4 +40,4 @@ export const RepoSchema = new mongoose.Schema(
 );
 
 export const RepoModel =
-  mongoose.models.RepoModel || mongoose.model<IRepo>("Repo", RepoSchema);
+  mongoose.models.Repo || mongoose.model<IRepo>("Repo", RepoSchema);

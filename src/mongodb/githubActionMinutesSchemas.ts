@@ -19,7 +19,7 @@ export const GithubActionMinutesSchema =
   );
 
 export const GithubActionMinutesModel =
-  mongoose.models.GithubActionMinutesModel ||
+  mongoose.models.GithubActionMinutes ||
   mongoose.model<IGithubActionMinutes>(
     "GithubActionMinutes",
     GithubActionMinutesSchema
