@@ -127,10 +127,6 @@ export const makeSonarcloudAPICall = async (
   let firstResponse;
   try {
     firstResponse = await fetch(url, requestInit);
-    if (firstResponse.status >= 400) {
-      logger.error("ENGEXPUTILS015", { response: firstResponse });
-      return { success: false };
-    }
   } catch (e: any) {
     logger.error("ENGEXPUTILS015", { error: e.message });
     return { success: false };
@@ -190,6 +186,7 @@ export const getSonarcloudProjects = async (
     }
     throw error;
   }
+  console.log("sonarcloud projects", sonarCloudProjects);
   return sonarCloudProjects.map((project: SonarcloudProject) => project.name);
 };
 
