@@ -186,7 +186,6 @@ export const getSonarcloudProjects = async (
     }
     throw error;
   }
-  console.log("sonarcloud projects", sonarCloudProjects);
   return sonarCloudProjects.map((project: SonarcloudProject) => project.name);
 };
 
