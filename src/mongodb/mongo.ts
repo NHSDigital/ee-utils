@@ -38,3 +38,17 @@ export const connectToDatabaseViaEnvVar = async (
     throw error;
   }
 };
+
+export const disconnect = async (
+  logger: ILog = defaultLogger
+): Promise<void> => {
+  try {
+    await mongoose.disconnect();
+    logger.info("ENGEXPUTILS009", { message: "Disconnected from database" });
+  } catch (error: any) {
+    logger.error("ENGEXPUTILS010", {
+      error: error.toString(),
+    });
+    throw error;
+  }
+};
