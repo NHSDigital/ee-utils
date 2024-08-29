@@ -1,6 +1,7 @@
+import { jest } from "@jest/globals";
 import { Octokit } from "@octokit/rest";
-import jwt from "jsonwebtoken";
 import { generateKeyPairSync } from "crypto";
+import jwt from "jsonwebtoken";
 import { LambdaLogger } from "../logger";
 import {
   getAllRepositoriesInOrganisation,
@@ -10,9 +11,8 @@ import {
   getTeamsForRepositoriesInOrganisation,
   octokitApp,
 } from "../octokit";
-
 jest.mock("../parameters", () => ({
-  ...jest.requireActual("../parameters"),
+  ...(jest.requireActual("../parameters") as object),
   getParameter: jest.fn((parameter) => Promise.resolve(parameter)),
 }));
 
@@ -70,7 +70,7 @@ describe("octokitApp", () => {
 
     await octokit.rest.repos.listForOrg({ org: "Anything" }).catch(() => {});
 
-    expect(jwtToken.getPayload().iss).toBe(Number.parseInt(appId));
+    expect(jwtToken.getPayload().iss).toBe(appId);
   });
 
   it("configures the private key", async () => {
@@ -86,17 +86,33 @@ describe("octokitApp", () => {
 });
 
 describe("getOctokit", () => {
+  let privateKey: string;
+
+  beforeAll(() => {
+    const keys = generateKeyPairSync("rsa", {
+      modulusLength: 2048,
+      publicKeyEncoding: { type: "spki", format: "pem" },
+      privateKeyEncoding: { type: "pkcs8", format: "pem" },
+    });
+    privateKey = keys.privateKey;
+  });
   it("throws error when installation id is not a number", async () => {
     const inputInstallationId = "installation_id";
 
     await expect(
-      getOctokit("private_key", "456", inputInstallationId)
+      getOctokit(
+        privateKey,
+        "456",
+        inputInstallationId,
+        {},
+        (parameter: string) => Promise.resolve(parameter)
+      )
     ).rejects.toThrow("installation_id is not a number");
   });
 });
 
 describe("getAllRepositoriesInOrganisation", () => {
-  let loggerSpy: jest.SpyInstance;
+  let loggerSpy: jest.SpiedFunction<(logReference: any, logArgs?: {}) => void>;
   beforeEach(() => {
     loggerSpy = jest.spyOn(LambdaLogger.prototype, "debug");
   });
@@ -281,9 +297,9 @@ describe("getTeamsForRepositoriesInOrganisation", () => {
   it("returns all teams by repos in the organisation", async () => {
     jest.mock("../octokit", () => ({
       getAllRepositoriesInOrganisation: jest
-        .fn()
+        .fn<typeof getAllRepositoriesInOrganisation>()
         .mockResolvedValue(["repo1", "repo2"]),
-      getTeamsForRepo: jest.fn().mockResolvedValue({
+      getTeamsForRepo: jest.fn<typeof getTeamsForRepo>().mockResolvedValue({
         repo1: [
           {
             slug: "team1",
@@ -344,7 +360,7 @@ describe("getTeamsForRepositoriesInOrganisation", () => {
 
     const fakeOctokit = {
       paginate: jest
-        .fn()
+        .fn<() => any>()
         .mockResolvedValueOnce(mockReposRequest)
         .mockResolvedValueOnce(mockTeamsForRepoRequest1)
         .mockResolvedValueOnce(mockTeamsForRepoRequest2),

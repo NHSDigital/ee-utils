@@ -27,7 +27,14 @@ export const connectToDatabaseViaEnvVar = async (
   try {
     await mongoose.connect(uri, options);
     logger.info("ENGEXPUTILS012", { database: uri });
-    await mongoose.connection.db.admin().command({ ping: 1 });
+    if (mongoose.connection.db) {
+      await mongoose.connection.db.admin().command({ ping: 1 });
+    } else {
+      logger.error("ENGEXPUTILS011", {
+        error: "Database connection is undefined",
+      });
+      throw new Error("Database connection is undefined");
+    }
     logger.info("ENGEXPUTILS007", {
       database: uri,
     });

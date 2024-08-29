@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals";
 import jwt from "jsonwebtoken";
 import { authenticateLambda, authenticateRequest } from "../authentication";
 import { LambdaLogger } from "../logger";
@@ -5,8 +6,11 @@ import { LambdaLogger } from "../logger";
 const MOCK_SIGNING_KEY = "mockSigningKey";
 
 jest.mock("jwks-rsa", () => ({
+  // @ts-ignore
   JwksClient: jest.fn().mockImplementation(() => ({
+    // @ts-ignore
     getSigningKey: jest.fn().mockResolvedValue({
+      // @ts-ignore
       getPublicKey: jest.fn().mockReturnValue(MOCK_SIGNING_KEY),
     }),
   })),
@@ -15,6 +19,7 @@ jest.mock("jwks-rsa", () => ({
 describe("authenticateRequest", () => {
   it("should successfully verify authenticity", async () => {
     const token = jwt.sign({ foo: "bar" }, MOCK_SIGNING_KEY);
+    console.log("TOKEN", token);
     await authenticateRequest(token, "tenant");
   });
   it("should throw an error if the token cannot be decoded", async () => {

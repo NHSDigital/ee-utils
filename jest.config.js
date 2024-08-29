@@ -1,9 +1,17 @@
-/** @type {import('jest').Config} */
-const config = {
-  verbose: true,
+/** @type {import('ts-jest').JestConfigWithTsJest} **/
+export default {
+  testEnvironment: "node",
+  // extensionsToTreatAsEsm: [".ts"],
+  transformIgnorePatterns: ["/node_modules/"],
+  transform: {
+    "^.+.ts$": [
+      "ts-jest",
+      {
+        useESM: true,
+      },
+    ],
+  },
+  moduleFileExtensions: ["ts", "js", "json"],
   testPathIgnorePatterns: ["/node_modules/", "/lib/"],
-  moduleFileExtensions: ["js", "json", "ts"],
-  preset: "ts-jest",
   setupFilesAfterEnv: ["<rootDir>/setupTests.ts"],
 };
-export default config;

@@ -1,6 +1,7 @@
-import { LambdaLogger, getTimestamp } from "../logger";
-import { transports } from "winston";
+import { jest } from "@jest/globals";
 import { Writable } from "stream";
+import { transports } from "winston";
+import { LambdaLogger, getTimestamp } from "../logger";
 
 const jsonTransport = () => {
   const buffer: any[] = [];

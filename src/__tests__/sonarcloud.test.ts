@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals";
 import { LambdaLogger } from "../logger";
 import {
   checkForErrors,
@@ -10,11 +11,12 @@ import {
   makeSonarcloudPostRequest,
 } from "../sonarcloud";
 
+//@ts-ignore
 global.fetch = jest.fn();
 
 jest.mock("../parameters", () => {
   return {
-    ...jest.requireActual("../parameters"),
+    ...(jest.requireActual("../parameters") as object),
     getParameter: () => "some_parameter",
   };
 });

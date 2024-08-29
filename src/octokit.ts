@@ -37,12 +37,12 @@ export const getOctokit = async (
   privateKey: string,
   appId: string,
   installationId: string,
-  octokitOptions: any = {}
+  octokitOptions: any = {},
+  getParameterFn: typeof getParameter = getParameter
 ): Promise<Octokit> => {
-  const GITHUB_PRIVATE_KEY = (await getParameter(privateKey, true)) ?? "";
-  const GITHUB_APP_ID = (await getParameter(appId)) ?? "";
-  const GITHUB_INSTALLATION_ID = (await getParameter(installationId)) ?? "0";
-
+  const GITHUB_PRIVATE_KEY = (await getParameterFn(privateKey, true)) ?? "";
+  const GITHUB_APP_ID = (await getParameterFn(appId)) ?? "";
+  const GITHUB_INSTALLATION_ID = (await getParameterFn(installationId)) ?? "0";
   logger.debug("ENGEXPUTILS009", {
     GITHUB_APP_ID,
     GITHUB_INSTALLATION_ID,
