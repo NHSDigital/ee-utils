@@ -1,5 +1,5 @@
-import { jest } from "@jest/globals";
 import mongoose from "mongoose";
+import { vi } from "vitest";
 import { connectToDatabaseViaEnvVar, ILog } from "../mongodb/mongo";
 
 import { Writable } from "stream";
@@ -25,6 +25,7 @@ const mongooseIsConnected = () => {
 
 const ensureMongooseIsConnected = async () => {
   if (!mongooseIsConnected()) {
+    console.log(process.env.MONGODB_URI);
     await mongoose.connect(process.env.MONGODB_URI!);
   }
 };
@@ -104,7 +105,7 @@ describe("connectToDatabaseViaEnvVar", () => {
   });
 
   it("should default to the LambdaLogger if no logger is provided", async () => {
-    jest.spyOn(LambdaLogger.prototype, "error");
+    vi.spyOn(LambdaLogger.prototype, "error");
 
     delete process.env.MONGODB_URI;
 

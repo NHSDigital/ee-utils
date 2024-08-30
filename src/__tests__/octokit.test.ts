@@ -1,7 +1,7 @@
-import { jest } from "@jest/globals";
 import { Octokit } from "@octokit/rest";
 import { generateKeyPairSync } from "crypto";
 import jwt from "jsonwebtoken";
+import { afterEach, MockInstance, vi } from "vitest";
 import { LambdaLogger } from "../logger";
 import {
   getAllRepositoriesInOrganisation,
@@ -11,13 +11,13 @@ import {
   getTeamsForRepositoriesInOrganisation,
   octokitApp,
 } from "../octokit";
-jest.mock("../parameters", () => ({
-  ...(jest.requireActual("../parameters") as object),
-  getParameter: jest.fn((parameter) => Promise.resolve(parameter)),
+vi.doMock("../parameters", () => ({
+  ...(vi.importActual("../parameters") as object),
+  getParameter: vi.fn((parameter) => Promise.resolve(parameter)),
 }));
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  vi.restoreAllMocks();
 });
 
 describe("octokitApp", () => {
@@ -112,22 +112,22 @@ describe("getOctokit", () => {
 });
 
 describe("getAllRepositoriesInOrganisation", () => {
-  let loggerSpy: jest.SpiedFunction<(logReference: any, logArgs?: {}) => void>;
+  let loggerSpy: MockInstance<(logReference: any, logArgs?: {}) => void>;
   beforeEach(() => {
-    loggerSpy = jest.spyOn(LambdaLogger.prototype, "debug");
+    loggerSpy = vi.spyOn(LambdaLogger.prototype, "debug");
   });
 
   const buildFakeOctokit = (resultToReturn: any[]) => {
     return {
       paginate: () => Promise.resolve(resultToReturn),
-      rest: { repos: { listForOrg: jest.fn() } },
+      rest: { repos: { listForOrg: vi.fn() } },
     } as unknown as Octokit;
   };
 
   it("gets all repository names in an organisation", async () => {
     const repositories = [{ name: "Test" }, { name: "Other" }];
     const fakeOctokit = buildFakeOctokit(repositories);
-
+    console.log("AAAAAAHHHHHHHH", getAllRepositoriesInOrganisation);
     const result = await getAllRepositoriesInOrganisation(
       fakeOctokit,
       "NHS-CodeLab"
@@ -188,9 +188,8 @@ describe("getTeamsForRepo", () => {
 
     const fakeOctokit = {
       paginate: () => Promise.resolve(mockOctokitRequest),
-      rest: { repos: { listTeams: jest.fn() } },
+      rest: { repos: { listTeams: vi.fn() } },
     } as unknown as Octokit;
-
     const result = await getTeamsForRepo(
       fakeOctokit,
       "organisation_name",
@@ -231,7 +230,7 @@ describe("getContributorsForRepo", () => {
 
     const fakeOctokit = {
       paginate: () => Promise.resolve(mockOctokitRequest),
-      rest: { repos: { listContributors: jest.fn() } },
+      rest: { repos: { listContributors: vi.fn() } },
     } as unknown as Octokit;
 
     const result = await getContributorsForRepo(
@@ -251,7 +250,7 @@ describe("getContributorsForRepo", () => {
 
     const fakeOctokit = {
       paginate: () => Promise.resolve(mockOctokitRequest),
-      rest: { repos: { listContributors: jest.fn() } },
+      rest: { repos: { listContributors: vi.fn() } },
     } as unknown as Octokit;
 
     const result = await getContributorsForRepo(
@@ -277,7 +276,7 @@ describe("getContributorsForRepo", () => {
 
     const fakeOctokit = {
       paginate: () => Promise.resolve(mockOctokitRequest),
-      rest: { repos: { listContributors: jest.fn() } },
+      rest: { repos: { listContributors: vi.fn() } },
     } as unknown as Octokit;
 
     const result = await getContributorsForRepo(
@@ -293,41 +292,46 @@ describe("getContributorsForRepo", () => {
   });
 });
 
-describe("getTeamsForRepositoriesInOrganisation", () => {
+describe("getTeamsForRepositoriesInOrganisastion", () => {
   it("returns all teams by repos in the organisation", async () => {
-    jest.mock("../octokit", () => ({
-      getAllRepositoriesInOrganisation: jest
-        .fn<typeof getAllRepositoriesInOrganisation>()
-        .mockResolvedValue(["repo1", "repo2"]),
-      getTeamsForRepo: jest.fn<typeof getTeamsForRepo>().mockResolvedValue({
-        repo1: [
-          {
-            slug: "team1",
-            permission: "write",
-            permissions: {
-              admin: false,
-              maintain: false,
-              push: true,
-              triage: false,
-              pull: true,
+    vi.doMock("../octokit", async (importOriginal) => {
+      const actual = (await importOriginal()) as object;
+      console.log("ACTUAL", actual);
+      return {
+        ...actual,
+        getAllRepositoriesInOrganisation: vi
+          .fn<typeof getAllRepositoriesInOrganisation>()
+          .mockResolvedValue(["repo1", "repo2"]),
+        getTeamsForRepo: vi.fn<typeof getTeamsForRepo>().mockResolvedValue({
+          repo1: [
+            {
+              slug: "team1",
+              permission: "write",
+              permissions: {
+                admin: false,
+                maintain: false,
+                push: true,
+                triage: false,
+                pull: true,
+              },
             },
-          },
-        ],
-        repo2: [
-          {
-            slug: "team2",
-            permission: "pull",
-            permissions: {
-              admin: false,
-              maintain: false,
-              push: false,
-              triage: false,
-              pull: true,
+          ],
+          repo2: [
+            {
+              slug: "team2",
+              permission: "pull",
+              permissions: {
+                admin: false,
+                maintain: false,
+                push: false,
+                triage: false,
+                pull: true,
+              },
             },
-          },
-        ],
-      }),
-    }));
+          ],
+        }),
+      };
+    });
     const mockReposRequest = [{ name: "repo1" }, { name: "repo2" }];
     const mockTeamsForRepoRequest1 = [
       {
@@ -359,12 +363,12 @@ describe("getTeamsForRepositoriesInOrganisation", () => {
     ];
 
     const fakeOctokit = {
-      paginate: jest
+      paginate: vi
         .fn<() => any>()
         .mockResolvedValueOnce(mockReposRequest)
         .mockResolvedValueOnce(mockTeamsForRepoRequest1)
         .mockResolvedValueOnce(mockTeamsForRepoRequest2),
-      rest: { repos: { listTeams: jest.fn(), listForOrg: jest.fn() } },
+      rest: { repos: { listTeams: vi.fn(), listForOrg: vi.fn() } },
     } as unknown as Octokit;
     const expectedTeamsForRepositoriesInOrganisation = {
       repo1: [
@@ -401,5 +405,6 @@ describe("getTeamsForRepositoriesInOrganisation", () => {
     expect(actualTeamsForRepositoriesInOrganisation).toEqual(
       expectedTeamsForRepositoriesInOrganisation
     );
+    vi.restoreAllMocks();
   });
 });

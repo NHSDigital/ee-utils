@@ -1,4 +1,4 @@
-import { jest } from "@jest/globals";
+import { MockedFunction, vi } from "vitest";
 import { LambdaLogger } from "../logger";
 import {
   checkForErrors,
@@ -12,16 +12,16 @@ import {
 } from "../sonarcloud";
 
 //@ts-ignore
-global.fetch = jest.fn();
+global.fetch = vi.fn();
 
-jest.mock("../parameters", () => {
+vi.mock("../parameters", () => {
   return {
-    ...(jest.requireActual("../parameters") as object),
+    ...(vi.importActual("../parameters") as object),
     getParameter: () => "some_parameter",
   };
 });
 beforeEach(() => {
-  (fetch as jest.MockedFunction<any>).mockClear();
+  (fetch as MockedFunction<any>).mockClear();
 });
 
 describe("checkForErrors", () => {
@@ -115,7 +115,7 @@ describe("getSonarcloudProjects", () => {
         },
       ],
     };
-    (fetch as jest.MockedFunction<any>).mockResolvedValue({
+    (fetch as MockedFunction<any>).mockResolvedValue({
       json: () => Promise.resolve(mockSonarcloudResponse),
     });
     const result = await getSonarcloudProjects("api-token", "orgName");
@@ -152,11 +152,11 @@ describe("getSonarcloudProjects", () => {
         },
       ],
     };
-    const fetchJsonMock = jest
+    const fetchJsonMock = vi
       .fn()
       .mockReturnValueOnce(Promise.resolve(mockSonarcloudResponsePageOne))
       .mockReturnValueOnce(Promise.resolve(mockSonarcloudResponsePageTwo));
-    (fetch as jest.MockedFunction<any>).mockResolvedValue({
+    (fetch as MockedFunction<any>).mockResolvedValue({
       json: fetchJsonMock,
     });
     const result = await getSonarcloudProjects("api-token", "orgName");
@@ -173,11 +173,11 @@ describe("getSonarcloudProjects", () => {
 
 describe("createGroup", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
   it("returns the group name and logs if in dry run mode", async () => {
     const inputGroupName = "someGroup";
-    const loggerSpy = jest.spyOn(LambdaLogger.prototype, "info");
+    const loggerSpy = vi.spyOn(LambdaLogger.prototype, "info");
     const result = await createGroup(
       inputGroupName,
       "someOrg",
@@ -192,8 +192,8 @@ describe("createGroup", () => {
   });
   it("create the group and logs the name", async () => {
     const inputGroupName = "someGroup";
-    const loggerSpy = jest.spyOn(LambdaLogger.prototype, "info");
-    (fetch as jest.MockedFunction<any>).mockResolvedValue({
+    const loggerSpy = vi.spyOn(LambdaLogger.prototype, "info");
+    (fetch as MockedFunction<any>).mockResolvedValue({
       json: () => Promise.resolve({ group: { name: "someGroup" } }),
     });
     const result = await createGroup(inputGroupName, "someOrg", "someToken");
@@ -209,8 +209,8 @@ describe("createGroup", () => {
   });
   it("should log and throw error if the group creation is unsuccessful", async () => {
     const inputGroupName = "someGroup";
-    const loggerSpy = jest.spyOn(LambdaLogger.prototype, "error");
-    (fetch as jest.MockedFunction<any>).mockResolvedValue({
+    const loggerSpy = vi.spyOn(LambdaLogger.prototype, "error");
+    (fetch as MockedFunction<any>).mockResolvedValue({
       json: () => Promise.resolve({ success: false }),
     });
     await expect(() =>
@@ -228,11 +228,11 @@ describe("makeSonarcloudAPICall", () => {
   const searchParams = { some: "param" };
   const sonarcloudApiToken = "someToken";
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
   it("should call with provided params", async () => {
     const expectedResponse = { response: ["response"], paging: { total: 1 } };
-    (fetch as jest.MockedFunction<any>).mockResolvedValue({
+    (fetch as MockedFunction<any>).mockResolvedValue({
       json: () => Promise.resolve(expectedResponse),
     });
     const result = await makeSonarcloudAPICall(
@@ -270,7 +270,7 @@ describe("makeSonarcloudAPICall", () => {
       paging: { pageIndex: 2, pageSize: 2, total: 4 },
     };
 
-    (fetch as jest.MockedFunction<any>)
+    (fetch as MockedFunction<any>)
       .mockResolvedValueOnce({
         json: () => Promise.resolve(mockSonarcloudFirstResponse),
       })
@@ -314,7 +314,7 @@ describe("makeSonarcloudAPICall", () => {
       total: 4,
     };
 
-    (fetch as jest.MockedFunction<any>)
+    (fetch as MockedFunction<any>)
       .mockResolvedValueOnce({
         json: () => Promise.resolve(mockSonarcloudFirstResponse),
       })
@@ -346,7 +346,7 @@ describe("makeSonarcloudAPICall", () => {
       ],
     };
 
-    (fetch as jest.MockedFunction<any>).mockResolvedValueOnce({
+    (fetch as MockedFunction<any>).mockResolvedValueOnce({
       json: () => Promise.resolve(mockSonarcloudFirstResponse),
     });
 
@@ -368,7 +368,7 @@ describe("makeSonarcloudAPICall", () => {
       groups: { id: 1, name: "someGroupName", membersCount: 0, default: false },
     };
 
-    (fetch as jest.MockedFunction<any>).mockResolvedValueOnce({
+    (fetch as MockedFunction<any>).mockResolvedValueOnce({
       json: () => Promise.resolve(mockSonarcloudFirstResponse),
     });
 
@@ -388,7 +388,7 @@ describe("makeSonarcloudAPICall", () => {
   it("should not paginate for POSTs", async () => {
     const mockSonarcloudFirstResponse = { group: { name: "someGroup" } };
 
-    (fetch as jest.MockedFunction<any>).mockResolvedValueOnce({
+    (fetch as MockedFunction<any>).mockResolvedValueOnce({
       json: () => Promise.resolve(mockSonarcloudFirstResponse),
     });
 
@@ -404,7 +404,7 @@ describe("makeSonarcloudAPICall", () => {
     expect(fetch).toBeCalledTimes(1);
   });
   it("should not attempt to parse the response as json for a 204", async () => {
-    (fetch as jest.MockedFunction<any>).mockResolvedValueOnce({
+    (fetch as MockedFunction<any>).mockResolvedValueOnce({
       status: 204,
     });
 
@@ -419,8 +419,8 @@ describe("makeSonarcloudAPICall", () => {
     expect(result).toEqual({ success: true });
   });
   it("should log out an error with fetch - POST", async () => {
-    (fetch as jest.MockedFunction<any>).mockRejectedValueOnce("some error");
-    const loggerSpy = jest.spyOn(LambdaLogger.prototype, "error");
+    (fetch as MockedFunction<any>).mockRejectedValueOnce("some error");
+    const loggerSpy = vi.spyOn(LambdaLogger.prototype, "error");
 
     const response = await makeSonarcloudAPICall(
       urlToCall,
@@ -436,10 +436,8 @@ describe("makeSonarcloudAPICall", () => {
     expect(response).toEqual({ success: false });
   });
   it("should log out an error with fetch - GET", async () => {
-    (fetch as jest.MockedFunction<any>).mockRejectedValueOnce(
-      Error("some error")
-    );
-    const loggerSpy = jest.spyOn(LambdaLogger.prototype, "error");
+    (fetch as MockedFunction<any>).mockRejectedValueOnce(Error("some error"));
+    const loggerSpy = vi.spyOn(LambdaLogger.prototype, "error");
 
     const response = await makeSonarcloudAPICall(
       urlToCall,
@@ -463,7 +461,7 @@ describe("makeSonarcloudGetRequest", () => {
     const sonarcloudApiToken = "someToken";
 
     const expectedResponse = { response: ["response"], paging: { total: 1 } };
-    (fetch as jest.MockedFunction<any>).mockResolvedValue({
+    (fetch as MockedFunction<any>).mockResolvedValue({
       json: () => Promise.resolve(expectedResponse),
     });
     const result = await makeSonarcloudGetRequest(
@@ -494,7 +492,7 @@ describe("makeSonarcloudPostRequest", () => {
 
     const mockSonarcloudResponse = { group: { name: "someGroup" } };
 
-    (fetch as jest.MockedFunction<any>).mockResolvedValueOnce({
+    (fetch as MockedFunction<any>).mockResolvedValueOnce({
       json: () => Promise.resolve(mockSonarcloudResponse),
     });
 

@@ -1,17 +1,19 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "commonjs",
+    "target": "ES6",
+    "module": "CommonJS",
     "outDir": "./lib/cjs",
     "rootDir": "./src",
+    "baseUrl": "./",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Node",
     "paths": {
       "@octokit/rest": ["./node_modules/@octokit/rest"]
-    }
+    },
+    "types": ["vitest/globals"]
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "**/__tests__/**"]
+  "exclude": ["node_modules", "**/__tests__/**", "**/*.test.ts"]
 }

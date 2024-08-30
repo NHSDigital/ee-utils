@@ -4,15 +4,16 @@ import {
   PutObjectCommand,
   S3Client,
 } from "@aws-sdk/client-s3";
-import { jest } from "@jest/globals";
 import { mockClient } from "aws-sdk-client-mock";
-import "aws-sdk-client-mock-jest";
+import { toHaveReceivedCommandWith } from "aws-sdk-client-mock-vitest";
+import { expect, vi } from "vitest";
 import {
   getParsedJSONFromS3,
   outputToS3,
   writeToS3HandleErrors,
 } from "../s3Utilities";
 
+expect.extend({ toHaveReceivedCommandWith });
 const s3Mock = mockClient(S3Client);
 
 beforeEach(() => {
@@ -27,7 +28,7 @@ describe("writeToS3HandleErrors", () => {
       },
     };
     s3Mock.on(PutObjectCommand).resolves(s3MockResponse);
-    const logSpy = jest.spyOn(global.console, "log");
+    const logSpy = vi.spyOn(global.console, "log");
     const jsonBody = { json_data: "SOME DATA" };
     const bucketName = "SOME BUCKET";
     const objectKey = "SOME KEY";
@@ -50,8 +51,8 @@ describe("writeToS3HandleErrors", () => {
   });
   it("fails to save the given json handles the error", async () => {
     s3Mock.on(PutObjectCommand).rejects("Mocked Error");
-    const logSpy = jest.spyOn(global.console, "log");
-    const errorSpy = jest.spyOn(global.console, "error");
+    const logSpy = vi.spyOn(global.console, "log");
+    const errorSpy = vi.spyOn(global.console, "error");
     const jsonBody = { json_data: "SOME DATA" };
     const bucketName = "SOME BUCKET";
     const objectKey = "SOME KEY";

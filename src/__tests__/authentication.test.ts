@@ -1,17 +1,17 @@
-import { jest } from "@jest/globals";
 import jwt from "jsonwebtoken";
+import { vi } from "vitest";
 import { authenticateLambda, authenticateRequest } from "../authentication";
 import { LambdaLogger } from "../logger";
 
 const MOCK_SIGNING_KEY = "mockSigningKey";
 
-jest.mock("jwks-rsa", () => ({
+vi.mock("jwks-rsa", () => ({
   // @ts-ignore
-  JwksClient: jest.fn().mockImplementation(() => ({
+  JwksClient: vi.fn().mockImplementation(() => ({
     // @ts-ignore
-    getSigningKey: jest.fn().mockResolvedValue({
+    getSigningKey: vi.fn().mockResolvedValue({
       // @ts-ignore
-      getPublicKey: jest.fn().mockReturnValue(MOCK_SIGNING_KEY),
+      getPublicKey: vi.fn().mockReturnValue(MOCK_SIGNING_KEY),
     }),
   })),
 }));
@@ -48,7 +48,7 @@ describe("authenticateLambda", () => {
   it("should return an error if there are no authorization headers", async () => {
     const headers = {};
     const [authorized, error] = await authenticateLambda(headers, "tenant_id", {
-      debug: jest.fn(),
+      debug: vi.fn(),
     } as any as LambdaLogger<any>);
 
     expect(authorized).toBeNull();
@@ -66,7 +66,7 @@ describe("authenticateLambda", () => {
     const [authorized, error] = await authenticateLambda(
       mockHeaders,
       "tenant_id",
-      { debug: jest.fn() } as any as LambdaLogger<any>
+      { debug: vi.fn() } as any as LambdaLogger<any>
     );
 
     expect(authorized).toBeNull();
@@ -74,7 +74,7 @@ describe("authenticateLambda", () => {
   });
   it("should return a success if authentication is successful", async () => {
     const logger = {
-      debug: jest.fn(),
+      debug: vi.fn(),
     };
     const token = jwt.sign({ foo: "bar" }, MOCK_SIGNING_KEY);
     const mockHeaders = {
