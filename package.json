@@ -44,6 +44,7 @@
     "@types/mongoose": "5.11.96",
     "@types/semver": "7.5.8",
     "@types/uuid": "10.0.0",
+    "@vitest/coverage-v8": "^2.0.5",
     "aws-sdk-client-mock": "4.0.1",
     "aws-sdk-client-mock-vitest": "^4.0.0",
     "esbuild": "0.23.1",
