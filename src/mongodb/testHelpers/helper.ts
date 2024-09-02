@@ -11,9 +11,6 @@ export const createCleanDatabase = async () => {
 export const connectToDatabase = async (uri: string) => {
   await mongoose.connect(uri);
 };
-export const disconnectFromDatabase = async () => {
-  await mongoose.disconnect();
-};
 
 export const cleanDatabase = async (uri: string) => {
   if (uri.includes("mongodb://127.0.0.1")) {
