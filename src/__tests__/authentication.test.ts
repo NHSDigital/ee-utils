@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { vi } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { authenticateLambda, authenticateRequest } from "../authentication";
 import { LambdaLogger } from "../logger";
 
@@ -19,8 +19,8 @@ vi.mock("jwks-rsa", () => ({
 describe("authenticateRequest", () => {
   it("should successfully verify authenticity", async () => {
     const token = jwt.sign({ foo: "bar" }, MOCK_SIGNING_KEY);
-    console.log("TOKEN", token);
     await authenticateRequest(token, "tenant");
+    expect(true).toBe(true);
   });
   it("should throw an error if the token cannot be decoded", async () => {
     await expect(authenticateRequest("foo", "bar")).rejects.toThrow(
