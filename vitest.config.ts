@@ -8,6 +8,7 @@ export default defineConfig({
     setupFiles: ["./setupTests.ts"],
     coverage: {
       reporter: ["lcov"],
+      reportsDirectory: "./coverage",
     },
   },
 });
