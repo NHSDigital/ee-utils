@@ -144,7 +144,16 @@ describe("disconnect", () => {
     vi.restoreAllMocks();
   });
   it("should disconnect from the database and log", async () => {
-    const logger = vi.fn();
+    const logger: ILog = {
+      info: vi.fn(),
+      error: vi.fn(),
+    };
+    await disconnectFromMongo(logger);
+
+    expect(mongoose.connection.readyState).toBe(0);
+    expect(logger.info).toHaveBeenCalledWith("ENGEXPUTILS009", {
+      message: "Disconnected from database",
+    });
   });
   it("should error if there is no database connection and log", async () => {
     vi.spyOn(mongoose, "disconnect").mockImplementation(async () =>
