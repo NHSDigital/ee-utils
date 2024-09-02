@@ -28,7 +28,7 @@ jobs:
       - name: Test and coverage
         run: yarn test --coverage --coverage.reportsDirectory=./coverage
       - name: See Directory
-        run: ls -l
+        run: ls -l && cd coverage && ls -l
       - name: Build package
         run: yarn build
 
