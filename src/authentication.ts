@@ -11,9 +11,7 @@ export const authenticateRequest = async (token: string, tenantId: string) => {
   if (!decodedToken) {
     throw new Error("Token is invalid");
   }
-  console.log(decodedToken);
   const key = await client.getSigningKey(decodedToken.header.kid);
-  console.log(key);
   try {
     jwt.verify(token, key.getPublicKey());
   } catch (err) {
