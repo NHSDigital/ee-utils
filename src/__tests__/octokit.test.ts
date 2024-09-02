@@ -1,7 +1,16 @@
 import { Octokit } from "@octokit/rest";
 import { generateKeyPairSync } from "crypto";
 import jwt from "jsonwebtoken";
-import { afterEach, MockInstance, vi } from "vitest";
+import {
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  MockInstance,
+  vi,
+} from "vitest";
 import { LambdaLogger } from "../logger";
 import {
   getAllRepositoriesInOrganisation,
@@ -106,6 +115,13 @@ describe("getOctokit", () => {
         inputInstallationId,
         {},
         (parameter: string) => Promise.resolve(parameter)
+      )
+    ).rejects.toThrow("installation_id is not a number");
+  });
+  it("sets empty values on the octokit app when cannot find the parameters", async () => {
+    await expect(
+      getOctokit("private_key", "app_id", "installation_id", {}, () =>
+        Promise.resolve(null)
       )
     ).rejects.toThrow("installation_id is not a number");
   });
