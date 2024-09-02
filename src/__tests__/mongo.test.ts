@@ -10,7 +10,7 @@ import {
 } from "vitest";
 import {
   connectToDatabaseViaEnvVar,
-  disconnectFromMongo,
+  disconnectFromDatabase,
   ILog,
 } from "../mongodb/mongo";
 
@@ -139,7 +139,7 @@ describe("connectToDatabaseViaEnvVar", () => {
   });
 });
 
-describe("disconnect", () => {
+describe("disconnectFromDatabase", () => {
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -148,7 +148,7 @@ describe("disconnect", () => {
       info: vi.fn(),
       error: vi.fn(),
     };
-    await disconnectFromMongo(logger);
+    await disconnectFromDatabase(logger);
 
     expect(mongoose.connection.readyState).toBe(0);
     expect(logger.info).toHaveBeenCalledWith("ENGEXPUTILS009", {
@@ -164,7 +164,7 @@ describe("disconnect", () => {
       error: vi.fn(),
     };
     try {
-      await disconnectFromMongo(logger);
+      await disconnectFromDatabase(logger);
     } catch (e: any) {
       expect(e.message).toBe("no connection");
     }

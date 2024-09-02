@@ -46,7 +46,7 @@ export const connectToDatabaseViaEnvVar = async (
   }
 };
 
-export const disconnectFromMongo = async (
+export const disconnectFromDatabase = async (
   logger: ILog = defaultLogger
 ): Promise<void> => {
   try {
