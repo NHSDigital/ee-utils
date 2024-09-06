@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
-import { logReferences } from "../logReferences";
-import { LambdaLogger } from "../logger";
-
+import { logReferences } from "../logReferences.js";
+import { LambdaLogger } from "../logger.js";
+// @ts-ignore
+// const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const defaultLogger = new LambdaLogger("ee-utils/mongodb", logReferences);
 
 export interface ILog {
@@ -51,9 +52,9 @@ export const disconnectFromDatabase = async (
 ): Promise<void> => {
   try {
     await mongoose.disconnect();
-    logger.info("ENGEXPUTILS009", { message: "Disconnected from database" });
+    logger.info("ENGEXPUTILS019");
   } catch (error: any) {
-    logger.error("ENGEXPUTILS010", {
+    logger.error("ENGEXPUTILS020", {
       error: error.toString(),
     });
     throw error;

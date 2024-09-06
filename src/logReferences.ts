@@ -17,4 +17,6 @@ export const logReferences: Record<string, string> = {
   ENGEXPUTILS016: "Attempting To Create Sonarcloud Group",
   ENGEXPUTILS017: "Failed To Create Sonarcloud Group",
   ENGEXPUTILS018: "Sonarcloud Post Request Failure",
+  ENGEXPUTILS019: "Disconnected From Database",
+  ENGEXPUTILS020: "Error Disconnecting From Database",
 };

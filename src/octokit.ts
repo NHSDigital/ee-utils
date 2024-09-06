@@ -1,8 +1,8 @@
 import { Octokit } from "@octokit/rest";
 import { App } from "octokit";
-import { logReferences } from "./logReferences";
-import { LambdaLogger } from "./logger";
-import { getParameter } from "./parameters";
+import { logReferences } from "./logReferences.js";
+import { LambdaLogger } from "./logger.js";
+import { getParameter } from "./parameters.js";
 
 export type OrgInfo = {
   orgName: string;

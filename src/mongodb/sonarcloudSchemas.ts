@@ -1,5 +1,5 @@
 import mongoose, { SchemaDefinitionProperty } from "mongoose";
-import { HealthStatuses, MetricRating } from "./stateTypes";
+import { HealthStatuses, MetricRating } from "./stateTypes.js";
 
 export interface IRepoSonarcloud {
   repo: string;

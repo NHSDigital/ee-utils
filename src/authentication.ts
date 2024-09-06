@@ -1,7 +1,7 @@
 import { APIGatewayProxyEventHeaders } from "aws-lambda";
 import jwt from "jsonwebtoken";
 import { JwksClient } from "jwks-rsa";
-import { LambdaLogger } from "./logger";
+import { LambdaLogger } from "./logger.js";
 
 export const authenticateRequest = async (token: string, tenantId: string) => {
   const client = new JwksClient({

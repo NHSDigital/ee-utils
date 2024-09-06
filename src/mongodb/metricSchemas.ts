@@ -1,64 +1,63 @@
 import mongoose from "mongoose";
-import { IRepoBranchProtection } from "./branchProtectionSchemas";
-import { IRepoDependabot } from "./dependabotSchemas";
-import { IGithubActionMinutes } from "./githubActionMinutesSchemas";
-import { IRepo } from "./repoSchemas";
-import { IRepoSonarcloud } from "./sonarcloudSchemas";
-import { IUniqueContributors } from "./uniqueContributorsSchemas";
+import { HealthStatuses, MetricRating } from "./stateTypes.js";
 
-type RepoOmitted<T> = Omit<T, "repo">;
-
-export interface IRepoMetrics
-  extends Pick<IRepo, "full_name" | "size" | "archived"> {
-  branchProtection: RepoOmitted<IRepoBranchProtection>;
-  dependabot: RepoOmitted<IRepoDependabot>;
-  githubActionMinutes: RepoOmitted<IGithubActionMinutes>;
-  sonarcloud: RepoOmitted<IRepoSonarcloud>;
-  uniqueContributors: RepoOmitted<IUniqueContributors>;
-  [index: string]: any;
+export interface IAggregatedRepo {
+  size: number;
+  totalLinesOfCode: number | "NA";
+  criticalDependabot: number | "NA";
+  highDependabot: number | "NA";
+  mediumDependabot: number | "NA";
+  lowDependabot: number | "NA";
+  proportionDependabotEnabled: number;
+  averageCodeCoverage: number;
+  averageBugs: number;
+  averageCodeSmells: number;
+  averageSecurityRating: MetricRating;
+  averageReliabilityRating: MetricRating;
+  averageSqaleRating: MetricRating;
+  proportionGreenRepos: number;
+  proportionAmberRepos: number;
+  proportionRedRepos: number;
+  overallServiceHealth: HealthStatuses;
+  hierarchyItem: string;
 }
 
-export const RepoMetricsSchema = new mongoose.Schema<IRepoMetrics>({
-  archived: { type: Boolean, required: true },
-  full_name: { type: String, required: true },
+export const AggregatedReposSchema = new mongoose.Schema<IAggregatedRepo>({
   size: { type: Number, required: true },
-  branchProtection: {
-    pullRequestRequired: { type: Boolean, required: true },
-    approvalsRequired: { type: Boolean, required: true },
-    stalePullRequestApprovalsDismissed: { type: Boolean, required: true },
-    signaturesRequired: { type: Boolean, required: true },
-    conversationResolutionRequired: { type: Boolean, required: true },
-    compliance: { type: String, required: true },
+  totalLinesOfCode: { type: mongoose.Schema.Types.Mixed, required: true },
+  criticalDependabot: { type: mongoose.Schema.Types.Mixed, required: true },
+  highDependabot: { type: mongoose.Schema.Types.Mixed, required: true },
+  mediumDependabot: { type: mongoose.Schema.Types.Mixed, required: true },
+  lowDependabot: { type: mongoose.Schema.Types.Mixed, required: true },
+  proportionDependabotEnabled: {
+    type: mongoose.Schema.Types.Mixed,
+    required: true,
   },
-  dependabot: {
-    dependabotEnabled: { type: Boolean, required: true },
-    criticalDependabot: { type: Number, required: true },
-    highDependabot: { type: Number, required: true },
-    mediumDependabot: { type: Number, required: true },
-    lowDependabot: { type: Number, required: true },
-    dependabotScore: { type: String, required: true },
+  averageCodeCoverage: { type: mongoose.Schema.Types.Mixed, required: true },
+  averageBugs: { type: mongoose.Schema.Types.Mixed, required: true },
+  averageCodeSmells: { type: mongoose.Schema.Types.Mixed, required: true },
+  averageSecurityRating: {
+    type: String,
+    required: true,
   },
-  githubActionMinutes: {
-    githubActionMinutes: { type: Number, required: true },
+  averageReliabilityRating: {
+    type: String,
+    required: true,
   },
-  sonarcloud: {
-    isEnabled: { type: Boolean, required: true },
-    reliabilityRating: { type: String, required: true },
-    securityRating: { type: String, required: true },
-    sqaleRating: { type: String, required: true },
-    codeCoverage: { type: Number, required: true },
-    codeCoverageScore: { type: String, required: true },
-    linesOfCode: { type: Number, required: true },
-    bugs: { type: Number, required: true },
-    codeSmells: { type: Number, required: true },
-    duplicatedLinesDensity: { type: Number, required: true },
+  averageSqaleRating: {
+    type: String,
+    required: true,
   },
-  uniqueContributors: {
-    contributors: { type: [String], required: true },
-    numContributors: { type: Number, required: true },
+  proportionGreenRepos: { type: Number, required: true },
+  proportionAmberRepos: { type: Number, required: true },
+  proportionRedRepos: { type: Number, required: true },
+  overallServiceHealth: {
+    type: String,
+    required: true,
   },
+  hierarchyItem: { type: String, required: true },
 });
 
-export const RepoMetricsModel =
-  mongoose.models.RepoMetrics ||
-  mongoose.model<IRepoMetrics>("RepoMetrics", RepoMetricsSchema);
+export const AggregatedReposModel =
+  mongoose.models.AggregatedRepos ||
+  mongoose.model<IAggregatedRepo>("AggregatedRepos", AggregatedReposSchema);

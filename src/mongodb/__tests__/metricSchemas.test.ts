@@ -1,106 +1,63 @@
-import { IRepoMetrics, RepoMetricsModel } from "../metricSchemas";
+import { describe, expect, it } from "vitest";
+import { AggregatedReposModel, IAggregatedRepo } from "../metricSchemas";
 
 describe("MetricSchema", () => {
-  const validRepoMetrics: IRepoMetrics = {
-    full_name: "owner/Repo-Name",
-    size: 10000,
-    archived: false,
-    branchProtection: {
-      approvalsRequired: true,
-      signaturesRequired: true,
-      pullRequestRequired: true,
-      stalePullRequestApprovalsDismissed: true,
-      conversationResolutionRequired: true,
-      compliance: "Green",
-    },
-    dependabot: {
-      dependabotEnabled: true,
-      dependabotScore: "Green",
-      criticalDependabot: 0,
-      highDependabot: 0,
-      mediumDependabot: 0,
-      lowDependabot: 0,
-    },
-    githubActionMinutes: {
-      githubActionMinutes: 0,
-    },
-    sonarcloud: {
-      bugs: 0,
-      codeCoverage: 100,
-      codeCoverageScore: "Green",
-      codeSmells: 0,
-      duplicatedLinesDensity: 0,
-      isEnabled: true,
-      linesOfCode: 50,
-      reliabilityRating: "A",
-      securityRating: "A",
-      sqaleRating: "A",
-    },
-    uniqueContributors: {
-      contributors: ["user1"],
-      numContributors: 0,
-    },
+  const validAggregatedRepo: IAggregatedRepo = {
+    size: 200,
+    averageCodeCoverage: 50,
+    totalLinesOfCode: 2,
+    averageBugs: 3,
+    averageCodeSmells: 5.5,
+    averageSecurityRating: "B",
+    averageReliabilityRating: "C",
+    averageSqaleRating: "C",
+    proportionGreenRepos: 0.5,
+    proportionAmberRepos: 0.5,
+    proportionRedRepos: 0,
+    criticalDependabot: 2,
+    highDependabot: 5,
+    mediumDependabot: 11,
+    lowDependabot: 31,
+    proportionDependabotEnabled: 1,
+    overallServiceHealth: "Amber",
+    hierarchyItem: "some_hierarchy",
   };
   describe("validations", () => {
     it("should succeed with a valid model", () => {
-      const validModel = new RepoMetricsModel(validRepoMetrics);
+      const validModel = new AggregatedReposModel(validAggregatedRepo);
       expect(validModel.validateSync()).toBeUndefined();
-      for (const key in validRepoMetrics) {
-        expect(validModel[key]).toEqual(validRepoMetrics[key]);
+      for (const key in validAggregatedRepo) {
+        expect(validModel[key]).toEqual(validAggregatedRepo[key]);
       }
     });
-    it.each([["archived"], ["full_name"], ["size"]])(
-      "should fail if all top-level details are not provided",
-      (field) => {
-        const invalidModel = new RepoMetricsModel({
-          ...validRepoMetrics,
-          [field]: undefined,
-        });
-
-        const errors = invalidModel.validateSync();
-        expect(errors).toBeDefined();
-        expect(errors?.errors[field]).toBeDefined();
-      }
-    );
     it.each([
-      ["branchProtection", "pullRequestRequired"],
-      ["branchProtection", "approvalsRequired"],
-      ["branchProtection", "stalePullRequestApprovalsDismissed"],
-      ["branchProtection", "signaturesRequired"],
-      ["branchProtection", "conversationResolutionRequired"],
-      ["branchProtection", "compliance"],
-      ["dependabot", "dependabotEnabled"],
-      ["dependabot", "criticalDependabot"],
-      ["dependabot", "highDependabot"],
-      ["dependabot", "mediumDependabot"],
-      ["dependabot", "lowDependabot"],
-      ["dependabot", "dependabotScore"],
-      ["githubActionMinutes", "githubActionMinutes"],
-      ["sonarcloud", "isEnabled"],
-      ["sonarcloud", "reliabilityRating"],
-      ["sonarcloud", "securityRating"],
-      ["sonarcloud", "sqaleRating"],
-      ["sonarcloud", "codeCoverage"],
-      ["sonarcloud", "codeCoverageScore"],
-      ["sonarcloud", "linesOfCode"],
-      ["sonarcloud", "bugs"],
-      ["sonarcloud", "codeSmells"],
-      ["sonarcloud", "duplicatedLinesDensity"],
-      ["uniqueContributors", "numContributors"],
-    ])(
-      "should fail if all nested details are not provided %s.%s",
-      (topLevelField, nestedField) => {
-        const invalidModel = new RepoMetricsModel({
-          ...validRepoMetrics,
-          [topLevelField]: {
-            ...validRepoMetrics[topLevelField],
-            [nestedField]: undefined,
-          },
-        });
-        const errors = invalidModel.validateSync();
-        expect(errors).toBeDefined();
-        expect(errors?.errors[`${topLevelField}.${nestedField}`]).toBeDefined();
-      }
-    );
+      ["size"],
+      ["averageCodeCoverage"],
+      ["totalLinesOfCode"],
+      ["averageBugs"],
+      ["averageCodeSmells"],
+      ["averageSecurityRating"],
+      ["averageReliabilityRating"],
+      ["averageSqaleRating"],
+      ["proportionGreenRepos"],
+      ["proportionAmberRepos"],
+      ["proportionRedRepos"],
+      ["criticalDependabot"],
+      ["highDependabot"],
+      ["mediumDependabot"],
+      ["lowDependabot"],
+      ["proportionDependabotEnabled"],
+      ["overallServiceHealth"],
+      ["hierarchyItem"],
+    ])("should fail if all top-level details are not provided", (field) => {
+      const invalidModel = new AggregatedReposModel({
+        ...validAggregatedRepo,
+        [field]: undefined,
+      });
+
+      const errors = invalidModel.validateSync();
+      expect(errors).toBeDefined();
+      expect(errors?.errors[field]).toBeDefined();
+    });
   });
 });
