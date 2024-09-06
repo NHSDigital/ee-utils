@@ -129,7 +129,7 @@ describe("connectToDatabaseViaEnvVar", () => {
         serverSelectionTimeoutMS: 0,
       });
     } catch (error: any) {
-      expect(error.success).toEqual("MONGODB_URI environment variable not set");
+      expect(error.message).toEqual("MONGODB_URI environment variable not set");
     }
 
     expect(LambdaLogger.prototype.error).toHaveBeenCalledWith(
@@ -151,9 +151,7 @@ describe("disconnectFromDatabase", () => {
     await disconnectFromDatabase(logger);
 
     expect(mongoose.connection.readyState).toBe(0);
-    expect(logger.info).toHaveBeenCalledWith("ENGEXPUTILS019", {
-      message: "Disconnected from database",
-    });
+    expect(logger.info).toHaveBeenCalledWith("ENGEXPUTILS019");
   });
   it("should error if there is no database connection and log", async () => {
     vi.spyOn(mongoose, "disconnect").mockImplementation(async () =>
