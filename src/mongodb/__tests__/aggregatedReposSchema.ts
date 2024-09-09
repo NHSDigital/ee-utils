@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   AggregatedReposModel,
   IAggregatedRepo,
-} from "../aggregatedReposSchema";
+} from "../aggregatedReposSchema.js";
 
 describe("AggregatedRepoSchema", () => {
   const validAggregatedRepo: IAggregatedRepo = {
