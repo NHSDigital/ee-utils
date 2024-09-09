@@ -1,9 +1,9 @@
 import mongoose from "mongoose";
+import { AggregatedReposModel } from "../aggregatedReposSchema.js";
 import { RepoBranchProtectionModel } from "../branchProtectionSchemas.js";
 import { RepoDependabotModel } from "../dependabotSchemas.js";
 import { GithubActionMinutesModel } from "../githubActionMinutesSchemas.js";
 import { HierarchyModel } from "../hierarchySchemas.js";
-import { AggregatedReposModel } from "../metricSchemas.js";
 import { RepoModel } from "../repoSchemas.js";
 import { RepoSonarcloudModel } from "../sonarcloudSchemas.js";
 import { UniqueContributorsModel } from "../uniqueContributorsSchemas.js";

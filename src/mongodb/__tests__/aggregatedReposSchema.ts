@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { AggregatedReposModel, IAggregatedRepo } from "../metricSchemas";
+import {
+  AggregatedReposModel,
+  IAggregatedRepo,
+} from "../aggregatedReposSchema";
 
-describe("MetricSchema", () => {
+describe("AggregatedRepoSchema", () => {
   const validAggregatedRepo: IAggregatedRepo = {
     size: 200,
     averageCodeCoverage: 50,
