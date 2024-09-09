@@ -33,34 +33,18 @@ describe("AggregatedRepoSchema", () => {
         expect(validModel[key]).toEqual(validAggregatedRepo[key]);
       }
     });
-    it.each([
-      ["size"],
-      ["averageCodeCoverage"],
-      ["totalLinesOfCode"],
-      ["averageBugs"],
-      ["averageCodeSmells"],
-      ["averageSecurityRating"],
-      ["averageReliabilityRating"],
-      ["averageSqaleRating"],
-      ["proportionGreenRepos"],
-      ["proportionAmberRepos"],
-      ["proportionRedRepos"],
-      ["criticalDependabot"],
-      ["highDependabot"],
-      ["mediumDependabot"],
-      ["lowDependabot"],
-      ["proportionDependabotEnabled"],
-      ["overallServiceHealth"],
-      ["hierarchyItem"],
-    ])("should fail if all top-level details are not provided", (field) => {
-      const invalidModel = new AggregatedReposModel({
-        ...validAggregatedRepo,
-        [field]: undefined,
-      });
+    it.each(Object.keys(validAggregatedRepo).map((k) => [k]))(
+      "should fail if all top-level details are not provided",
+      (field) => {
+        const invalidModel = new AggregatedReposModel({
+          ...validAggregatedRepo,
+          [field]: undefined,
+        });
 
-      const errors = invalidModel.validateSync();
-      expect(errors).toBeDefined();
-      expect(errors?.errors[field]).toBeDefined();
-    });
+        const errors = invalidModel.validateSync();
+        expect(errors).toBeDefined();
+        expect(errors?.errors[field]).toBeDefined();
+      }
+    );
   });
 });

@@ -19,8 +19,7 @@ vi.mock("jwks-rsa", () => ({
 describe("authenticateRequest", () => {
   it("should successfully verify authenticity", async () => {
     const token = jwt.sign({ foo: "bar" }, MOCK_SIGNING_KEY);
-    await authenticateRequest(token, "tenant");
-    expect(true).toBe(true);
+    await expect(authenticateRequest(token, "tenant")).resolves.toBeUndefined();
   });
   it("should throw an error if the token cannot be decoded", async () => {
     await expect(authenticateRequest("foo", "bar")).rejects.toThrow(

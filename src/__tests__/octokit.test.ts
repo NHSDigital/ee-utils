@@ -120,8 +120,12 @@ describe("getOctokit", () => {
   });
   it("sets empty values on the octokit app when cannot find the parameters", async () => {
     await expect(
-      getOctokit("private_key", "app_id", "installation_id", {}, () =>
-        Promise.resolve(null)
+      getOctokit(
+        "private_key",
+        "app_id",
+        "installation_id",
+        {},
+        async () => null
       )
     ).rejects.toThrow("installation_id is not a number");
   });
@@ -143,7 +147,6 @@ describe("getAllRepositoriesInOrganisation", () => {
   it("gets all repository names in an organisation", async () => {
     const repositories = [{ name: "Test" }, { name: "Other" }];
     const fakeOctokit = buildFakeOctokit(repositories);
-    console.log("AAAAAAHHHHHHHH", getAllRepositoriesInOrganisation);
     const result = await getAllRepositoriesInOrganisation(
       fakeOctokit,
       "NHS-CodeLab"
@@ -312,7 +315,6 @@ describe("getTeamsForRepositoriesInOrganisastion", () => {
   it("returns all teams by repos in the organisation", async () => {
     vi.doMock("../octokit", async (importOriginal) => {
       const actual = (await importOriginal()) as object;
-      console.log("ACTUAL", actual);
       return {
         ...actual,
         getAllRepositoriesInOrganisation: vi
@@ -421,6 +423,5 @@ describe("getTeamsForRepositoriesInOrganisastion", () => {
     expect(actualTeamsForRepositoriesInOrganisation).toEqual(
       expectedTeamsForRepositoriesInOrganisation
     );
-    vi.restoreAllMocks();
   });
 });

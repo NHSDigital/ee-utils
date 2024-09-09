@@ -31,23 +31,26 @@ const fakeLogger = (): [ILog, string[]] => {
   return [logger, output];
 };
 
+afterEach(() => {
+  vi.restoreAllMocks();
+});
+
+const mongooseIsConnected = () => {
+  return mongoose.connection.readyState === 1;
+};
+
+const ensureMongooseIsConnected = async () => {
+  if (!mongooseIsConnected()) {
+    await mongoose.connect(process.env.MONGODB_URI!);
+  }
+};
+
+const ensureMongooseIsDisconnected = async () => {
+  if (mongooseIsConnected()) {
+    await mongoose.disconnect();
+  }
+};
 describe("connectToDatabaseViaEnvVar", () => {
-  const mongooseIsConnected = () => {
-    return mongoose.connection.readyState === 1;
-  };
-
-  const ensureMongooseIsConnected = async () => {
-    if (!mongooseIsConnected()) {
-      console.log(process.env.MONGODB_URI);
-      await mongoose.connect(process.env.MONGODB_URI!);
-    }
-  };
-
-  const ensureMongooseIsDisconnected = async () => {
-    if (mongooseIsConnected()) {
-      await mongoose.disconnect();
-    }
-  };
   let originalMongoDBUri: string | undefined = "";
 
   beforeAll(async () => {
@@ -55,13 +58,11 @@ describe("connectToDatabaseViaEnvVar", () => {
   });
 
   beforeEach(async () => {
-    vi.restoreAllMocks();
     process.env.MONGODB_URI = originalMongoDBUri;
     await ensureMongooseIsDisconnected();
   });
 
   afterEach(async () => {
-    vi.restoreAllMocks();
     process.env.MONGODB_URI = originalMongoDBUri;
     await ensureMongooseIsConnected();
   });
@@ -140,32 +141,21 @@ describe("connectToDatabaseViaEnvVar", () => {
 });
 
 describe("disconnectFromDatabase", () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
+  const logger: ILog = {
+    info: vi.fn(),
+    error: vi.fn(),
+  };
   it("should disconnect from the database and log", async () => {
-    const logger: ILog = {
-      info: vi.fn(),
-      error: vi.fn(),
-    };
     await disconnectFromDatabase(logger);
 
     expect(mongoose.connection.readyState).toBe(0);
     expect(logger.info).toHaveBeenCalledWith("ENGEXPUTILS019");
   });
   it("should error if there is no database connection and log", async () => {
-    vi.spyOn(mongoose, "disconnect").mockImplementation(async () =>
-      Promise.reject(Error("no connection"))
+    vi.spyOn(mongoose, "disconnect").mockRejectedValue(Error("no connection"));
+    await expect(disconnectFromDatabase(logger)).rejects.toThrow(
+      "no connection"
     );
-    const logger: ILog = {
-      info: vi.fn(),
-      error: vi.fn(),
-    };
-    try {
-      await disconnectFromDatabase(logger);
-    } catch (e: any) {
-      expect(e.message).toBe("no connection");
-    }
     expect(logger.error).toHaveBeenCalledWith("ENGEXPUTILS020", {
       error: "Error: no connection",
     });
