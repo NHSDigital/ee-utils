@@ -1,6 +1,7 @@
-import { LambdaLogger, getTimestamp } from "../logger";
-import { transports } from "winston";
 import { Writable } from "stream";
+import { vi } from "vitest";
+import { transports } from "winston";
+import { LambdaLogger, getTimestamp } from "../logger";
 
 const jsonTransport = () => {
   const buffer: any[] = [];
@@ -110,7 +111,7 @@ describe("LambdaLogger - _removeReservedFields", () => {
 
 describe("getTimestamp", () => {
   it("returns the timestamp for the current date", () => {
-    jest.useFakeTimers().setSystemTime(new Date("2023-02-15"));
+    vi.useFakeTimers().setSystemTime(new Date("2023-02-15"));
 
     const expectedTimestamp = 1676419200000;
 

@@ -1,4 +1,4 @@
-import { MetricRating } from "../../stateTypes";
+import { MetricRating } from "../../stateTypes.js";
 
 const createDependabot = (repo: string) => ({
   repo: `ORG/${repo}`,

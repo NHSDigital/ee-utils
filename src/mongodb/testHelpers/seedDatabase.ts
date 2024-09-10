@@ -1,42 +1,50 @@
 import mongoose from "mongoose";
-import { RepoBranchProtectionModel } from "../branchProtectionSchemas";
-import { RepoDependabotModel } from "../dependabotSchemas";
-import { GithubActionMinutesModel } from "../githubActionMinutesSchemas";
-import { HierarchyModel } from "../hierarchySchemas";
-import { RepoModel } from "../repoSchemas";
-import { RepoSonarcloudModel } from "../sonarcloudSchemas";
-import { UniqueContributorsModel } from "../uniqueContributorsSchemas";
-import { AREA_1, AREA_2, AREA_3, AREA_4 } from "./seedData/areas";
+import { AggregatedReposModel } from "../aggregatedReposSchema.js";
+import { RepoBranchProtectionModel } from "../branchProtectionSchemas.js";
+import { RepoDependabotModel } from "../dependabotSchemas.js";
+import { GithubActionMinutesModel } from "../githubActionMinutesSchemas.js";
+import { HierarchyModel } from "../hierarchySchemas.js";
+import { RepoModel } from "../repoSchemas.js";
+import { RepoSonarcloudModel } from "../sonarcloudSchemas.js";
+import { UniqueContributorsModel } from "../uniqueContributorsSchemas.js";
+import {
+  AREA_1_AGGREGATION,
+  DIRECTORATE_1_AGGREGATION,
+  FUNCTION_1_AGGREGATION,
+  SERVICE_1_AGGREGATION,
+  SUBDIRECTORATE_1_AGGREGATION,
+} from "./seedData/aggregated.js";
+import { AREA_1, AREA_2, AREA_3, AREA_4 } from "./seedData/areas.js";
 import {
   DIRECTORATE_1,
   DIRECTORATE_2,
   UNALLOCATED,
-} from "./seedData/directorates";
+} from "./seedData/directorates.js";
 import {
   FUNCTION_1,
   FUNCTION_2,
   FUNCTION_3,
   FUNCTION_4,
-} from "./seedData/functions";
+} from "./seedData/functions.js";
 import {
   HISTORICAL_REPO_1,
   REPO_1,
   REPO_2,
   REPO_3,
   REPO_4,
-} from "./seedData/repos";
+} from "./seedData/repos.js";
 import {
   SERVICE_1,
   SERVICE_2,
   SERVICE_3,
   SERVICE_4,
-} from "./seedData/services";
+} from "./seedData/services.js";
 import {
   SUBDIRECTORATE_1,
   SUBDIRECTORATE_2,
   SUBDIRECTORATE_3,
   SUBDIRECTORATE_4,
-} from "./seedData/subdirectorates";
+} from "./seedData/subdirectorates.js";
 
 export const seedDatabase = async (uri: string) => {
   await mongoose.connect(uri);
@@ -46,6 +54,7 @@ export const seedDatabase = async (uri: string) => {
   await insertSubdirectorates();
   await insertAreas();
   await insertServices();
+  await insertAggregations();
   await mongoose.disconnect();
 };
 
@@ -131,4 +140,14 @@ export const insertAreas = async () => {
 
 export const insertServices = async () => {
   await HierarchyModel.insertMany([SERVICE_1, SERVICE_2, SERVICE_3, SERVICE_4]);
+};
+
+export const insertAggregations = async () => {
+  await AggregatedReposModel.insertMany([
+    DIRECTORATE_1_AGGREGATION,
+    FUNCTION_1_AGGREGATION,
+    SUBDIRECTORATE_1_AGGREGATION,
+    AREA_1_AGGREGATION,
+    SERVICE_1_AGGREGATION,
+  ]);
 };

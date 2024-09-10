@@ -1,8 +1,8 @@
 import { Octokit } from "@octokit/rest";
 import { App } from "octokit";
-import { logReferences } from "./logReferences";
-import { LambdaLogger } from "./logger";
-import { getParameter } from "./parameters";
+import { logReferences } from "./logReferences.js";
+import { LambdaLogger } from "./logger.js";
+import { getParameter } from "./parameters.js";
 
 export type OrgInfo = {
   orgName: string;
@@ -37,12 +37,14 @@ export const getOctokit = async (
   privateKey: string,
   appId: string,
   installationId: string,
-  octokitOptions: any = {}
+  octokitOptions: any = {},
+  getParameterFn: typeof getParameter = getParameter
 ): Promise<Octokit> => {
-  const GITHUB_PRIVATE_KEY = (await getParameter(privateKey, true)) ?? "";
-  const GITHUB_APP_ID = (await getParameter(appId)) ?? "";
-  const GITHUB_INSTALLATION_ID = (await getParameter(installationId)) ?? "0";
-
+  const GITHUB_PRIVATE_KEY =
+    (await getParameterFn(privateKey, true)) ?? "private_key";
+  const GITHUB_APP_ID = (await getParameterFn(appId)) ?? "app_id";
+  const GITHUB_INSTALLATION_ID =
+    (await getParameterFn(installationId)) ?? "installation_id";
   logger.debug("ENGEXPUTILS009", {
     GITHUB_APP_ID,
     GITHUB_INSTALLATION_ID,
