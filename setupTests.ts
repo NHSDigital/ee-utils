@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { afterAll, beforeAll } from "vitest";
+import { afterAll, afterEach, beforeAll, vi } from "vitest";
 import { createCleanDatabase } from "./src/mongodb/testHelpers/helper";
 beforeAll(async () => {
   const { uri, mongod } = await createCleanDatabase();
@@ -9,7 +9,12 @@ beforeAll(async () => {
   await mongoose.connect(process.env.MONGODB_URI!);
 });
 
+afterEach(() => {
+  vi.clearAllMocks();
+});
+
 afterAll(async () => {
+  vi.resetAllMocks();
   await mongoose.disconnect();
   // @ts-ignore
   await global.__MONGOD__.stop();

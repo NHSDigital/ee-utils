@@ -30,10 +30,7 @@ const fakeLogger = (): [ILog, string[]] => {
   const logger = winston.createLogger({ transports: [streamTransport] });
   return [logger, output];
 };
-
-afterEach(() => {
-  vi.restoreAllMocks();
-});
+let originalMongoDBUri: string | undefined = "";
 
 const mongooseIsConnected = () => {
   return mongoose.connection.readyState === 1;
@@ -51,8 +48,6 @@ const ensureMongooseIsDisconnected = async () => {
   }
 };
 describe("connectToDatabaseViaEnvVar", () => {
-  let originalMongoDBUri: string | undefined = "";
-
   beforeAll(async () => {
     originalMongoDBUri = process.env.MONGODB_URI;
   });
