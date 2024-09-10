@@ -2,7 +2,6 @@ import { Octokit } from "@octokit/rest";
 import { generateKeyPairSync } from "crypto";
 import jwt from "jsonwebtoken";
 import {
-  afterEach,
   beforeAll,
   beforeEach,
   describe,
@@ -24,10 +23,6 @@ vi.doMock("../parameters", () => ({
   ...(vi.importActual("../parameters") as object),
   getParameter: vi.fn((parameter) => Promise.resolve(parameter)),
 }));
-
-afterEach(() => {
-  vi.restoreAllMocks();
-});
 
 describe("octokitApp", () => {
   let privateKey: string;

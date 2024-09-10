@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
+import { afterAll, beforeAll } from "vitest";
 import { createCleanDatabase } from "./src/mongodb/testHelpers/helper";
-
 beforeAll(async () => {
   const { uri, mongod } = await createCleanDatabase();
   process.env.MONGODB_URI = uri;
