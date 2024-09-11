@@ -1,6 +1,6 @@
 {
   "name": "@NHSDigital/ee-utils",
-  "version": "0.0.70-dev.4",
+  "version": "0.0.70-dev.5",
   "license": "MIT",
   "type": "module",
   "author": "jacobgill1 <jacob.gill1@nhs.net>",
