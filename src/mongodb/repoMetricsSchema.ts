@@ -8,8 +8,8 @@ import { IUniqueContributors } from "./uniqueContributorsSchemas.js";
 
 type RepoOmitted<T> = Omit<T, "repo">;
 
-export interface IRepoMetrics
-  extends Pick<IRepo, "full_name" | "size" | "archived"> {
+export interface IRepoMetrics {
+  repo: IRepo;
   branchProtection: RepoOmitted<IRepoBranchProtection>;
   dependabot: RepoOmitted<IRepoDependabot>;
   githubActionMinutes: RepoOmitted<IGithubActionMinutes>;
@@ -19,9 +19,21 @@ export interface IRepoMetrics
 }
 
 export const RepoMetricsSchema = new mongoose.Schema<IRepoMetrics>({
-  archived: { type: Boolean, required: true },
-  full_name: { type: String, required: true },
-  size: { type: Number, required: true },
+  repo: {
+    name: { type: String, required: true },
+    owner: { type: String, required: true },
+    full_name: { type: String, required: true },
+    github_id: { type: Number, required: true },
+    language: { type: String, required: true },
+    node_id: { type: String, required: true },
+    pushed_at: { type: String, required: true },
+    repo_created_at: { type: String, required: true },
+    repo_updated_at: { type: String, required: true },
+    size: { type: Number, required: true },
+    url: { type: String, required: true },
+    visibility: { type: String, required: true },
+    archived: { type: Boolean, required: true },
+  },
   branchProtection: {
     pullRequestRequired: { type: Boolean, required: true },
     approvalsRequired: { type: Boolean, required: true },
@@ -54,7 +66,16 @@ export const RepoMetricsSchema = new mongoose.Schema<IRepoMetrics>({
     duplicatedLinesDensity: { type: Number, required: true },
   },
   uniqueContributors: {
-    contributors: { type: [String], required: true },
+    contributors: {
+      type: [String],
+      required: true,
+      validate: function (this: IRepoMetrics) {
+        return (
+          this.uniqueContributors.contributors.length ===
+          this.uniqueContributors.numContributors
+        );
+      },
+    },
     numContributors: { type: Number, required: true },
   },
 });

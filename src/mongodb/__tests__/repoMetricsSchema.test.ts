@@ -3,9 +3,21 @@ import { IRepoMetrics, RepoMetricsModel } from "../repoMetricsSchema.js";
 
 describe("RepoMetricSchema", () => {
   const validRepoMetrics: IRepoMetrics = {
-    full_name: "owner/Repo-Name",
-    size: 10000,
-    archived: false,
+    repo: {
+      name: "repo1",
+      owner: "owner1",
+      full_name: "owner/Repo-Name",
+      github_id: 1,
+      language: "JavaScript",
+      node_id: "node_id",
+      pushed_at: "2021-08-01T00:00:00Z",
+      repo_created_at: "2021-08-01T00:00:00Z",
+      repo_updated_at: "2021-08-01T00:00:00Z",
+      size: 100,
+      url: "https://api.github.com/repos/owner1/repo1",
+      visibility: "public",
+      archived: false,
+    },
     branchProtection: {
       approvalsRequired: true,
       signaturesRequired: true,
@@ -39,7 +51,7 @@ describe("RepoMetricSchema", () => {
     },
     uniqueContributors: {
       contributors: ["user1"],
-      numContributors: 0,
+      numContributors: 1,
     },
   };
   describe("validations", () => {
@@ -50,45 +62,11 @@ describe("RepoMetricSchema", () => {
         expect(validModel[key]).toEqual(validRepoMetrics[key]);
       }
     });
-    it.each([["archived"], ["full_name"], ["size"]])(
-      "should fail if all top-level details are not provided",
-      (field) => {
-        const invalidModel = new RepoMetricsModel({
-          ...validRepoMetrics,
-          [field]: undefined,
-        });
-
-        const errors = invalidModel.validateSync();
-        expect(errors).toBeDefined();
-        expect(errors?.errors[field]).toBeDefined();
-      }
-    );
-    it.each([
-      ["branchProtection", "pullRequestRequired"],
-      ["branchProtection", "approvalsRequired"],
-      ["branchProtection", "stalePullRequestApprovalsDismissed"],
-      ["branchProtection", "signaturesRequired"],
-      ["branchProtection", "conversationResolutionRequired"],
-      ["branchProtection", "compliance"],
-      ["dependabot", "dependabotEnabled"],
-      ["dependabot", "criticalDependabot"],
-      ["dependabot", "highDependabot"],
-      ["dependabot", "mediumDependabot"],
-      ["dependabot", "lowDependabot"],
-      ["dependabot", "dependabotScore"],
-      ["githubActionMinutes", "githubActionMinutes"],
-      ["sonarcloud", "isEnabled"],
-      ["sonarcloud", "reliabilityRating"],
-      ["sonarcloud", "securityRating"],
-      ["sonarcloud", "sqaleRating"],
-      ["sonarcloud", "codeCoverage"],
-      ["sonarcloud", "codeCoverageScore"],
-      ["sonarcloud", "linesOfCode"],
-      ["sonarcloud", "bugs"],
-      ["sonarcloud", "codeSmells"],
-      ["sonarcloud", "duplicatedLinesDensity"],
-      ["uniqueContributors", "numContributors"],
-    ])(
+    it.each(
+      Object.entries(validRepoMetrics).flatMap(([key, value]) => [
+        ...Object.keys(value).map((subkey) => [key, subkey]),
+      ])
+    )(
       "should fail if all nested details are not provided %s.%s",
       (topLevelField, nestedField) => {
         const invalidModel = new RepoMetricsModel({
