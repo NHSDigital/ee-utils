@@ -46,5 +46,12 @@ describe("AggregatedRepoSchema", () => {
         expect(errors?.errors[field]).toBeDefined();
       }
     );
+    it("should create a document with timestamps", async () => {
+      const validModel = new AggregatedReposModel(validAggregatedRepo);
+
+      const insertedDocument = await AggregatedReposModel.create(validModel);
+
+      expect(insertedDocument.document_created_at).toBeDefined();
+    });
   });
 });
