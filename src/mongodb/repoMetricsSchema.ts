@@ -44,26 +44,26 @@ export const RepoMetricsSchema = new mongoose.Schema<IRepoMetrics>({
   },
   dependabot: {
     dependabotEnabled: { type: Boolean, required: true },
-    criticalDependabot: { type: Number, required: true },
-    highDependabot: { type: Number, required: true },
-    mediumDependabot: { type: Number, required: true },
-    lowDependabot: { type: Number, required: true },
-    dependabotScore: { type: String, required: true },
+    criticalDependabot: { type: Number, required: true, default: 0 },
+    highDependabot: { type: Number, required: true, default: 0 },
+    mediumDependabot: { type: Number, required: true, default: 0 },
+    lowDependabot: { type: Number, required: true, default: 0 },
+    dependabotScore: { type: String, required: true, default: "Grey" },
   },
   githubActionMinutes: {
-    githubActionMinutes: { type: Number, required: true },
+    githubActionMinutes: { type: Number, required: true, default: 0 },
   },
   sonarcloud: {
     isEnabled: { type: Boolean, required: true },
-    reliabilityRating: { type: String, required: true },
-    securityRating: { type: String, required: true },
-    sqaleRating: { type: String, required: true },
-    codeCoverage: { type: Number, required: true },
-    codeCoverageScore: { type: String, required: true },
-    linesOfCode: { type: Number, required: true },
-    bugs: { type: Number, required: true },
-    codeSmells: { type: Number, required: true },
-    duplicatedLinesDensity: { type: Number, required: true },
+    reliabilityRating: { type: String, required: true, default: null },
+    securityRating: { type: String, required: true, default: null },
+    sqaleRating: { type: String, required: true, default: null },
+    codeCoverage: { type: Number, required: true, default: null },
+    codeCoverageScore: { type: String, required: true, default: "Grey" },
+    linesOfCode: { type: Number, required: true, default: null },
+    bugs: { type: Number, required: true, default: null },
+    codeSmells: { type: Number, required: true, default: null },
+    duplicatedLinesDensity: { type: Number, required: true, default: null },
   },
   uniqueContributors: {
     contributors: {
@@ -75,8 +75,9 @@ export const RepoMetricsSchema = new mongoose.Schema<IRepoMetrics>({
           this.uniqueContributors.numContributors
         );
       },
+      default: [],
     },
-    numContributors: { type: Number, required: true },
+    numContributors: { type: Number, required: true, default: 0 },
   },
 });
 

@@ -60,7 +60,7 @@ const createSonarcloud = (repo: string) => ({
 const createUniqueContributors = (repo: string) => ({
   repo: `ORG/${repo}`,
   contributors: ["user1", "user2"],
-  numContributors: Math.floor(Math.random() * 10),
+  numContributors: 2,
 });
 
 const createHierarchy = (repo: string, isUnallocated = false) => {
@@ -126,3 +126,27 @@ export const REPO_4 = {
   uniqueContributors: createUniqueContributors(REPO_4_NAME),
   hierarchy: createHierarchy(REPO_4_NAME),
 };
+
+const consolidateRepoData = (repoData: any) => {
+  const consolidatedData = {
+    dependabot: { ...repoData.dependabot, dependabotScore: "Green" },
+    branchProtection: { ...repoData.branchProtection, compliance: "Green" },
+    githubActionMinutes: { ...repoData.githubActionMinutes },
+    repo: { ...repoData.repo },
+    sonarcloud: { ...repoData.sonarcloud, codeCoverageScore: "Green" },
+    uniqueContributors: { ...repoData.uniqueContributors },
+  };
+
+  delete consolidatedData.branchProtection.repo;
+  delete consolidatedData.dependabot.repo;
+  delete consolidatedData.githubActionMinutes.repo;
+  delete consolidatedData.sonarcloud.repo;
+  delete consolidatedData.uniqueContributors.repo;
+
+  return consolidatedData;
+};
+
+export const REPO_1_CONSOLIDATED = consolidateRepoData(REPO_1);
+export const REPO_2_CONSOLIDATED = consolidateRepoData(REPO_2);
+export const REPO_3_CONSOLIDATED = consolidateRepoData(REPO_3);
+export const REPO_4_CONSOLIDATED = consolidateRepoData(REPO_4);
