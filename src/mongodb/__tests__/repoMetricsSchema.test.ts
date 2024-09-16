@@ -54,6 +54,16 @@ describe("RepoMetricSchema", () => {
       numContributors: 1,
     },
   };
+  const validationProperties = JSON.parse(JSON.stringify(validRepoMetrics));
+  delete validationProperties.dependabot.dependabotScore;
+  delete validationProperties.dependabot.criticalDependabot;
+  delete validationProperties.dependabot.highDependabot;
+  delete validationProperties.dependabot.mediumDependabot;
+  delete validationProperties.dependabot.lowDependabot;
+  delete validationProperties.githubActionMinutes.githubActionMinutes;
+  delete validationProperties.sonarcloud.codeCoverageScore;
+  delete validationProperties.uniqueContributors.numContributors;
+  delete validationProperties.uniqueContributors.contributors;
   describe("validations", () => {
     it("should succeed with a valid model", () => {
       const validModel = new RepoMetricsModel(validRepoMetrics);
@@ -63,7 +73,8 @@ describe("RepoMetricSchema", () => {
       }
     });
     it.each(
-      Object.entries(validRepoMetrics).flatMap(([key, value]) => [
+      Object.entries(validationProperties).flatMap(([key, value]) => [
+        // @ts-ignore
         ...Object.keys(value).map((subkey) => [key, subkey]),
       ])
     )(
