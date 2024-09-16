@@ -4,6 +4,7 @@ import { RepoBranchProtectionModel } from "../branchProtectionSchemas.js";
 import { RepoDependabotModel } from "../dependabotSchemas.js";
 import { GithubActionMinutesModel } from "../githubActionMinutesSchemas.js";
 import { HierarchyModel } from "../hierarchySchemas.js";
+import { RepoMetricsModel } from "../repoMetricsSchema.js";
 import { RepoModel } from "../repoSchemas.js";
 import { RepoSonarcloudModel } from "../sonarcloudSchemas.js";
 import { UniqueContributorsModel } from "../uniqueContributorsSchemas.js";
@@ -29,9 +30,13 @@ import {
 import {
   HISTORICAL_REPO_1,
   REPO_1,
+  REPO_1_CONSOLIDATED,
   REPO_2,
+  REPO_2_CONSOLIDATED,
   REPO_3,
+  REPO_3_CONSOLIDATED,
   REPO_4,
+  REPO_4_CONSOLIDATED,
 } from "./seedData/repos.js";
 import {
   SERVICE_1,
@@ -55,6 +60,7 @@ export const seedDatabase = async (uri: string) => {
   await insertAreas();
   await insertServices();
   await insertAggregations();
+  await insertConsolidation();
   await mongoose.disconnect();
 };
 
@@ -149,5 +155,14 @@ export const insertAggregations = async () => {
     SUBDIRECTORATE_1_AGGREGATION,
     AREA_1_AGGREGATION,
     SERVICE_1_AGGREGATION,
+  ]);
+};
+
+export const insertConsolidation = async () => {
+  await RepoMetricsModel.insertMany([
+    REPO_1_CONSOLIDATED,
+    REPO_2_CONSOLIDATED,
+    REPO_3_CONSOLIDATED,
+    REPO_4_CONSOLIDATED,
   ]);
 };

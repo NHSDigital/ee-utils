@@ -8,6 +8,7 @@ export * from "./mongodb/dependabotSchemas.js";
 export * from "./mongodb/githubActionMinutesSchemas.js";
 export * from "./mongodb/hierarchySchemas.js";
 export * from "./mongodb/mongo.js";
+export * from "./mongodb/repoMetricsSchema.js";
 export * from "./mongodb/repoSchemas.js";
 export * from "./mongodb/sonarcloudSchemas.js";
 export * from "./mongodb/stateTypes.js";
