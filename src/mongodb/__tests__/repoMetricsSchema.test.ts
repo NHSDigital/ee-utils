@@ -54,7 +54,10 @@ describe("RepoMetricSchema", () => {
       numContributors: 1,
     },
   };
-  const validationProperties = JSON.parse(JSON.stringify(validRepoMetrics));
+  function deepClone<T>(x: T): T {
+    return JSON.parse(JSON.stringify(x));
+  }
+  const validationProperties = deepClone(validRepoMetrics as any);
   delete validationProperties.dependabot.dependabotScore;
   delete validationProperties.dependabot.criticalDependabot;
   delete validationProperties.dependabot.highDependabot;
