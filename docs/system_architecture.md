@@ -65,3 +65,4 @@ yarn build && yarn publish --tag dev
 ```
 
 This will then prompt you to tag the build with a new version. I would recommend you choose a suitable number with `-dev.X` at the end.
+If you are building on top of version `N`, you should number your development version `(N+1)-dev.X` so that npm's version resolution will correctly pick up your new version in the downstream projects.
