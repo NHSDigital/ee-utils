@@ -3,6 +3,8 @@ import { LambdaLogger } from "./logger.js";
 
 const logger = new LambdaLogger("ee-utils/sonarcloud", logReferences);
 
+// add a comment to trigger a new build
+
 export const SONARCLOUD_BASE_URL = "https://sonarcloud.io/api";
 export class NoOrganisationError extends Error {
   constructor(message: string) {
