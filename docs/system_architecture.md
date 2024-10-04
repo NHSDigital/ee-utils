@@ -57,3 +57,12 @@ Many projects depend on this one for shared code. The following projects use EE 
 - [EE Dashboard Frontend](https://github.com/NHSDigital/ee-dashboard-frontend)
 - [Github Scanning Utils](https://github.com/NHSDigital/github-scanning-utils)
 - [Repo Meta Data](https://github.com/NHSDigital/repo-meta-data)
+
+You may want to create development versions for these projects to test changes to EE Utils. To do this, follow the instructions in the README of each project.
+
+```sh
+yarn build && yarn publish --tag dev
+```
+
+This will then prompt you to tag the build with a new version. I would recommend you choose a suitable number with `-dev.X` at the end.
+If you are building on top of version `N`, you should number your development version `(N+1)-dev.X` so that npm's version resolution will correctly pick up your new version in the downstream projects.
